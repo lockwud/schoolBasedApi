@@ -1,0 +1,232 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model admin {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  password   String
+  contact    String
+  gender     gender
+  otp        String?
+  otpExpired Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  tutor      tutor[]
+}
+
+model tutor {
+  id         String       @id @default(uuid())
+  fullname   String
+  gender     gender
+  email      String       @unique
+  password   String
+  contact    String
+  photoUrl   String
+  photoKey   String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  admin      admin?       @relation(fields: [adminId], references: [id])
+  adminId    String?
+  student    student[]
+  subject    subject[]
+  classes    classes?     @relation(fields: [classId], references: [id])
+  classId    String?
+  del_flag   Boolean
+  assignment assignment[]
+
+  materials materials[]
+}
+
+model student {
+  id          String       @id @default(uuid())
+  firstName   String
+  lastName    String
+  otherName   String
+  gender      gender
+  photoUrl    String
+  photoKey    String
+  batchNumber String       @unique
+  password    String
+  contact     String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  tutor       tutor?       @relation(fields: [tutorId], references: [id])
+  tutorId     String
+  subject     subject[]
+  class       classes      @relation(fields: [classId], references: [id])
+  classId     String       @unique
+  del_flag    Boolean
+  attendance  attendance[]
+
+  solveAssignment solveAssignment[]
+
+  guardian       guardian[]
+  paymentRequest paymentRequest[]
+
+  studentTerminalReport studentTerminalReport[]
+}
+
+model subject {
+  id        String    @id @default(uuid())
+  name      String
+  tutorId   String
+  tutor     tutor     @relation(fields: [tutorId], references: [id])
+  students  student[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  assignment assignment[]
+
+  materials materials[]
+
+  studentTerminalReport studentTerminalReport[]
+}
+
+model classes {
+  id         String       @id @default(uuid())
+  name       String
+  capacity   Int
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  student    student[]
+  attendance attendance[]
+  tutor      tutor[]
+  tutorId    String[]
+
+  studentTerminalReport studentTerminalReport[]
+}
+
+model attendance {
+  id                    String                  @id @default(uuid())
+  studentId             String?
+  student               student?                @relation(fields: [studentId], references: [id])
+  date                  DateTime
+  attendanceStatus      status
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  classId               String
+  class                 classes                 @relation(fields: [classId], references: [id])
+  studentTerminalReport studentTerminalReport[]
+}
+
+enum status {
+  present
+  absent
+}
+
+model assignment {
+  id              String            @id @default(uuid())
+  subjectId       String
+  subject         subject           @relation(fields: [subjectId], references: [id])
+  tutorId         String
+  tutor           tutor             @relation(fields: [tutorId], references: [id])
+  title           String
+  description     String
+  dueDate         DateTime
+  isDone          Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  solveAssignment solveAssignment[]
+}
+
+model solveAssignment {
+  id           String     @id @default(uuid())
+  studentId    String
+  student      student    @relation(fields: [studentId], references: [id])
+  assignmentId String
+  assignment   assignment @relation(fields: [assignmentId], references: [id])
+  score        Int
+  isDone       Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model guardian {
+  id                 String           @id @default(uuid())
+  fullName           String
+  gender             gender
+  studentBatchNumber String
+  student            student          @relation(fields: [studentBatchNumber], references: [batchNumber])
+  relationship       String
+  contact            String
+  email              String           @unique
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  paymentRequest     paymentRequest[]
+}
+
+model paymentRequest {
+  id                 String        @id @default(uuid())
+  guadianId          String
+  guadian            guardian      @relation(fields: [guadianId], references: [id])
+  studentBatchNumber String
+  student            student       @relation(fields: [studentBatchNumber], references: [batchNumber])
+  amount             Float
+  paymentType        paymentType
+  status             paymentStatus
+}
+
+model materials {
+  id          String   @id @default(uuid())
+  subjectId   String
+  subject     subject  @relation(fields: [subjectId], references: [id])
+  title       String
+  description String
+  file        String
+  tutor       tutor    @relation(fields: [tutorId], references: [id])
+  tutorId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model studentTerminalReport {
+  id               String       @id @default(uuid())
+  studentId        String
+  student          student      @relation(fields: [studentId], references: [id])
+  numOfSubject     Int
+  totalScore       Int
+  averageScore     Float
+  classId          String
+  position         Int
+  numRoll          Int
+  tutorsRemarks    String[]
+  class            classes      @relation(fields: [classId], references: [id])
+  subjectReport    subject[]
+  attendanceReport attendance[]
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+enum gender {
+  male
+  female
+}
+
+enum paymentStatus {
+  paid
+  pending
+  cancelled
+  failed
+  refunded
+  partial
+  partiallyRefunded
+}
+
+enum paymentType {
+  cash
+  card
+  mobileMoney
+}
