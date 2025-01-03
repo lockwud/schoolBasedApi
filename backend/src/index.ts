@@ -7,7 +7,7 @@ import mainRouter from "./routes";
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT || 2020;
+const port = process.env.PORT || 4500;
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(

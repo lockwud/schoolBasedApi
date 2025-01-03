@@ -4,5 +4,4 @@ node_modules
 pnpm-lock.yaml
 generatedSchema.json
 allowedFields.json
-dist
 /prisma/migrations
