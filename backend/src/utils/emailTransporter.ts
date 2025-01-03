@@ -34,3 +34,31 @@ export const generateOtp = (): string => {
     }
   };
 
+
+  export const sendPasswordResetLink = async (email: string, link: string | any, hashedResetLink: string | "null")=>{
+    const transporter = nodemailer.createTransport({
+      service: "gmail", 
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Forgot password",
+    text: `Click on this link to reset your password ${link + hashedResetLink}`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Password reset link sent successfully");
+  } catch (error) {
+    console.error("Error sending password reset link to  email:", error);
+    throw new HttpException(
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      "Failed to send password reset link to email"
+    );
+  }
+  }

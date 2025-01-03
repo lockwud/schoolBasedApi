@@ -17,6 +17,7 @@ declare global {
       student?: UserPayload; // student payload with role
       tutor?: UserPayload;   // tutor payload with role
       admin?:UserPayload;
+      guardian?: UserPayload;
     }
   }
 }
@@ -43,12 +44,15 @@ export const authenticateJWT = (
         req.student = decoded as UserPayload;
       } else if (decoded && (decoded as UserPayload).role === "tutor") {
         req.tutor = decoded as UserPayload;
+      }else if (decoded && (decoded as UserPayload).role === "admin"){
+        req.admin = decoded as UserPayload;
       }
       next();
     });
   } else {
     next(new HttpException(HttpStatus.FORBIDDEN, "No token found"));
   }
+
 };
 
 
@@ -85,7 +89,7 @@ export const setInvalidToken = (): string => {
 
 export const authorizeRole = (allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
-    const user = req.student || req.tutor;
+    const user = req.student || req.tutor || req.admin || req.guardian;
     
     if (!user || !allowedRoles.includes(user.role)) {
       return next(new HttpException(HttpStatus.FORBIDDEN, "Access denied"));
@@ -94,3 +98,5 @@ export const authorizeRole = (allowedRoles: string[]) => {
     next();
   };
 };
+
+

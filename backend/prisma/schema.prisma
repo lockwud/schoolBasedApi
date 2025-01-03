@@ -14,17 +14,19 @@ datasource db {
 }
 
 model admin {
-  id         String   @id @default(uuid())
-  name       String
-  email      String   @unique
-  password   String
-  contact    String
-  gender     gender
-  otp        String?
-  otpExpired Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  tutor      tutor[]
+  id                       String   @id @default(uuid())
+  name                     String
+  email                    String   @unique
+  password                 String
+  otp                      String?
+  otpExpired               Boolean  @default(false)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+  tutor                    tutor[]
+  passwordResetToken       String?  @unique
+  passwordResetTokenExpiry DateTime @default(now())
+  hashedResetLink          String?
+  hashedResetLinkExpired   Boolean  @default(false)
 }
 
 model tutor {
@@ -34,8 +36,6 @@ model tutor {
   email      String       @unique
   password   String
   contact    String
-  photoUrl   String
-  photoKey   String
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   admin      admin?       @relation(fields: [adminId], references: [id])
@@ -47,29 +47,29 @@ model tutor {
   del_flag   Boolean
   assignment assignment[]
 
-  materials materials[]
+  materials teachingMaterials[]
 }
 
 model student {
-  id          String       @id @default(uuid())
-  firstName   String
-  lastName    String
-  otherName   String
-  gender      gender
-  photoUrl    String
-  photoKey    String
-  batchNumber String       @unique
-  password    String
-  contact     String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  tutor       tutor?       @relation(fields: [tutorId], references: [id])
-  tutorId     String
-  subject     subject[]
-  class       classes      @relation(fields: [classId], references: [id])
-  classId     String       @unique
-  del_flag    Boolean
-  attendance  attendance[]
+  id         String       @id @default(uuid())
+  firstName  String
+  lastName   String
+  otherName  String
+  gender     gender
+  photoUrl   String
+  photoKey   String
+  studentId  String       @unique
+  password   String
+  contact    String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  tutor      tutor?       @relation(fields: [tutorId], references: [id])
+  tutorId    String
+  subject    subject[]
+  class      classes      @relation(fields: [classId], references: [id])
+  classId    String       @unique
+  del_flag   Boolean
+  attendance attendance[]
 
   solveAssignment solveAssignment[]
 
@@ -90,14 +90,14 @@ model subject {
 
   assignment assignment[]
 
-  materials materials[]
+  materials teachingMaterials[]
 
   studentTerminalReport studentTerminalReport[]
 }
 
 model classes {
   id         String       @id @default(uuid())
-  name       String
+  className  String
   capacity   Int
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
@@ -159,10 +159,10 @@ model guardian {
   fullName           String
   gender             gender
   studentBatchNumber String
-  student            student          @relation(fields: [studentBatchNumber], references: [batchNumber])
+  student            student          @relation(fields: [studentBatchNumber], references: [studentId])
   relationship       String
   contact            String
-  email              String           @unique
+  email              String?          @unique
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
   paymentRequest     paymentRequest[]
@@ -173,13 +173,13 @@ model paymentRequest {
   guadianId          String
   guadian            guardian      @relation(fields: [guadianId], references: [id])
   studentBatchNumber String
-  student            student       @relation(fields: [studentBatchNumber], references: [batchNumber])
+  student            student       @relation(fields: [studentBatchNumber], references: [studentId])
   amount             Float
   paymentType        paymentType
   status             paymentStatus
 }
 
-model materials {
+model teachingMaterials {
   id          String   @id @default(uuid())
   subjectId   String
   subject     subject  @relation(fields: [subjectId], references: [id])
