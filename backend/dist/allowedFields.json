@@ -1,217 +1,217 @@
 [
-    {
-        "modelName": "",
-        "fields": []
-    },
-    {
-        "modelName": "client",
-        "fields": [
-            "provider"
-        ]
-    },
-    {
-        "modelName": "db",
-        "fields": [
-            "provider",
-            "url"
-        ]
-    },
-    {
-        "modelName": "admin",
-        "fields": [
-            "id",
-            "name",
-            "email",
-            "password",
-            "otp",
-            "otpExpired",
-            "createdAt",
-            "updatedAt",
-            "passwordResetToken",
-            "passwordResetTokenExpiry",
-            "hashedResetLink",
-            "hashedResetLinkExpired"
-        ]
-    },
-    {
-        "modelName": "tutor",
-        "fields": [
-            "id",
-            "fullname",
-            "gender",
-            "email",
-            "password",
-            "contact",
-            "createdAt",
-            "updatedAt",
-            "adminId",
-            "classId",
-            "del_flag"
-        ]
-    },
-    {
-        "modelName": "student",
-        "fields": [
-            "id",
-            "firstName",
-            "lastName",
-            "otherName",
-            "gender",
-            "photoUrl",
-            "photoKey",
-            "studentId",
-            "password",
-            "contact",
-            "createdAt",
-            "updatedAt",
-            "tutorId",
-            "classId",
-            "del_flag"
-        ]
-    },
-    {
-        "modelName": "subject",
-        "fields": [
-            "id",
-            "name",
-            "tutorId",
-            "createdAt",
-            "updatedAt"
-        ]
-    },
-    {
-        "modelName": "classes",
-        "fields": [
-            "id",
-            "className",
-            "capacity",
-            "createdAt",
-            "updatedAt"
-        ]
-    },
-    {
-        "modelName": "attendance",
-        "fields": [
-            "id",
-            "studentId",
-            "date",
-            "attendanceStatus",
-            "createdAt",
-            "updatedAt",
-            "classId"
-        ]
-    },
-    {
-        "modelName": "status",
-        "fields": [
-            "present",
-            "absent"
-        ]
-    },
-    {
-        "modelName": "assignment",
-        "fields": [
-            "id",
-            "subjectId",
-            "tutorId",
-            "title",
-            "description",
-            "dueDate",
-            "isDone",
-            "createdAt",
-            "updatedAt"
-        ]
-    },
-    {
-        "modelName": "solveAssignment",
-        "fields": [
-            "id",
-            "studentId",
-            "assignmentId",
-            "score",
-            "isDone",
-            "createdAt",
-            "updatedAt"
-        ]
-    },
-    {
-        "modelName": "guardian",
-        "fields": [
-            "id",
-            "fullName",
-            "gender",
-            "studentBatchNumber",
-            "relationship",
-            "contact",
-            "email",
-            "createdAt",
-            "updatedAt"
-        ]
-    },
-    {
-        "modelName": "paymentRequest",
-        "fields": [
-            "id",
-            "guadianId",
-            "studentBatchNumber",
-            "amount",
-            "paymentType",
-            "status"
-        ]
-    },
-    {
-        "modelName": "teachingMaterials",
-        "fields": [
-            "id",
-            "subjectId",
-            "title",
-            "description",
-            "file",
-            "tutorId",
-            "createdAt",
-            "updatedAt"
-        ]
-    },
-    {
-        "modelName": "studentTerminalReport",
-        "fields": [
-            "id",
-            "studentId",
-            "numOfSubject",
-            "totalScore",
-            "averageScore",
-            "classId",
-            "position",
-            "numRoll",
-            "createdAt",
-            "updatedAt"
-        ]
-    },
-    {
-        "modelName": "gender",
-        "fields": [
-            "male",
-            "female"
-        ]
-    },
-    {
-        "modelName": "paymentStatus",
-        "fields": [
-            "paid",
-            "pending",
-            "cancelled",
-            "failed",
-            "refunded",
-            "partial",
-            "partiallyRefunded"
-        ]
-    },
-    {
-        "modelName": "paymentType",
-        "fields": [
-            "cash",
-            "card",
-            "mobileMoney"
-        ]
-    }
+  {
+    "modelName": "",
+    "fields": []
+  },
+  {
+    "modelName": "client",
+    "fields": [
+      "provider"
+    ]
+  },
+  {
+    "modelName": "db",
+    "fields": [
+      "provider",
+      "url"
+    ]
+  },
+  {
+    "modelName": "admin",
+    "fields": [
+      "id",
+      "name",
+      "email",
+      "password",
+      "otp",
+      "otpExpired",
+      "createdAt",
+      "updatedAt",
+      "passwordResetToken",
+      "passwordResetTokenExpiry",
+      "hashedResetLink",
+      "hashedResetLinkExpired"
+    ]
+  },
+  {
+    "modelName": "tutor",
+    "fields": [
+      "id",
+      "fullname",
+      "gender",
+      "email",
+      "password",
+      "contact",
+      "createdAt",
+      "updatedAt",
+      "adminId",
+      "classId",
+      "del_flag"
+    ]
+  },
+  {
+    "modelName": "student",
+    "fields": [
+      "id",
+      "firstName",
+      "lastName",
+      "otherName",
+      "gender",
+      "photoUrl",
+      "photoKey",
+      "studentId",
+      "password",
+      "contact",
+      "createdAt",
+      "updatedAt",
+      "tutorId",
+      "classId",
+      "del_flag"
+    ]
+  },
+  {
+    "modelName": "subject",
+    "fields": [
+      "id",
+      "name",
+      "tutorId",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "modelName": "classes",
+    "fields": [
+      "id",
+      "className",
+      "capacity",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "modelName": "attendance",
+    "fields": [
+      "id",
+      "studentId",
+      "date",
+      "attendanceStatus",
+      "createdAt",
+      "updatedAt",
+      "classId"
+    ]
+  },
+  {
+    "modelName": "status",
+    "fields": [
+      "present",
+      "absent"
+    ]
+  },
+  {
+    "modelName": "assignment",
+    "fields": [
+      "id",
+      "subjectId",
+      "tutorId",
+      "title",
+      "description",
+      "dueDate",
+      "isDone",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "modelName": "solveAssignment",
+    "fields": [
+      "id",
+      "studentId",
+      "assignmentId",
+      "score",
+      "isDone",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "modelName": "guardian",
+    "fields": [
+      "id",
+      "fullName",
+      "gender",
+      "studentBatchNumber",
+      "relationship",
+      "contact",
+      "email",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "modelName": "paymentRequest",
+    "fields": [
+      "id",
+      "guadianId",
+      "studentBatchNumber",
+      "amount",
+      "paymentType",
+      "status"
+    ]
+  },
+  {
+    "modelName": "teachingMaterials",
+    "fields": [
+      "id",
+      "subjectId",
+      "title",
+      "description",
+      "file",
+      "tutorId",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "modelName": "studentTerminalReport",
+    "fields": [
+      "id",
+      "studentId",
+      "numOfSubject",
+      "totalScore",
+      "averageScore",
+      "classId",
+      "position",
+      "numRoll",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "modelName": "gender",
+    "fields": [
+      "male",
+      "female"
+    ]
+  },
+  {
+    "modelName": "paymentStatus",
+    "fields": [
+      "paid",
+      "pending",
+      "cancelled",
+      "failed",
+      "refunded",
+      "partial",
+      "partiallyRefunded"
+    ]
+  },
+  {
+    "modelName": "paymentType",
+    "fields": [
+      "cash",
+      "card",
+      "mobileMoney"
+    ]
+  }
 ]

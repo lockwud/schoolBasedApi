@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "copy-files": "cp ../allowedFields.json dist/",
+    "copy-files": "cp ./allowedFields.json dist/",
     "build": "tsc && pnpm copy-files",
     "start": "node ./dist/src/index.js",
     "dev": "nodemon",
