@@ -1,7 +1,7 @@
 import { validatePayload } from './../../middleware/validate-payload';
 import { Router } from "express";
 import * as admin from "../../controllers/adminController"
-// import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
+import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
 const adminRoute = Router();
 
 
@@ -26,8 +26,35 @@ adminRoute.put("/resetPassword/:token",
     admin.resetPassword
 );
 
-adminRoute.get("/", admin.getAdmins)
+adminRoute.get("/", 
+    authenticateJWT,
+    authorizeRole(["admin"]),
+    admin.getAdmins
+);
 
+adminRoute.get("/:id",
+    authenticateJWT,
+    authorizeRole(["admin"]),
+    admin.getAdminById
+);
+
+adminRoute.get("/email",
+    authenticateJWT,
+    authorizeRole(["admin"]),
+    admin.getAdminByEmail
+);
+
+adminRoute.put("/update/:id",
+    authenticateJWT,
+    authorizeRole(["admin"]),
+    admin.updateAdminRecords
+);
+
+adminRoute.delete("/delete/:id",
+    authenticateJWT,
+    authorizeRole(["admin"]),
+    admin.deleteAdmin
+)
 
 
 export default adminRoute;

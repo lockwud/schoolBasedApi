@@ -6,6 +6,7 @@ import { adminData, adminSchema } from "../validators/adminValidator";
 import { signToken } from "../utils/jsonwebtoken";
 import { admin } from "@prisma/client";
 import { sendPasswordResetLink } from "../utils/emailTransporter"
+import { generateReferallCode } from "../utils/referralCodeGenerator";
 
 export const registerAdmin = async(data: adminData)=>{
     const validateAdminData = adminSchema.safeParse(data)
@@ -23,15 +24,16 @@ export const registerAdmin = async(data: adminData)=>{
         })
         if(!checkAdminAvailability){
             const HashedAdminPassword = await hash(data.password)
+            const registrationCodes = await generateReferallCode();
             const saveAdmin = await prisma.admin.create({
-                data:{
+                data: {
                     ...data,
+                    generatedRegistrationCodes: registrationCodes, 
                     password: HashedAdminPassword
                 }
-            })
+            });
             const {password, ...adminDataWithoutPassword} = saveAdmin
             return adminDataWithoutPassword
-            
         }else{
             throw new HttpException(HttpStatus.CONFLICT, "Admin already exist")
     
