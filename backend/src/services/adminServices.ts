@@ -171,7 +171,6 @@ export const forgotPasswordLink = async(email: string, link: string| undefined, 
              },
              data: { 
                  passwordResetToken: token,  // this token will be used to verify the reset link in the frontend
-                 passwordResetTokenExpiry: new Date(Date.now() + 3 * 600000),// 3 minutes
                  hashedResetLink: hashedResetLink 
 
              },

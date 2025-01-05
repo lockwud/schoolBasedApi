@@ -23,34 +23,38 @@ model admin {
   createdAt                  DateTime @default(now())
   updatedAt                  DateTime @updatedAt
   passwordResetToken         String?  @unique
-  passwordResetTokenExpiry   DateTime @default(now())
   hashedResetLink            String?
   hashedResetLinkExpired     Boolean  @default(false)
   generatedRegistrationCodes String   @unique
   tutor                      tutor[]
-  maxUsedCode               Int @default(3)
-  totalCodeUsed             Int @default(0)
+  maxUsedCode                Int      @default(3)
+  totalCodeUsed              Int      @default(0)
 }
 
 model tutor {
-  id               String              @id @default(uuid())
-  firstName        String
-  lastName         String
-  gender           gender
-  email            String              @unique
-  password         String
-  contact          String
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
-  student          student[]
-  subject          subject[]
-  classes          classes?            @relation(fields: [classId], references: [id])
-  classId          String?
-  del_flag         Boolean             @default(false)
-  assignment       assignment[]
-  materials        teachingMaterials[]
-  registrationCode admin?              @relation(fields: [registeredCode], references: [generatedRegistrationCodes])
-  registeredCode   String
+  id                      String              @id @default(uuid())
+  firstName               String
+  lastName                String
+  gender                  gender
+  email                   String              @unique
+  password                String
+  contact                 String
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+  student                 student[]
+  subject                 subject[]
+  classes                 classes?            @relation(fields: [classId], references: [id])
+  classId                 String?
+  del_flag                Boolean             @default(false)
+  assignment              assignment[]
+  materials               teachingMaterials[]
+  registrationCode        admin?              @relation(fields: [registeredCode], references: [generatedRegistrationCodes])
+  registeredCode          String
+  passwordResetToken      String?             @unique
+  hashedResetLink         String?
+  hashedResetLinkExpired  Boolean             @default(false)
+  passwordResetCompleted  Boolean             @default(false)
+  passwordResetExpiration DateTime?
 }
 
 model student {

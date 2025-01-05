@@ -28,7 +28,6 @@
       "createdAt",
       "updatedAt",
       "passwordResetToken",
-      "passwordResetTokenExpiry",
       "hashedResetLink",
       "hashedResetLinkExpired",
       "generatedRegistrationCodes",
@@ -50,7 +49,12 @@
       "updatedAt",
       "classId",
       "del_flag",
-      "registeredCode"
+      "registeredCode",
+      "passwordResetToken",
+      "hashedResetLink",
+      "hashedResetLinkExpired",
+      "passwordResetCompleted",
+      "passwordResetExpiration"
     ]
   },
   {
