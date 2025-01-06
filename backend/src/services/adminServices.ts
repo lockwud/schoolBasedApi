@@ -65,7 +65,7 @@ export const verifyOtp = async (id: string, otp: string) => {
     const admin = await prisma.admin.findUnique({ where: { id } });
   
     if (!admin) {
-      throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid OTP or Admin not found");
+      throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid OTP or  not found");
     }
   
     // Check if the OTP matches
@@ -212,7 +212,8 @@ export const resetPassword = async(newPassword: string, token: string)=>{
                         data: { 
                             password: hashedPassword,
                             passwordResetToken: null,
-                            hashedResetLink: null                      
+                            hashedResetLink: null,
+                            otp: null                      
                          },
                     });
                     return "Password reset successful"
