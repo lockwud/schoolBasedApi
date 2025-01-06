@@ -65,7 +65,7 @@ export const verifyOtp = async (id: string, otp: string) => {
     const admin = await prisma.admin.findUnique({ where: { id } });
   
     if (!admin) {
-      throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid OTP or Student not found");
+      throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid OTP or Admin not found");
     }
   
     // Check if the OTP matches

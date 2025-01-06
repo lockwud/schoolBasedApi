@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(
   cors({
-    origin: "http://localhost:4500",
+    origin: true,
     credentials: true,
   })
 );
