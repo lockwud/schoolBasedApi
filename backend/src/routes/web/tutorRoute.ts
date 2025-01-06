@@ -10,5 +10,49 @@ tutorRoute.post("/signup",
     tutor.signUp
 );
 
+tutorRoute.post("/login",
+    tutor.login 
+);
+
+tutorRoute.get("/", 
+    authenticateJWT,
+    authorizeRole(["admin", "tutor"]),
+    tutor.getTutors
+);
+
+
+tutorRoute.get("/:id", 
+    authenticateJWT,
+    authorizeRole(["admin", "tutor"]),
+    tutor.getTtutorById
+);
+
+
+tutorRoute.get("/email",
+    authenticateJWT,
+    authorizeRole(["admin", "tutor"]),
+    tutor.getTutorByEmail
+);
+
+tutorRoute.put("/update/:id",
+    authenticateJWT,
+    authorizeRole(["admin", "tutor"]),
+    tutor.updateTutorDetails
+);
+
+
+tutorRoute.delete("/delete/:id",
+    authenticateJWT,
+    authorizeRole(["admin", "tutor"]),
+    tutor.deleteTutor
+);
+
+tutorRoute.post("/forgotPassword",
+    tutor.sendPasswordResetLink
+);
+
+tutorRoute.put("/resetPassword/:token",
+    tutor.resetPassword
+);
 
 export default tutorRoute;

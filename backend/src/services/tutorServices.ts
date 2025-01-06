@@ -240,3 +240,33 @@ export const resetPassword = async (newPassword: string, token: string) => {
         throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error resetting password");
     }
 };
+
+
+
+
+export const verifyOtp = async (id: string, otp: string) => {
+    const tutor = await prisma.tutor.findUnique({ where: { id } });
+  
+    if (!tutor) {
+      throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid OTP or Tutor not found");
+    }
+  
+    // Check if the OTP matches
+    if (tutor.otp !== otp) {
+      throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid OTP");
+    }
+  
+    // Generate a JWT token if OTP is correct
+    const token = signToken({ id: tutor.id,role:'tutor' });
+  
+    // Clear the OTP from the database after successful verification
+    await prisma.admin.update({
+        where: {
+            id: tutor.id
+        },
+        data: { otp: null },
+        
+    });
+  
+    return token;
+  };

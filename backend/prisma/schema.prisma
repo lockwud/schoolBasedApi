@@ -39,6 +39,8 @@ model tutor {
   email                   String              @unique
   password                String
   contact                 String
+  otp                     String?
+  otpExpired              Boolean             @default(false)
   createdAt               DateTime            @default(now())
   updatedAt               DateTime            @updatedAt
   student                 student[]
