@@ -30,7 +30,7 @@ export const addTtutor = async(data: tutorData)=>{
             if(!findAdminRegistrationCode){
                 throw new HttpException(HttpStatus.FORBIDDEN, "Invalid registration code")
             }else{
-                if (findAdminRegistrationCode.maxUsedCode == findAdminRegistrationCode.totalCodeUsed) {
+                if (findAdminRegistrationCode.maxUsedCode <= findAdminRegistrationCode.totalCodeUsed) {
                     throw new HttpException(HttpStatus.FORBIDDEN, "Maximum number of codes used");
                   }else{
                     await prisma.admin.update({
@@ -38,7 +38,9 @@ export const addTtutor = async(data: tutorData)=>{
                             id: findAdminRegistrationCode.id,
                         },
                         data:{
-                           
+                            maxUsedCode:{
+                                decrement: 1,
+                            },
                             totalCodeUsed:{
                                 increment: 1,
                             }
