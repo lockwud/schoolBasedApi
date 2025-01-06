@@ -45,6 +45,8 @@
       "email",
       "password",
       "contact",
+      "otp",
+      "otpExpired",
       "createdAt",
       "updatedAt",
       "classId",
