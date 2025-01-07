@@ -253,7 +253,7 @@ export const verifyOtp = async (id: string, otp: string) => {
     const token = signToken({ id: tutor.id,role:'tutor' });
   
     // Clear the OTP from the database after successful verification
-    await prisma.admin.update({
+    await prisma.tutor.update({
         where: {
             id: tutor.id
         },
