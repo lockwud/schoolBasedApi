@@ -14,7 +14,7 @@ tutorRoute.post("/login",
     tutor.login 
 );
 
-tutorRoute.post("/auth/:id/verifyOtp",
+tutorRoute.post("/auth/verifyOtp",
   tutor.otpVerification
 )
 

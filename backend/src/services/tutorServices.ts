@@ -237,8 +237,8 @@ export const resetPassword = async (newPassword: string, token: string) => {
 
 
 
-export const verifyOtp = async (id: string, otp: string) => {
-    const tutor = await prisma.tutor.findUnique({ where: { id } });
+export const verifyOtp = async (email: string, otp: string) => {
+    const tutor = await prisma.tutor.findUnique({ where: { email } });
   
     if (!tutor) {
       throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid OTP or Tutor not found");
