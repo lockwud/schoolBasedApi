@@ -181,7 +181,7 @@ model paymentRequest {
   id                 String        @id @default(uuid())
   guadianId          String
   guadian            guardian      @relation(fields: [guadianId], references: [id])
-  studentBatchNumber String
+  studentBatchNumber String @unique
   student            student       @relation(fields: [studentBatchNumber], references: [studentId])
   amount             Float
   paymentType        paymentType
