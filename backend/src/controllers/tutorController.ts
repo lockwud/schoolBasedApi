@@ -209,7 +209,7 @@ export const otpVerification = async(
     try{
         const { otp } = req.body
         const { id } = req.params
-        const token = await tutorService.verifyOtp(otp, id)
+        const token = await tutorService.verifyOtp(id, otp)
         res.status(HttpStatus.OK).json({message: 'OTP verified', token})
     }catch(error){
         const err = error as ErrorResponse
