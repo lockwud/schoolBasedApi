@@ -148,9 +148,9 @@ export const deleteAdmin = async(
 
 export const otpVerification = async(req: Request, res: Response, next: NextFunction)=>{
     try{
-        const {otp} = req.body
-        const { id } = req.params
-        const token = await adminService.verifyOtp(id, otp)
+        const {email,otp} = req.body
+        
+        const token = await adminService.verifyOtp(email, otp)
         res.status(HttpStatus.OK).json({message:"verified",token})
 
     }catch(error){

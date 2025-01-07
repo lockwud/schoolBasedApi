@@ -14,7 +14,7 @@ adminRoute.post("/login",
     admin.login 
 );
 
-adminRoute.post("/:id/verifyOtp", 
+adminRoute.post("/verifyOtp", 
     admin.otpVerification
 );
 

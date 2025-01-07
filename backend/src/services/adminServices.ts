@@ -61,8 +61,8 @@ export const signInAdmin = async(email: string, password: string)=>{
 }
 
 
-export const verifyOtp = async (id: string, otp: string) => {
-    const admin = await prisma.admin.findUnique({ where: { id } });
+export const verifyOtp = async (email: string, otp: string) => {
+    const admin = await prisma.admin.findUnique({ where: { email} });
   
     if (!admin) {
       throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid OTP or  not found");
