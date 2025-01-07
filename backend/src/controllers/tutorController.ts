@@ -36,7 +36,7 @@ export const login = async(
         const otp = generateOtp();
         await tutorService.updateTutor(tutorLogin.id, {otp,})
         await sendOtpEmail(email, otp)
-        res.status(HttpStatus.OK).json(tutorLogin)
+        res.status(HttpStatus.OK).json({message:"check your email for otp"})
     }catch(error){
         const err = error as ErrorResponse
         next(
