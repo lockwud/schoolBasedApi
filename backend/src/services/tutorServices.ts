@@ -7,7 +7,7 @@ import { sendPasswordResetLink } from "../utils/emailTransporter"
 import { tutorData, tutorSchema } from "../validators/tutorValidator";
 import { tutor } from "@prisma/client";
 
-export const addTtutor = async(data: tutorData)=>{
+export const addTutor = async(data: tutorData)=>{
     const validateTutorData = tutorSchema.safeParse(data)
     if(!validateTutorData.success){
         const errors = validateTutorData.error.issues.map(

@@ -10,7 +10,7 @@ import { generateOtp, sendOtpEmail } from '../utils/emailTransporter';
 export const signUp = async(req: Request, res: Response, next: NextFunction)=>{
     try{
         const data = req.body satisfies tutorData
-        const addTutor = await tutorService.addTtutor(data)
+        const addTutor = await tutorService.addTutor(data)
         res.status(HttpStatus.CREATED).json(addTutor)
     }catch(error){
         const err = error as ErrorResponse
