@@ -14,6 +14,10 @@ tutorRoute.post("/login",
     tutor.login 
 );
 
+tutorRoute.post("/auth/verifyotp/:",
+  tutor.otpVerification
+)
+
 tutorRoute.get("/", 
     authenticateJWT,
     authorizeRole(["admin", "tutor"]),
