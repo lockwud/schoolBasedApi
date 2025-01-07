@@ -31,6 +31,7 @@ const bcrypt_1 = require("../utils/bcrypt");
 const adminValidator_1 = require("../validators/adminValidator");
 const jsonwebtoken_1 = require("../utils/jsonwebtoken");
 const emailTransporter_1 = require("../utils/emailTransporter");
+const referralCodeGenerator_1 = require("../utils/referralCodeGenerator");
 const registerAdmin = (data) => __awaiter(void 0, void 0, void 0, function* () {
     const validateAdminData = adminValidator_1.adminSchema.safeParse(data);
     if (!validateAdminData.success) {
@@ -45,8 +46,9 @@ const registerAdmin = (data) => __awaiter(void 0, void 0, void 0, function* () {
         });
         if (!checkAdminAvailability) {
             const HashedAdminPassword = yield (0, bcrypt_1.hash)(data.password);
+            const registrationCodes = yield (0, referralCodeGenerator_1.generateReferallCode)();
             const saveAdmin = yield prisma_1.default.admin.create({
-                data: Object.assign(Object.assign({}, data), { password: HashedAdminPassword })
+                data: Object.assign(Object.assign({}, data), { generatedRegistrationCodes: registrationCodes, password: HashedAdminPassword })
             });
             const { password } = saveAdmin, adminDataWithoutPassword = __rest(saveAdmin, ["password"]);
             return adminDataWithoutPassword;
@@ -76,7 +78,7 @@ exports.signInAdmin = signInAdmin;
 const verifyOtp = (id, otp) => __awaiter(void 0, void 0, void 0, function* () {
     const admin = yield prisma_1.default.admin.findUnique({ where: { id } });
     if (!admin) {
-        throw new http_error_1.default(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid OTP or Student not found");
+        throw new http_error_1.default(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid OTP or  not found");
     }
     // Check if the OTP matches
     if (admin.otp !== otp) {
@@ -168,7 +170,6 @@ const forgotPasswordLink = (email, link, passwordResetLink) => __awaiter(void 0,
             },
             data: {
                 passwordResetToken: token, // this token will be used to verify the reset link in the frontend
-                passwordResetTokenExpiry: new Date(Date.now() + 3 * 600000), // 3 minutes
                 hashedResetLink: hashedResetLink
             },
         });
@@ -205,7 +206,8 @@ const resetPassword = (newPassword, token) => __awaiter(void 0, void 0, void 0, 
                         data: {
                             password: hashedPassword,
                             passwordResetToken: null,
-                            hashedResetLink: null
+                            hashedResetLink: null,
+                            otp: null
                         },
                     });
                     return "Password reset successful";

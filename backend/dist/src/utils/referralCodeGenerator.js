@@ -32,20 +32,20 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const validate_payload_1 = require("./../../middleware/validate-payload");
-const express_1 = require("express");
-const admin = __importStar(require("../../controllers/adminController"));
-const jsonwebtoken_1 = require("../../utils/jsonwebtoken");
-const adminRoute = (0, express_1.Router)();
-adminRoute.post("/signup", (0, validate_payload_1.validatePayload)('admin'), admin.signUp);
-adminRoute.post("/login", admin.login);
-adminRoute.post("/:id/verifyOtp", admin.otpVerification);
-adminRoute.post("/forgotPassword", admin.forgotPassword);
-adminRoute.put("/resetPassword/:token", admin.resetPassword);
-adminRoute.get("/", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), admin.getAdmins);
-adminRoute.get("/:id", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), admin.getAdminById);
-adminRoute.get("/email", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), admin.getAdminByEmail);
-adminRoute.put("/update/:id", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), admin.updateAdminRecords);
-adminRoute.delete("/delete/:id", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), admin.deleteAdmin);
-exports.default = adminRoute;
+exports.generateReferallCode = void 0;
+const crypto = __importStar(require("crypto"));
+const generateReferallCode = () => __awaiter(void 0, void 0, void 0, function* () {
+    const code = crypto.randomUUID().slice(0, 6).toString();
+    return code;
+});
+exports.generateReferallCode = generateReferallCode;

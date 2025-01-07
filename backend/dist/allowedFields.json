@@ -28,25 +28,35 @@
       "createdAt",
       "updatedAt",
       "passwordResetToken",
-      "passwordResetTokenExpiry",
       "hashedResetLink",
-      "hashedResetLinkExpired"
+      "hashedResetLinkExpired",
+      "generatedRegistrationCodes",
+      "maxUsedCode",
+      "totalCodeUsed"
     ]
   },
   {
     "modelName": "tutor",
     "fields": [
       "id",
-      "fullname",
+      "firstName",
+      "lastName",
       "gender",
       "email",
       "password",
       "contact",
+      "otp",
+      "otpExpired",
       "createdAt",
       "updatedAt",
-      "adminId",
       "classId",
-      "del_flag"
+      "del_flag",
+      "registeredCode",
+      "passwordResetToken",
+      "hashedResetLink",
+      "hashedResetLinkExpired",
+      "passwordResetCompleted",
+      "passwordResetExpiration"
     ]
   },
   {
