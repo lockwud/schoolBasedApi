@@ -32,7 +32,7 @@ export const login = async(
 )=>{
     try{
         const {email, password} = req.body
-        const tutorLogin = await tutorService.loginTutor(email, password)
+        const tutorLogin = await tutorService.signIn(email, password)
         const otp = generateOtp();
         await tutorService.updateTutor(tutorLogin.id, {otp,})
         await sendOtpEmail(email, otp)
@@ -98,7 +98,7 @@ export const getTutorByEmail = async(
 )=>{
     try{
         const { email } = req.body
-        const fetchedTutor = await tutorService.fetchTtutorByEmail(email)
+        const fetchedTutor = await tutorService.fetchTutorByEmail(email)
         res.status(HttpStatus.OK).json({fetchedTutor})
     }catch(error){
         const err = error as ErrorResponse

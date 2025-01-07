@@ -72,22 +72,22 @@ export const addTutor = async(data: tutorData)=>{
 };
 
 
-export const loginTutor = async(email: string, password: string)=>{
-    const findTutor = await prisma.tutor.findUnique({
+export const signIn = async(email: string, password: string)=>{
+    const fetchedTutor = await prisma.tutor.findUnique({
         where:{
             email
         }
     })
-    if(!findTutor){
-        throw new HttpException(HttpStatus.NOT_FOUND, "Tutor not found")
+   if(!fetchedTutor){
+    throw new HttpException(HttpStatus.NOT_FOUND, "Tutor does not exist")
+   }else{
+    const verifiedPassword = await compare(password, fetchedTutor.password)
+    if(!verifiedPassword){
+        throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid email or password")
     }else{
-        const comparePassword = await compare(password, findTutor.password)
-        if(!comparePassword){
-            throw new HttpException(HttpStatus.FORBIDDEN, "Invalid email or password")
-        }else{
-            return findTutor
-        }
+        return fetchedTutor
     }
+   }
 };
 
 
@@ -107,7 +107,7 @@ export const fetchTutorById = async(id: string)=>{
 };
 
 
-export const fetchTtutorByEmail = async(email: string)=>{
+export const fetchTutorByEmail = async(email: string)=>{
     const fetchedTutor = await prisma.tutor.findUnique({
         where:{
             email
@@ -118,13 +118,7 @@ export const fetchTtutorByEmail = async(email: string)=>{
 
 
 export const updateTutor = async(id: string, data: Partial<tutor>)=>{
-    const validateTutorData = tutorSchema.safeParse(data)
-    if(!validateTutorData.success){
-        const errors = validateTutorData.error.issues.map(
-        ({ message, path }) => `${path}: ${message}`
-        )
-        throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "))
-    }else{
+  
         const findTutor = await prisma.tutor.findUnique({
             where:{
                 id
@@ -141,7 +135,6 @@ export const updateTutor = async(id: string, data: Partial<tutor>)=>{
             })
             return updatedTutor
         }
-    }
 };
 
 
@@ -166,7 +159,7 @@ export const deleteTutor = async(id: string)=>{
 
 
 export const forgotPasswordLink = async (email: string, link: string | undefined, passwordResetLink: string | undefined) => {
-    if (!(await fetchTtutorByEmail(email))) {
+    if (!(await fetchTutorByEmail(email))) {
         throw new HttpException(HttpStatus.NOT_FOUND, "Tutor not found");
     } else {
         // Sign the token with JWT
