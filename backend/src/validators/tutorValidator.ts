@@ -14,9 +14,6 @@ export const tutorSchema = z.object({
     .min(1, "Last name is required"),
     gender: gender,
     email: z.string().email({message:"Please provide a valid mail"}),
-    password: z.string({required_error: "Password name cannot be empty"})
-    .trim()
-    .min(6, "Password should be 6 characters or more"),
     contact: z.string({required_error: "Mobile number is required"})
     .trim()
     .min(10, "Phone number cannot be less than 10 digits").max(10, "Phone number cannot exceed 10 digits"),

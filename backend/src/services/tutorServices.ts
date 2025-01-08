@@ -6,6 +6,7 @@ import { signToken } from "../utils/jsonwebtoken";
 import { sendPasswordResetLink } from "../utils/emailTransporter"
 import { tutorData, tutorSchema } from "../validators/tutorValidator";
 import { tutor } from "@prisma/client";
+import { generateReferallCode } from "../utils/referralCodeGenerator";
 
 export const addTutor = async(data: tutorData)=>{
     const validateTutorData = tutorSchema.safeParse(data)
@@ -46,14 +47,14 @@ export const addTutor = async(data: tutorData)=>{
                             }
                         }
                     })
-                    const hashedTutorPassword = await hash(data.password)
+                    const generatedPassword = await generateReferallCode()
                     const savedTutor = await prisma.tutor.create({
                         data:{
                             firstName: data.firstName,
                             lastName: data.lastName,
                             gender: data.gender,
                             email: data.email,
-                            password: hashedTutorPassword,
+                            password: generatedPassword,
                             contact: data.contact,
                             registeredCode: data.registeredCode
                         }
