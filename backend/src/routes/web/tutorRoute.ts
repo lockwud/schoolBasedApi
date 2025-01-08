@@ -5,8 +5,10 @@ import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
 const tutorRoute = Router();
 
 
-tutorRoute.post("/signup", 
+tutorRoute.post("/admin/signup", 
     validatePayload('tutor'),
+    authenticateJWT,
+    authorizeRole(["admin"]),
     tutor.signUp
 );
 
