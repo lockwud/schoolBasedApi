@@ -10,7 +10,8 @@ export const signUp = async(req: Request, res: Response, next: NextFunction)=>{
     try{
         const data = req.body satisfies adminData
         const addAdmin = await adminService.registerAdmin(data)
-        res.status(HttpStatus.CREATED).json(addAdmin)
+        const token = addAdmin.token
+        res.status(HttpStatus.CREATED).json({addAdmin, token})
     }catch(error){
         const err = error as ErrorResponse
         next(

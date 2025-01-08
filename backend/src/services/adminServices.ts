@@ -32,8 +32,9 @@ export const registerAdmin = async(data: adminData)=>{
                     password: HashedAdminPassword
                 }
             });
+            const token = signToken({ id:saveAdmin.id,role:'admin' });
             const {password, ...adminDataWithoutPassword} = saveAdmin
-            return adminDataWithoutPassword
+            return {adminDataWithoutPassword, token}
         }else{
             throw new HttpException(HttpStatus.CONFLICT, "Admin already exist")
     
