@@ -54,7 +54,7 @@ const signUp = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const data = req.body;
         const addAdmin = yield adminService.registerAdmin(data);
-        res.status(http_status_1.HttpStatus.CREATED).json(addAdmin);
+        res.status(http_status_1.HttpStatus.CREATED).json({ addAdmin });
     }
     catch (error) {
         const err = error;
@@ -139,9 +139,8 @@ const deleteAdmin = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
 exports.deleteAdmin = deleteAdmin;
 const otpVerification = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { otp } = req.body;
-        const { id } = req.params;
-        const token = yield adminService.verifyOtp(id, otp);
+        const { email, otp } = req.body;
+        const token = yield adminService.verifyOtp(email, otp);
         res.status(http_status_1.HttpStatus.OK).json({ message: "verified", token });
     }
     catch (error) {

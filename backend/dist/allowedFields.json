@@ -74,7 +74,6 @@
       "contact",
       "createdAt",
       "updatedAt",
-      "tutorId",
       "classId",
       "del_flag"
     ]
@@ -150,7 +149,7 @@
       "id",
       "fullName",
       "gender",
-      "studentBatchNumber",
+      "studentId",
       "relationship",
       "contact",
       "email",
@@ -163,7 +162,7 @@
     "fields": [
       "id",
       "guadianId",
-      "studentBatchNumber",
+      "studentId",
       "amount",
       "paymentType",
       "status"

@@ -23,7 +23,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyOtp = exports.resetPassword = exports.forgotPasswordLink = exports.deleteTutor = exports.updateTutor = exports.fetchTtutorByEmail = exports.fetchTutorById = exports.fetchTutors = exports.loginTutor = exports.addTtutor = void 0;
+exports.verifyOtp = exports.resetPassword = exports.forgotPasswordLink = exports.deleteTutor = exports.updateTutor = exports.fetchTutorByEmail = exports.fetchTutorById = exports.fetchTutors = exports.signIn = exports.addTutor = void 0;
 const http_error_1 = __importDefault(require("../utils/http-error"));
 const http_status_1 = require("../utils/http-status");
 const prisma_1 = __importDefault(require("../utils/prisma"));
@@ -31,7 +31,8 @@ const bcrypt_1 = require("../utils/bcrypt");
 const jsonwebtoken_1 = require("../utils/jsonwebtoken");
 const emailTransporter_1 = require("../utils/emailTransporter");
 const tutorValidator_1 = require("../validators/tutorValidator");
-const addTtutor = (data) => __awaiter(void 0, void 0, void 0, function* () {
+const referralCodeGenerator_1 = require("../utils/referralCodeGenerator");
+const addTutor = (data) => __awaiter(void 0, void 0, void 0, function* () {
     const validateTutorData = tutorValidator_1.tutorSchema.safeParse(data);
     if (!validateTutorData.success) {
         const errors = validateTutorData.error.issues.map(({ message, path }) => `${path}: ${message}`);
@@ -71,14 +72,14 @@ const addTtutor = (data) => __awaiter(void 0, void 0, void 0, function* () {
                             }
                         }
                     });
-                    const hashedTutorPassword = yield (0, bcrypt_1.hash)(data.password);
+                    const generatedPassword = yield (0, referralCodeGenerator_1.generateReferallCode)();
                     const savedTutor = yield prisma_1.default.tutor.create({
                         data: {
                             firstName: data.firstName,
                             lastName: data.lastName,
                             gender: data.gender,
                             email: data.email,
-                            password: hashedTutorPassword,
+                            password: generatedPassword,
                             contact: data.contact,
                             registeredCode: data.registeredCode
                         }
@@ -94,27 +95,27 @@ const addTtutor = (data) => __awaiter(void 0, void 0, void 0, function* () {
     }
     ;
 });
-exports.addTtutor = addTtutor;
-const loginTutor = (email, password) => __awaiter(void 0, void 0, void 0, function* () {
-    const findTutor = yield prisma_1.default.tutor.findUnique({
+exports.addTutor = addTutor;
+const signIn = (email, password) => __awaiter(void 0, void 0, void 0, function* () {
+    const fetchedTutor = yield prisma_1.default.tutor.findUnique({
         where: {
             email
         }
     });
-    if (!findTutor) {
-        throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, "Tutor not found");
+    if (!fetchedTutor) {
+        throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, "Tutor does not exist");
     }
     else {
-        const comparePassword = yield (0, bcrypt_1.compare)(password, findTutor.password);
-        if (!comparePassword) {
-            throw new http_error_1.default(http_status_1.HttpStatus.FORBIDDEN, "Invalid email or password");
+        const verifiedPassword = yield (0, bcrypt_1.compare)(password, fetchedTutor.password);
+        if (!verifiedPassword) {
+            throw new http_error_1.default(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid email or password");
         }
         else {
-            return findTutor;
+            return fetchedTutor;
         }
     }
 });
-exports.loginTutor = loginTutor;
+exports.signIn = signIn;
 const fetchTutors = () => __awaiter(void 0, void 0, void 0, function* () {
     const getAllTutors = yield prisma_1.default.tutor.findMany();
     return getAllTutors;
@@ -129,7 +130,7 @@ const fetchTutorById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return fetchedTutor;
 });
 exports.fetchTutorById = fetchTutorById;
-const fetchTtutorByEmail = (email) => __awaiter(void 0, void 0, void 0, function* () {
+const fetchTutorByEmail = (email) => __awaiter(void 0, void 0, void 0, function* () {
     const fetchedTutor = yield prisma_1.default.tutor.findUnique({
         where: {
             email
@@ -137,31 +138,24 @@ const fetchTtutorByEmail = (email) => __awaiter(void 0, void 0, void 0, function
     });
     return fetchedTutor;
 });
-exports.fetchTtutorByEmail = fetchTtutorByEmail;
+exports.fetchTutorByEmail = fetchTutorByEmail;
 const updateTutor = (id, data) => __awaiter(void 0, void 0, void 0, function* () {
-    const validateTutorData = tutorValidator_1.tutorSchema.safeParse(data);
-    if (!validateTutorData.success) {
-        const errors = validateTutorData.error.issues.map(({ message, path }) => `${path}: ${message}`);
-        throw new http_error_1.default(http_status_1.HttpStatus.BAD_REQUEST, errors.join(". "));
+    const findTutor = yield prisma_1.default.tutor.findUnique({
+        where: {
+            id
+        }
+    });
+    if (!findTutor) {
+        throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, "Tutor not found");
     }
     else {
-        const findTutor = yield prisma_1.default.tutor.findUnique({
+        const updatedTutor = yield prisma_1.default.tutor.update({
             where: {
                 id
-            }
+            },
+            data
         });
-        if (!findTutor) {
-            throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, "Tutor not found");
-        }
-        else {
-            const updatedTutor = yield prisma_1.default.tutor.update({
-                where: {
-                    id
-                },
-                data
-            });
-            return updatedTutor;
-        }
+        return updatedTutor;
     }
 });
 exports.updateTutor = updateTutor;
@@ -185,7 +179,7 @@ const deleteTutor = (id) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.deleteTutor = deleteTutor;
 const forgotPasswordLink = (email, link, passwordResetLink) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!(yield (0, exports.fetchTtutorByEmail)(email))) {
+    if (!(yield (0, exports.fetchTutorByEmail)(email))) {
         throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, "Tutor not found");
     }
     else {
@@ -253,8 +247,8 @@ const resetPassword = (newPassword, token) => __awaiter(void 0, void 0, void 0, 
     }
 });
 exports.resetPassword = resetPassword;
-const verifyOtp = (id, otp) => __awaiter(void 0, void 0, void 0, function* () {
-    const tutor = yield prisma_1.default.tutor.findUnique({ where: { id } });
+const verifyOtp = (email, otp) => __awaiter(void 0, void 0, void 0, function* () {
+    const tutor = yield prisma_1.default.tutor.findUnique({ where: { email } });
     if (!tutor) {
         throw new http_error_1.default(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid OTP or Tutor not found");
     }
@@ -265,7 +259,7 @@ const verifyOtp = (id, otp) => __awaiter(void 0, void 0, void 0, function* () {
     // Generate a JWT token if OTP is correct
     const token = (0, jsonwebtoken_1.signToken)({ id: tutor.id, role: 'tutor' });
     // Clear the OTP from the database after successful verification
-    yield prisma_1.default.admin.update({
+    yield prisma_1.default.tutor.update({
         where: {
             id: tutor.id
         },

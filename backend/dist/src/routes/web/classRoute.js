@@ -38,8 +38,14 @@ const express_1 = require("express");
 const classes = __importStar(require("../../controllers/classController"));
 const jsonwebtoken_1 = require("../../utils/jsonwebtoken");
 const classRoute = (0, express_1.Router)();
-classRoute.post("/add", (0, validate_payload_1.validatePayload)('classes'), jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), classes.registerClass);
-classRoute.get("/", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin", "tutors"]), classes.getClasses);
+classRoute.post("/add", (0, validate_payload_1.validatePayload)('classes'), 
+//authenticateJWT,
+//authorizeRole(["admin"]),
+classes.registerClass);
+classRoute.get("/", 
+//authenticateJWT,
+//authorizeRole(["admin", "tutors"]),
+classes.getClasses);
 classRoute.get("/:id", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin", "tutors"]), classes.getClassById);
 classRoute.get("/name", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin", "tutors"]), classes.getClassByName);
 classRoute.put("/update/:id", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), classes.updateClassDetails);

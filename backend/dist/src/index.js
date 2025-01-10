@@ -14,7 +14,7 @@ const port = process.env.PORT || 4500;
 app.use(express_1.default.json());
 app.use((0, morgan_1.default)("dev"));
 app.use((0, cors_1.default)({
-    origin: "http://localhost: 1000",
+    origin: true,
     credentials: true,
 }));
 app.get("/", (req, res) => {

@@ -45,50 +45,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateStudentIndex = exports.generateReferallCode = void 0;
-const crypto = __importStar(require("crypto"));
-const prisma_1 = __importDefault(require("./prisma"));
-const generateReferallCode = () => __awaiter(void 0, void 0, void 0, function* () {
-    const code = crypto.randomUUID().slice(0, 6).toString();
-    return code;
-});
-exports.generateReferallCode = generateReferallCode;
-const generateStudentIndex = () => __awaiter(void 0, void 0, void 0, function* () {
+exports.addStudent = void 0;
+const http_error_1 = __importDefault(require("../utils/http-error"));
+const studentService = __importStar(require("../services/studentServices"));
+const http_status_1 = require("../utils/http-status");
+const cloudinary_1 = __importDefault(require("../utils/cloudinary"));
+// import { generateOtp, sendOtpEmail } from '../utils/emailTransporter';
+const addStudent = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // Get all students ordered by studentId in descending order
-        const students = yield prisma_1.default.student.findMany({
-            select: {
-                studentId: true,
-            },
-            orderBy: {
-                studentId: 'desc',
-            },
-        });
-        // If there are no students, start from a default starting index
-        let nextIndex = students.length > 0 ? BigInt(students[0].studentId.toString()) + BigInt(1) : BigInt("5221040301");
-        // Loop to find the next available index
-        while (true) {
-            // Check if the generated studentId already exists in the database
-            const existingIndex = yield prisma_1.default.student.findUnique({
-                where: {
-                    studentId: nextIndex.toString(), // Convert BigInt to string before passing
-                },
+        const data = req.body;
+        const photo = req.file ? req.file.path : undefined;
+        const picture = {
+            photoUrl: "",
+            photoKey: "",
+        };
+        if (photo) {
+            const uploaded = yield cloudinary_1.default.uploader.upload(photo, {
+                folder: "students/",
             });
-            if (!existingIndex) {
-                // If the studentId is available (not already used), return it
-                return nextIndex.toString();
-            }
-            // If the studentId already exists, increment by 1 and check again
-            nextIndex++;
-            // Apply the specific gap logic
-            if (nextIndex === BigInt(399)) {
-                nextIndex = BigInt(400);
-            }
+            picture.photoUrl = uploaded.secure_url;
+            picture.photoKey = uploaded.public_id;
         }
+        const newStudent = yield studentService.registerStudent(data, picture);
+        res.status(http_status_1.HttpStatus.CREATED).json(newStudent);
     }
     catch (error) {
-        console.error('Error generating student index:', error);
-        throw new Error('Error generating student index');
+        const err = error;
+        next(new http_error_1.default(err.status || http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, err.message));
     }
 });
-exports.generateStudentIndex = generateStudentIndex;
+exports.addStudent = addStudent;

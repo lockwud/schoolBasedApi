@@ -32,20 +32,16 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const validate_payload_1 = require("./../../middleware/validate-payload");
 const express_1 = require("express");
-const admin = __importStar(require("../../controllers/adminController"));
-const jsonwebtoken_1 = require("../../utils/jsonwebtoken");
-const adminRoute = (0, express_1.Router)();
-adminRoute.post("/signup", (0, validate_payload_1.validatePayload)('admin'), admin.signUp);
-adminRoute.post("/login", admin.login);
-adminRoute.post("/verifyOtp", admin.otpVerification);
-adminRoute.post("/forgotPassword", admin.forgotPassword);
-adminRoute.put("/resetPassword/:token", admin.resetPassword);
-adminRoute.get("/", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), admin.getAdmins);
-adminRoute.get("/:id", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), admin.getAdminById);
-adminRoute.get("/email", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), admin.getAdminByEmail);
-adminRoute.put("/update/:id", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), admin.updateAdminRecords);
-adminRoute.delete("/delete/:id", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), admin.deleteAdmin);
-exports.default = adminRoute;
+const student = __importStar(require("../../controllers/studentController"));
+// import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
+const multer_1 = __importDefault(require("../../utils/multer"));
+const studentRoute = (0, express_1.Router)();
+// All endpoints for admin-student relationship
+studentRoute.post("/admin/register", multer_1.default.single("photo"), (0, validate_payload_1.validatePayload)('student'), student.addStudent);
+exports.default = studentRoute;

@@ -38,8 +38,12 @@ const express_1 = require("express");
 const tutor = __importStar(require("../../controllers/tutorController"));
 const jsonwebtoken_1 = require("../../utils/jsonwebtoken");
 const tutorRoute = (0, express_1.Router)();
+// All enpoint for admin tutor relation
+tutorRoute.post("/admin/signup", (0, validate_payload_1.validatePayload)('tutor'), jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), tutor.signUp);
+// All enpoint for tutor self registration and crud
 tutorRoute.post("/signup", (0, validate_payload_1.validatePayload)('tutor'), tutor.signUp);
 tutorRoute.post("/login", tutor.login);
+tutorRoute.post("/auth/verifyOtp", tutor.otpVerification);
 tutorRoute.get("/", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin", "tutor"]), tutor.getTutors);
 tutorRoute.get("/:id", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin", "tutor"]), tutor.getTtutorById);
 tutorRoute.get("/email", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin", "tutor"]), tutor.getTutorByEmail);

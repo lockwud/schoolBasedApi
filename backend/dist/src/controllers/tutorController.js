@@ -53,7 +53,7 @@ const emailTransporter_1 = require("../utils/emailTransporter");
 const signUp = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = req.body;
-        const addTutor = yield tutorService.addTtutor(data);
+        const addTutor = yield tutorService.addTutor(data);
         res.status(http_status_1.HttpStatus.CREATED).json(addTutor);
     }
     catch (error) {
@@ -65,11 +65,11 @@ exports.signUp = signUp;
 const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password } = req.body;
-        const tutorLogin = yield tutorService.loginTutor(email, password);
+        const tutorLogin = yield tutorService.signIn(email, password);
         const otp = (0, emailTransporter_1.generateOtp)();
         yield tutorService.updateTutor(tutorLogin.id, { otp, });
         yield (0, emailTransporter_1.sendOtpEmail)(email, otp);
-        res.status(http_status_1.HttpStatus.OK).json(tutorLogin);
+        res.status(http_status_1.HttpStatus.OK).json({ message: "check your email for otp" });
     }
     catch (error) {
         const err = error;
@@ -103,7 +103,7 @@ exports.getTtutorById = getTtutorById;
 const getTutorByEmail = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email } = req.body;
-        const fetchedTutor = yield tutorService.fetchTtutorByEmail(email);
+        const fetchedTutor = yield tutorService.fetchTutorByEmail(email);
         res.status(http_status_1.HttpStatus.OK).json({ fetchedTutor });
     }
     catch (error) {
@@ -166,9 +166,8 @@ const resetPassword = (req, res, next) => __awaiter(void 0, void 0, void 0, func
 exports.resetPassword = resetPassword;
 const otpVerification = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { otp } = req.body;
-        const { email } = req.params;
-        const token = yield tutorService.verifyOtp(otp, email);
+        const { email, otp } = req.body;
+        const token = yield tutorService.verifyOtp(email, otp);
         res.status(http_status_1.HttpStatus.OK).json({ message: 'OTP verified', token });
     }
     catch (error) {

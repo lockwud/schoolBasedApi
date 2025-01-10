@@ -50,8 +50,9 @@ const registerAdmin = (data) => __awaiter(void 0, void 0, void 0, function* () {
             const saveAdmin = yield prisma_1.default.admin.create({
                 data: Object.assign(Object.assign({}, data), { generatedRegistrationCodes: registrationCodes, password: HashedAdminPassword })
             });
+            const token = (0, jsonwebtoken_1.signToken)({ id: saveAdmin.id, role: 'admin' });
             const { password } = saveAdmin, adminDataWithoutPassword = __rest(saveAdmin, ["password"]);
-            return adminDataWithoutPassword;
+            return { adminDataWithoutPassword, token };
         }
         else {
             throw new http_error_1.default(http_status_1.HttpStatus.CONFLICT, "Admin already exist");
@@ -75,8 +76,8 @@ const signInAdmin = (email, password) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.signInAdmin = signInAdmin;
-const verifyOtp = (id, otp) => __awaiter(void 0, void 0, void 0, function* () {
-    const admin = yield prisma_1.default.admin.findUnique({ where: { id } });
+const verifyOtp = (email, otp) => __awaiter(void 0, void 0, void 0, function* () {
+    const admin = yield prisma_1.default.admin.findUnique({ where: { email } });
     if (!admin) {
         throw new http_error_1.default(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid OTP or  not found");
     }
