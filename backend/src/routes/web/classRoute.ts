@@ -6,14 +6,14 @@ const classRoute = Router();
 
 classRoute.post("/add",
      validatePayload('classes'),
-     authenticateJWT,
-     authorizeRole(["admin"]),
+     //authenticateJWT,
+     //authorizeRole(["admin"]),
     classes.registerClass
 );
 
 classRoute.get("/",
-    authenticateJWT,
-    authorizeRole(["admin", "tutors"]),
+    //authenticateJWT,
+    //authorizeRole(["admin", "tutors"]),
     classes.getClasses
 );
 

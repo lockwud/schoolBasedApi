@@ -43,11 +43,10 @@ model tutor {
   otpExpired              Boolean             @default(false)
   createdAt               DateTime            @default(now())
   updatedAt               DateTime            @updatedAt
-  student                 student[]
   subject                 subject[]
   classes                 classes?            @relation(fields: [classId], references: [id])
   classId                 String?
-  del_flag                Boolean             @default(false)
+  del_flag                Boolean            @default(false)
   assignment              assignment[]
   materials               teachingMaterials[]
   registrationCode        admin?              @relation(fields: [registeredCode], references: [generatedRegistrationCodes])
@@ -63,7 +62,7 @@ model student {
   id         String       @id @default(uuid())
   firstName  String
   lastName   String
-  otherName  String
+  otherName  String?
   gender     gender
   photoUrl   String
   photoKey   String
@@ -72,11 +71,9 @@ model student {
   contact    String?
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
-  tutor      tutor?       @relation(fields: [tutorId], references: [id])
-  tutorId    String
   subject    subject[]
   class      classes      @relation(fields: [classId], references: [id])
-  classId    String       @unique
+  classId    String       
   del_flag   Boolean
   attendance attendance[]
 
@@ -153,8 +150,8 @@ model assignment {
 
 model solveAssignment {
   id           String     @id @default(uuid())
-  studentId    String
-  student      student    @relation(fields: [studentId], references: [id])
+  studentId   String 
+  student      student    @relation(fields: [studentId], references: [studentId])
   assignmentId String
   assignment   assignment @relation(fields: [assignmentId], references: [id])
   score        Int
@@ -167,8 +164,8 @@ model guardian {
   id                 String           @id @default(uuid())
   fullName           String
   gender             gender
-  studentBatchNumber String
-  student            student          @relation(fields: [studentBatchNumber], references: [studentId])
+  studentId String
+  student            student          @relation(fields: [studentId], references: [studentId])
   relationship       String
   contact            String
   email              String?          @unique
@@ -181,8 +178,8 @@ model paymentRequest {
   id                 String        @id @default(uuid())
   guadianId          String
   guadian            guardian      @relation(fields: [guadianId], references: [id])
-  studentBatchNumber String @unique
-  student            student       @relation(fields: [studentBatchNumber], references: [studentId])
+  studentId String @unique
+  student            student       @relation(fields: [studentId], references: [studentId])
   amount             Float
   paymentType        paymentType
   status             paymentStatus
@@ -204,7 +201,7 @@ model teachingMaterials {
 model studentTerminalReport {
   id               String       @id @default(uuid())
   studentId        String
-  student          student      @relation(fields: [studentId], references: [id])
+  student          student      @relation(fields: [studentId], references: [studentId])
   numOfSubject     Int
   totalScore       Int
   averageScore     Float

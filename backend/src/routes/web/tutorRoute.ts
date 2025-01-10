@@ -4,7 +4,7 @@ import * as tutor from "../../controllers/tutorController"
 import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
 const tutorRoute = Router();
 
-
+// All enpoint for admin tutor relation
 tutorRoute.post("/admin/signup", 
     validatePayload('tutor'),
     authenticateJWT,
@@ -12,6 +12,13 @@ tutorRoute.post("/admin/signup",
     tutor.signUp
 );
 
+
+// All enpoint for tutor self registration and crud
+
+tutorRoute.post("/signup", 
+    validatePayload('tutor'),
+    tutor.signUp
+);
 tutorRoute.post("/login",
     tutor.login 
 );

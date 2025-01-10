@@ -1,8 +1,6 @@
 import {z} from "zod"
 
 
-
-
 export const adminSchema = z.object({
     name: z.string({required_error: "Name is required"})
     .trim()
@@ -13,7 +11,6 @@ export const adminSchema = z.object({
     passwordResetToken: z.string({required_error: "Password reset token is required"}).optional(),
     hashedResetLink: z.string({required_error: "Password reset token expiry is required"}).optional(),
 })
-
 
 
 export type adminData = z.infer<typeof adminSchema>
