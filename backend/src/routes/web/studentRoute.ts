@@ -7,47 +7,51 @@ import upload from "../../utils/multer"
 const studentRoute = Router();
 
 // All endpoints for admin-student relationship
-studentRoute.post("/admin/register",
+studentRoute.post("/register",
     upload.single("photo"),
     validatePayload('student'),
     student.addStudent
 );
 
+studentRoute.post("/login",
+    student.login
+);
 
-studentRoute.get("/admin/fetch",
+
+studentRoute.get("/",
     authenticateJWT,
     authorizeRole(["admin"]),
     student.fetchStudents
 );
 
 
-studentRoute.get("/admin/fetch/:id",
+studentRoute.get("/:id",
     authenticateJWT,
     authorizeRole(["admin"]),
     student.fetchStudentById
 );
 
 
-studentRoute.put("/admin/update/:id",
+studentRoute.put("/:id",
     student.updateStudent
 );
 
 
-studentRoute.delete("/admin/delete/:id",
+studentRoute.delete("/:id",
     authenticateJWT,
     authorizeRole(["admin"]),
     student.deleteStudent
 );
 
 
-studentRoute.put("/admin/autoDelete",
+studentRoute.put("/autoDelete",
     authenticateJWT,
     authorizeRole(["admin"]),
     student.autoDeleteStudent
 );
 
 
-studentRoute.post("/admin/forgotPassword",
+studentRoute.post("/forgotPassword",
     student.requestPassword
 );
 

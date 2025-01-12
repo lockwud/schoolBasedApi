@@ -42,6 +42,27 @@ export const addStudent = async(
 };
 
 
+export const login = async(
+    req: Request, 
+    res: Response, 
+    next: NextFunction
+)=>{
+    try{
+        const {studentId, password} = req.body;
+        const student = await studentService.login(studentId, password)
+        res.status(HttpStatus.ACCEPTED).json({student})
+}catch(error){
+    const err = error as ErrorResponse;
+        next(
+            new HttpException(HttpStatus.INTERNAL_SERVER_ERROR,
+                err.message
+            )
+        )
+    
+}
+};
+
+
 export const fetchStudents = async(
     req: Request,
     res: Response,
