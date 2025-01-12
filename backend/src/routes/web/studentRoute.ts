@@ -1,7 +1,7 @@
 import { validatePayload } from './../../middleware/validate-payload';
 import { Router } from "express";
 import * as student from "../../controllers/studentController"
-import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
+// import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
 import upload from "../../utils/multer"
 
 const studentRoute = Router();
@@ -19,15 +19,15 @@ studentRoute.post("/login",
 
 
 studentRoute.get("/",
-    authenticateJWT,
-    authorizeRole(["admin"]),
+    // authenticateJWT,
+    // authorizeRole(["admin"]),
     student.fetchStudents
 );
 
 
 studentRoute.get("/:id",
-    authenticateJWT,
-    authorizeRole(["admin"]),
+    // authenticateJWT,
+    // authorizeRole(["admin"]),
     student.fetchStudentById
 );
 
@@ -38,15 +38,15 @@ studentRoute.put("/:id",
 
 
 studentRoute.delete("/:id",
-    authenticateJWT,
-    authorizeRole(["admin"]),
+    // authenticateJWT,
+    // authorizeRole(["admin"]),
     student.deleteStudent
 );
 
 
 studentRoute.put("/autoDelete",
-    authenticateJWT,
-    authorizeRole(["admin"]),
+    // authenticateJWT,
+    // authorizeRole(["admin"]),
     student.autoDeleteStudent
 );
 
