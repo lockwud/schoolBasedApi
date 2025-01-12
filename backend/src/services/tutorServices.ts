@@ -93,7 +93,12 @@ export const signIn = async(email: string, password: string)=>{
 
 
 export const fetchTutors = async()=>{
-    const getAllTutors = await prisma.tutor.findMany()
+    const getAllTutors = await prisma.tutor.findMany({
+       
+        orderBy:{
+            createdAt: "desc"
+        }
+    })
     return getAllTutors
 };
 

@@ -1,6 +1,11 @@
 import {z} from "zod"
 
-import { gender } from "./tutorValidator"
+export const gender = z.enum([
+    "male",
+    "female"
+
+])
+   
 
 export const studentSchema = z.object({
     firstName: z.string({required_error: "First name cannot be empty"})

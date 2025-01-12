@@ -206,6 +206,7 @@ model studentTerminalReport {
   totalScore       Int
   averageScore     Float
   classId          String
+  className        String?     // Field indicating the new class name for enrollment
   position         Int
   numRoll          Int
   tutorsRemarks    String[]
