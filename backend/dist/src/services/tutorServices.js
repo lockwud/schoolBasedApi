@@ -117,7 +117,11 @@ const signIn = (email, password) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.signIn = signIn;
 const fetchTutors = () => __awaiter(void 0, void 0, void 0, function* () {
-    const getAllTutors = yield prisma_1.default.tutor.findMany();
+    const getAllTutors = yield prisma_1.default.tutor.findMany({
+        orderBy: {
+            createdAt: "desc"
+        }
+    });
     return getAllTutors;
 });
 exports.fetchTutors = fetchTutors;

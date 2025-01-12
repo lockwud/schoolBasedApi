@@ -39,9 +39,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const validate_payload_1 = require("./../../middleware/validate-payload");
 const express_1 = require("express");
 const student = __importStar(require("../../controllers/studentController"));
-// import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
+const jsonwebtoken_1 = require("../../utils/jsonwebtoken");
 const multer_1 = __importDefault(require("../../utils/multer"));
 const studentRoute = (0, express_1.Router)();
 // All endpoints for admin-student relationship
 studentRoute.post("/admin/register", multer_1.default.single("photo"), (0, validate_payload_1.validatePayload)('student'), student.addStudent);
+studentRoute.get("/admin/fetch", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), student.fetchStudents);
+studentRoute.get("/admin/fetch/:id", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), student.fetchStudentById);
+studentRoute.put("/admin/update/:id", student.updateStudent);
+studentRoute.delete("/admin/delete/:id", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), student.deleteStudent);
+studentRoute.put("/admin/autoDelete", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), student.autoDeleteStudent);
+studentRoute.post("/admin/forgotPassword", student.requestPassword);
+studentRoute.put("/resetPassword", student.updatePassword);
 exports.default = studentRoute;

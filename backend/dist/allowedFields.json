@@ -190,6 +190,7 @@
       "totalScore",
       "averageScore",
       "classId",
+      "className",
       "position",
       "numRoll",
       "createdAt",

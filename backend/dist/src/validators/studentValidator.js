@@ -1,8 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.studentSchema = void 0;
+exports.studentSchema = exports.gender = void 0;
 const zod_1 = require("zod");
-const tutorValidator_1 = require("./tutorValidator");
+exports.gender = zod_1.z.enum([
+    "male",
+    "female"
+]);
 exports.studentSchema = zod_1.z.object({
     firstName: zod_1.z.string({ required_error: "First name cannot be empty" })
         .trim()
@@ -11,7 +14,7 @@ exports.studentSchema = zod_1.z.object({
         .trim()
         .min(1, "Last name is required"),
     otherName: zod_1.z.string().optional(),
-    gender: tutorValidator_1.gender,
+    gender: exports.gender,
     classId: zod_1.z.string({ required_error: "Class id is required" })
         .trim()
         .min(1, "Class Id cannot be empty"),
