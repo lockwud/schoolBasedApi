@@ -45,12 +45,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updatePassword = exports.requestPassword = exports.autoDeleteStudent = exports.deleteStudent = exports.updateStudent = exports.fetchStudentById = exports.fetchStudents = exports.addStudent = void 0;
+exports.updatePassword = exports.requestPassword = exports.autoDeleteStudent = exports.deleteStudent = exports.updateStudent = exports.fetchStudentById = exports.fetchStudents = exports.login = exports.addStudent = void 0;
 const http_error_1 = __importDefault(require("../utils/http-error"));
 const studentService = __importStar(require("../services/studentServices"));
 const http_status_1 = require("../utils/http-status");
 const cloudinary_1 = __importDefault(require("../utils/cloudinary"));
-// import { generateOtp, sendOtpEmail } from '../utils/emailTransporter';
 const addStudent = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = req.body;
@@ -75,6 +74,18 @@ const addStudent = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.addStudent = addStudent;
+const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { studentId, password } = req.body;
+        const student = yield studentService.login(studentId, password);
+        res.status(http_status_1.HttpStatus.ACCEPTED).json({ student });
+    }
+    catch (error) {
+        const err = error;
+        next(new http_error_1.default(http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, err.message));
+    }
+});
+exports.login = login;
 const fetchStudents = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const fetchedStudents = yield studentService.fetchStudents();

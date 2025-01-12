@@ -72,3 +72,10 @@ export const studentAnalytics = {
     }
 
 };    
+
+
+export const tutorAnalytics = {
+    getTotalTutors: async()=>{
+        
+    }
+}

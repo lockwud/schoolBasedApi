@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.studentAnalytics = void 0;
+exports.tutorAnalytics = exports.studentAnalytics = void 0;
 const prisma_1 = __importDefault(require("../utils/prisma"));
 exports.studentAnalytics = {
     getTotalStudents: () => __awaiter(void 0, void 0, void 0, function* () {
@@ -66,5 +66,9 @@ exports.studentAnalytics = {
             return Object.assign(Object.assign({}, classData), { topPerformingStudents: topStudents });
         });
         return adjustedResults;
+    })
+};
+exports.tutorAnalytics = {
+    getTotalTutors: () => __awaiter(void 0, void 0, void 0, function* () {
     })
 };

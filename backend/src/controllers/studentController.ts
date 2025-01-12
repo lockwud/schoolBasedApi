@@ -3,10 +3,8 @@ import { Request, Response, NextFunction } from "express";
 import HttpException from "../utils/http-error";
 import * as studentService from "../services/studentServices"
 import { HttpStatus } from "../utils/http-status";
-// import { sendOtpEmail, generateOtp, sendPasswordResetLink  } from "../utils/emailTransporter";
 import { studentData } from '../validators/studentValidator';
 import cloudinary from '../utils/cloudinary';
-// import { generateOtp, sendOtpEmail } from '../utils/emailTransporter';
 
 export const addStudent = async(
     req: Request, 

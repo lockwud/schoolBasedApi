@@ -187,8 +187,16 @@ export const login = async(studentId: string, password: string)=>{
     if(!findStudent){
         throw new HttpException(HttpStatus.NOT_FOUND, "Student not found")
     }else{
-        const checkPassword = await compare(password, findStudent.password)
-        if(checkPassword){
+        if(password === findStudent.password){
+            const tokenPayload: UserPayload = {
+                id: findStudent.studentId,
+                role: 'student'
+            }
+            const token = signToken(tokenPayload)
+            return {findStudent, token}
+        }else{
+            const checkPassword = await compare(password, findStudent.password)
+            if(checkPassword){
             const tokenPayload: UserPayload = {
                 id: findStudent.studentId,
                 role: 'student'
@@ -198,6 +206,7 @@ export const login = async(studentId: string, password: string)=>{
         }else{
             throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid password")
         }
+     }
     }
 };
 

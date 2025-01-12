@@ -197,8 +197,7 @@ const login = (studentId, password) => __awaiter(void 0, void 0, void 0, functio
         throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, "Student not found");
     }
     else {
-        const checkPassword = yield (0, bcrypt_1.compare)(password, findStudent.password);
-        if (checkPassword) {
+        if (password === findStudent.password) {
             const tokenPayload = {
                 id: findStudent.studentId,
                 role: 'student'
@@ -207,7 +206,18 @@ const login = (studentId, password) => __awaiter(void 0, void 0, void 0, functio
             return { findStudent, token };
         }
         else {
-            throw new http_error_1.default(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid password");
+            const checkPassword = yield (0, bcrypt_1.compare)(password, findStudent.password);
+            if (checkPassword) {
+                const tokenPayload = {
+                    id: findStudent.studentId,
+                    role: 'student'
+                };
+                const token = (0, jsonwebtoken_1.signToken)(tokenPayload);
+                return { findStudent, token };
+            }
+            else {
+                throw new http_error_1.default(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid password");
+            }
         }
     }
 });
