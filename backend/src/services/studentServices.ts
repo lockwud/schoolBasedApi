@@ -16,7 +16,7 @@ export const registerStudent = async(data: studentData, picture:{photoUrl: strin
             )
             throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "))
     }else{
-        const studentIndex = await generateStudentIndex()
+        const studentIndex = await generateStudentIndex(data.classId)
 
         const findStudent = await prisma.student.findUnique({
             where: {
