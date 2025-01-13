@@ -8,41 +8,45 @@ import { admin } from "@prisma/client";
 import { sendPasswordResetLink } from "../utils/emailTransporter"
 import { generateReferallCode } from "../utils/referralCodeGenerator";
 
-export const registerAdmin = async(data: adminData)=>{
-    const validateAdminData = adminSchema.safeParse(data)
-    if(!validateAdminData.success){
+export const registerAdmin = async (data: adminData) => {
+    const validateAdminData = adminSchema.safeParse(data);
+    if (!validateAdminData.success) {
         const errors = validateAdminData.error.issues.map(
             ({ message, path }) => `${path}: ${message}`
-          );
-          throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "));
-
-    }else{
-        const checkAdminAvailability = await prisma.admin.findUnique({
-            where:{
-                email: data.email
-            }
-        })
-        if(!checkAdminAvailability){
-            const HashedAdminPassword = await hash(data.password)
-            const registrationCodes = await generateReferallCode();
-            const saveAdmin = await prisma.admin.create({
-                data: {
-                    ...data,
-                    generatedRegistrationCodes: registrationCodes, 
-                    password: HashedAdminPassword
-                }
-            });
-            const token = signToken({ id:saveAdmin.id,role:'admin' });
-            const {password, ...adminDataWithoutPassword} = saveAdmin
-            return {adminDataWithoutPassword, token}
-        }else{
-            throw new HttpException(HttpStatus.CONFLICT, "Admin already exist")
-    
-        }
-
+        );
+        throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "));
     }
 
+    // Check if admin already exists
+    const checkAdminAvailability = await prisma.admin.findUnique({
+        where: {
+            email: data.email,
+        },
+    });
+
+    if (!checkAdminAvailability) {
+        const HashedAdminPassword = await hash(data.password);
+        const registrationCodes = await generateReferallCode();
+
+        // Save admin to the database
+        const saveAdmin = await prisma.admin.create({
+            data: {
+                ...data,
+                generatedRegistrationCodes: registrationCodes,
+                maxUsedCode: 5, 
+                totalCodeUsed: 0,
+                password: HashedAdminPassword,
+            },
+        });
+
+        const token = signToken({ id: saveAdmin.id, role: "admin" });
+        const { password, ...adminDataWithoutPassword } = saveAdmin;
+        return { adminDataWithoutPassword, token };
+    } else {
+        throw new HttpException(HttpStatus.CONFLICT, "Admin already exists");
+    }
 };
+
 
 
 export const signInAdmin = async(email: string, password: string)=>{

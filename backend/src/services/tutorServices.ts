@@ -8,68 +8,83 @@ import { tutorData, tutorSchema } from "../validators/tutorValidator";
 import { tutor } from "@prisma/client";
 import { generateReferallCode } from "../utils/referralCodeGenerator";
 
-export const addTutor = async(data: tutorData)=>{
-    const validateTutorData = tutorSchema.safeParse(data)
-    if(!validateTutorData.success){
+export const addTutor = async (data: tutorData) => {
+    const validateTutorData = tutorSchema.safeParse(data);
+    if (!validateTutorData.success) {
         const errors = validateTutorData.error.issues.map(
-        ({ message, path }) => `${path}: ${message}`
-        )
-        throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "))
-    }else{
-        const checkTutorAvailability = await prisma.tutor.findUnique({
-            where:{
-                email: data.email
-            }
-        })
-        if(!checkTutorAvailability){
-            //check registrationCode
-            const findAdminRegistrationCode = await prisma.admin.findUnique({
-               where:{
-                generatedRegistrationCodes: data.registeredCode
-               }
-            });  
-            if(!findAdminRegistrationCode){
-                throw new HttpException(HttpStatus.FORBIDDEN, "Invalid registration code")
-            }else{
-                if (findAdminRegistrationCode.maxUsedCode <= findAdminRegistrationCode.totalCodeUsed) {
-                    throw new HttpException(HttpStatus.FORBIDDEN, "Maximum number of codes used");
-                  }else{
-                    await prisma.admin.update({
-                        where:{
-                            id: findAdminRegistrationCode.id,
-                        },
-                        data:{
-                            maxUsedCode:{
-                                decrement: 1,
-                            },
-                            totalCodeUsed:{
-                                increment: 1,
-                            }
-                        }
-                    })
-                    const generatedPassword = await generateReferallCode()
-                    const savedTutor = await prisma.tutor.create({
-                        data:{
-                            firstName: data.firstName,
-                            lastName: data.lastName,
-                            gender: data.gender,
-                            email: data.email,
-                            password: generatedPassword,
-                            contact: data.contact,
-                            registeredCode: data.registeredCode
-                        }
-                    })
-                    const {password, ...tutorWithoutPassword} = savedTutor
-                    return tutorWithoutPassword
+            ({ message, path }) => `${path}: ${message}`
+        );
+        throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "));
+    }
 
-                  }
-                  }
-               
-        }else{
-            throw new HttpException(HttpStatus.CONFLICT, "Email already exists")
+    // Check if the tutor already exists
+    const checkTutorAvailability = await prisma.tutor.findUnique({
+        where: {
+            email: data.email,
+        },
+    });
+
+    if (!checkTutorAvailability) {
+        // Validate the provided registration code
+        const findAdminRegistrationCode = await prisma.admin.findUnique({
+            where: {
+                generatedRegistrationCodes: data.registeredCode,
+            },
+        });
+
+        if (!findAdminRegistrationCode) {
+            throw new HttpException(HttpStatus.FORBIDDEN, "Invalid registration code");
+        } else {
+            const { maxUsedCode, totalCodeUsed, id, email } = findAdminRegistrationCode;
+
+            // Check if the max usage limit for the code has been reached
+            if (totalCodeUsed >= maxUsedCode+1) {
+                // Generate a new registration code for the admin
+                const newRegistrationCode = await generateReferallCode();
+
+                await prisma.admin.update({
+                    where: { id },
+                    data: {
+                        generatedRegistrationCodes: newRegistrationCode,
+                        maxUsedCode: maxUsedCode, // Adjust max usage for the new code
+                        totalCodeUsed: 0, // Reset the usage counter for the new code
+                    },
+                });
+
+                throw new HttpException(
+                    HttpStatus.FORBIDDEN,
+                    `The provided registration code has reached its maximum usage. A new registration code (${newRegistrationCode}) has been generated for Admin (${email}). Please use the new code.`
+                );
+            }
+
+            // Update code usage
+            await prisma.admin.update({
+                where: { id },
+                data: {
+                    totalCodeUsed: { increment: 1 },
+                },
+            });
+
+            const generatedPassword = await generateReferallCode();
+
+            const savedTutor = await prisma.tutor.create({
+                data: {
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    gender: data.gender,
+                    email: data.email,
+                    password: generatedPassword,
+                    contact: data.contact,
+                    registeredCode: data.registeredCode,
+                },
+            });
+
+            const { password, ...tutorWithoutPassword } = savedTutor;
+            return tutorWithoutPassword;
         }
-       
-    };
+    } else {
+        throw new HttpException(HttpStatus.CONFLICT, "Email already exists");
+    }
 };
 
 
