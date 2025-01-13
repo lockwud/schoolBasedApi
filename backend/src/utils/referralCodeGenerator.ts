@@ -9,28 +9,56 @@ export const generateReferallCode = async()=>{
 };
 
 
-export const generateStudentIndex = async (): Promise<string> => {
+export const generateStudentIndex = async (classId: string): Promise<string> => {
   try {
-    // Get all students ordered by studentId in descending order
-    const students = await prisma.student.findMany({
-      select: {
-        studentId: true,
-      },
-      orderBy: {
-        studentId: 'desc',
+    // Predefined starting indexes for each class
+    const classStartingIndexes: { [key: string]: string } = {
+      "Class1": "5221040101",
+      "Class2": "5221040201",
+      "Class3": "5221040301",
+      "Class4": "5221040401",
+      "Class5": "5221040501",
+      "Class6": "5221040601",
+      "JHS1": "5221040701",
+      "JHS2": "5221040801",
+      "JHS3": "5221040901",
+    };
+
+    // Fetch the class details using classId
+    const classInfo = await prisma.classes.findUnique({
+      where: { id: classId },
+      include: {
+        student: {
+          orderBy: {
+            studentId: 'desc', // Get the latest student in this class
+          },
+        },
       },
     });
 
-    // If there are no students, start from a default starting index
-    let nextIndex = students.length > 0 ? BigInt(students[0].studentId.toString()) + BigInt(1) : BigInt("5221040301");
+    // Check if the class exists
+    if (!classInfo) {
+      throw new Error(`Class with id ${classId} not found`);
+    }
 
-    // Loop to find the next available index
+    const { className, student } = classInfo;
+
+    // Check if a starting index is defined for the given class
+    if (!classStartingIndexes[className]) {
+      throw new Error(`No starting index defined for class ${className}`);
+    }
+
+    // Determine the next index
+    let nextIndex =
+      student.length > 0
+        ? BigInt(student[0].studentId.toString()) + BigInt(1) // Continue from the last student index
+        : BigInt(classStartingIndexes[className]); // Start from the base class's starting index
+
+    // Check for index availability and ensure uniqueness
     while (true) {
       // Check if the generated studentId already exists in the database
       const existingIndex = await prisma.student.findUnique({
-        where: {
-          studentId: nextIndex.toString(), // Convert BigInt to string before passing
-        },
+        where: { studentId: nextIndex.toString() },
       });
 
       if (!existingIndex) {
@@ -40,15 +68,8 @@ export const generateStudentIndex = async (): Promise<string> => {
 
       // If the studentId already exists, increment by 1 and check again
       nextIndex++;
-
-      // Apply the specific gap logic
-      if (nextIndex === BigInt(399)) {
-        nextIndex = BigInt(400);
-      }
     }
   } catch (error) {
-    console.error('Error generating student index:', error);
     throw new Error('Error generating student index');
   }
 };
-
