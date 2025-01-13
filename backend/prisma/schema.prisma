@@ -27,7 +27,7 @@ model admin {
   hashedResetLinkExpired     Boolean  @default(false)
   generatedRegistrationCodes String   @unique
   tutor                      tutor[]
-  maxUsedCode                Int      @default(3)
+  maxUsedCode                Int      @default(5)
   totalCodeUsed              Int      @default(0)
 }
 
