@@ -112,6 +112,9 @@ export const fetchTutors = async()=>{
        
         orderBy:{
             createdAt: "desc"
+        },
+        include:{
+            subject: true
         }
     })
     return getAllTutors

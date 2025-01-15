@@ -27,8 +27,8 @@ adminRoute.put("/resetPassword/:token",
 );
 
 adminRoute.get("/", 
-    authenticateJWT,
-    authorizeRole(["admin"]),
+    // authenticateJWT,
+    // authorizeRole(["admin"]),
     admin.getAdmins
 );
 

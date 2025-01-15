@@ -82,8 +82,7 @@
     "modelName": "subject",
     "fields": [
       "id",
-      "name",
-      "tutorId",
+      "subjectName",
       "createdAt",
       "updatedAt"
     ]

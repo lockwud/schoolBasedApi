@@ -7,8 +7,8 @@ const tutorRoute = Router();
 // All enpoint for admin tutor relation
 tutorRoute.post("/admin/signup", 
     validatePayload('tutor'),
-    authenticateJWT,
-    authorizeRole(["admin"]),
+    // authenticateJWT,
+    // authorizeRole(["admin"]),
     tutor.signUp
 );
 
@@ -28,8 +28,8 @@ tutorRoute.post("/auth/verifyOtp",
 )
 
 tutorRoute.get("/", 
-    authenticateJWT,
-    authorizeRole(["admin", "tutor"]),
+    // authenticateJWT,
+    // authorizeRole(["admin", "tutor"]),
     tutor.getTutors
 );
 

@@ -76,6 +76,15 @@ export const studentAnalytics = {
 
 export const tutorAnalytics = {
     getTotalTutors: async()=>{
-        
+        const totalTutors = await prisma.tutor.count()
+        return totalTutors
+    }
+};
+
+
+export const totalPopulationAnalytics = {
+    Population: async()=>{
+        const sumOfPopulation = await prisma.student.count() + await prisma.tutor.count()
+        return sumOfPopulation
     }
 }

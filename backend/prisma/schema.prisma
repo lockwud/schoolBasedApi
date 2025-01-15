@@ -46,7 +46,7 @@ model tutor {
   subject                 subject[]
   classes                 classes?            @relation(fields: [classId], references: [id])
   classId                 String?
-  del_flag                Boolean            @default(false)
+  del_flag                Boolean             @default(false)
   assignment              assignment[]
   materials               teachingMaterials[]
   registrationCode        admin?              @relation(fields: [registeredCode], references: [generatedRegistrationCodes])
@@ -73,7 +73,7 @@ model student {
   updatedAt  DateTime     @updatedAt
   subject    subject[]
   class      classes      @relation(fields: [classId], references: [id])
-  classId    String       
+  classId    String
   del_flag   Boolean
   attendance attendance[]
 
@@ -87,9 +87,8 @@ model student {
 
 model subject {
   id        String    @id @default(uuid())
-  name      String
-  tutorId   String
-  tutor     tutor     @relation(fields: [tutorId], references: [id])
+  subjectName      String @unique
+  tutors    tutor[]
   students  student[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -150,7 +149,7 @@ model assignment {
 
 model solveAssignment {
   id           String     @id @default(uuid())
-  studentId   String 
+  studentId    String
   student      student    @relation(fields: [studentId], references: [studentId])
   assignmentId String
   assignment   assignment @relation(fields: [assignmentId], references: [id])
@@ -161,28 +160,28 @@ model solveAssignment {
 }
 
 model guardian {
-  id                 String           @id @default(uuid())
-  fullName           String
-  gender             gender
-  studentId String
-  student            student          @relation(fields: [studentId], references: [studentId])
-  relationship       String
-  contact            String
-  email              String?          @unique
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
-  paymentRequest     paymentRequest[]
+  id             String           @id @default(uuid())
+  fullName       String
+  gender         gender
+  studentId      String
+  student        student          @relation(fields: [studentId], references: [studentId])
+  relationship   String
+  contact        String
+  email          String?          @unique
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  paymentRequest paymentRequest[]
 }
 
 model paymentRequest {
-  id                 String        @id @default(uuid())
-  guadianId          String
-  guadian            guardian      @relation(fields: [guadianId], references: [id])
-  studentId String @unique
-  student            student       @relation(fields: [studentId], references: [studentId])
-  amount             Float
-  paymentType        paymentType
-  status             paymentStatus
+  id          String        @id @default(uuid())
+  guadianId   String
+  guadian     guardian      @relation(fields: [guadianId], references: [id])
+  studentId   String        @unique
+  student     student       @relation(fields: [studentId], references: [studentId])
+  amount      Float
+  paymentType paymentType
+  status      paymentStatus
 }
 
 model teachingMaterials {
@@ -206,7 +205,7 @@ model studentTerminalReport {
   totalScore       Int
   averageScore     Float
   classId          String
-  className        String?     // Field indicating the new class name for enrollment
+  className        String? // Field indicating the new class name for enrollment
   position         Int
   numRoll          Int
   tutorsRemarks    String[]
@@ -216,6 +215,7 @@ model studentTerminalReport {
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 }
+
 
 enum gender {
   male
