@@ -7,6 +7,7 @@ import { sendPasswordResetLink } from "../utils/emailTransporter"
 import { tutorData, tutorSchema } from "../validators/tutorValidator";
 import { tutor } from "@prisma/client";
 import { generateReferallCode } from "../utils/referralCodeGenerator";
+import { throwError } from "../middleware/errorHandler";
 
 export const addTutor = async (data: tutorData) => {
     const validateTutorData = tutorSchema.safeParse(data);
@@ -14,7 +15,7 @@ export const addTutor = async (data: tutorData) => {
         const errors = validateTutorData.error.issues.map(
             ({ message, path }) => `${path}: ${message}`
         );
-        throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "));
+       throwError(HttpStatus.BAD_REQUEST, errors.join(". "));
     }
 
     // Check if the tutor already exists
@@ -33,7 +34,7 @@ export const addTutor = async (data: tutorData) => {
         });
 
         if (!findAdminRegistrationCode) {
-            throw new HttpException(HttpStatus.FORBIDDEN, "Invalid registration code");
+           throwError(HttpStatus.FORBIDDEN, "Invalid registration code");
         } else {
             const { maxUsedCode, totalCodeUsed, id, email } = findAdminRegistrationCode;
 
@@ -51,7 +52,7 @@ export const addTutor = async (data: tutorData) => {
                     },
                 });
 
-                throw new HttpException(
+               throwError(
                     HttpStatus.FORBIDDEN,
                     `The provided registration code has reached its maximum usage. A new registration code (${newRegistrationCode}) has been generated for Admin (${email}). Please use the new code.`
                 );
@@ -83,7 +84,7 @@ export const addTutor = async (data: tutorData) => {
             return tutorWithoutPassword;
         }
     } else {
-        throw new HttpException(HttpStatus.CONFLICT, "Email already exists");
+       throwError(HttpStatus.CONFLICT, "Email already exists");
     }
 };
 
@@ -95,11 +96,11 @@ export const signIn = async(email: string, password: string)=>{
         }
     })
    if(!fetchedTutor){
-    throw new HttpException(HttpStatus.NOT_FOUND, "Tutor does not exist")
+   throwError(HttpStatus.NOT_FOUND, "Tutor does not exist")
    }else{
     const verifiedPassword = await compare(password, fetchedTutor.password)
     if(!verifiedPassword){
-        throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid email or password")
+       throwError(HttpStatus.UNAUTHORIZED, "Invalid email or password")
     }else{
         return fetchedTutor
     }
@@ -149,7 +150,7 @@ export const updateTutor = async(id: string, data: Partial<tutor>)=>{
             }
         })
         if(!findTutor){
-            throw new HttpException(HttpStatus.NOT_FOUND, "Tutor not found")
+           throwError(HttpStatus.NOT_FOUND, "Tutor not found")
         }else{
             const updatedTutor = await prisma.tutor.update({
                 where:{
@@ -169,7 +170,7 @@ export const deleteTutor = async(id: string)=>{
         }
     })
     if(!findTutor){
-        throw new HttpException(HttpStatus.NOT_FOUND, "Tutor not found")
+       throwError(HttpStatus.NOT_FOUND, "Tutor not found")
     }else{
         await prisma.tutor.delete({
             where:{
@@ -184,7 +185,7 @@ export const deleteTutor = async(id: string)=>{
 
 export const forgotPasswordLink = async (email: string, link: string | undefined, passwordResetLink: string | undefined) => {
     if (!(await fetchTutorByEmail(email))) {
-        throw new HttpException(HttpStatus.NOT_FOUND, "Tutor not found");
+       throwError(HttpStatus.NOT_FOUND, "Tutor not found");
     } else {
         // Sign the token with JWT
         const token = signToken({ id: email, role: 'tutor' });
@@ -218,7 +219,7 @@ export const forgotPasswordLink = async (email: string, link: string | undefined
 export const resetPassword = async (newPassword: string, token: string) => {
     try {
         if (!newPassword || !token) {
-            throw new HttpException(HttpStatus.BAD_REQUEST, "Missing required fields ");
+           throwError(HttpStatus.BAD_REQUEST, "Missing required fields ");
         } else {
             const findToken = await prisma.tutor.findFirst({
                 where: {
@@ -228,12 +229,12 @@ export const resetPassword = async (newPassword: string, token: string) => {
             });
 
             if (!findToken) {
-                throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid token");
+               throwError(HttpStatus.UNAUTHORIZED, "Invalid token");
             } else {
                 const hashedPassword = await hash(newPassword);
                 
                 if (!hashedPassword) {
-                    throw new HttpException(
+                   throwError(
                         HttpStatus.INTERNAL_SERVER_ERROR,
                         "Error hashing password"
                     );
@@ -254,7 +255,7 @@ export const resetPassword = async (newPassword: string, token: string) => {
             }
         }
     } catch (error) {
-        throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error resetting password");
+       throwError(HttpStatus.INTERNAL_SERVER_ERROR, "Error resetting password");
     }
 };
 
@@ -265,21 +266,21 @@ export const verifyOtp = async (email: string, otp: string) => {
     const tutor = await prisma.tutor.findUnique({ where: { email } });
   
     if (!tutor) {
-      throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid OTP or Tutor not found");
+     throwError(HttpStatus.UNAUTHORIZED, "Invalid OTP or Tutor not found");
     }
   
     // Check if the OTP matches
-    if (tutor.otp !== otp) {
-      throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid OTP");
+    if (tutor!.otp !== otp) {
+     throwError(HttpStatus.UNAUTHORIZED, "Invalid OTP");
     }
   
     // Generate a JWT token if OTP is correct
-    const token = signToken({ id: tutor.id,role:'tutor' });
+    const token = signToken({ id: tutor!.id,role:'tutor' });
   
     // Clear the OTP from the database after successful verification
     await prisma.tutor.update({
         where: {
-            id: tutor.id
+            id: tutor!.id
         },
         data: { otp: null },
         

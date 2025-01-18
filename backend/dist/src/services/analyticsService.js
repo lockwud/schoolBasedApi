@@ -12,8 +12,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tutorAnalytics = exports.studentAnalytics = void 0;
+exports.totalPopulationAnalytics = exports.tutorAnalytics = exports.studentAnalytics = void 0;
+const errorHandler_1 = require("../middleware/errorHandler");
+const http_status_1 = require("../utils/http-status");
 const prisma_1 = __importDefault(require("../utils/prisma"));
+const DEFAULT_TOP_STUDENT_LIMIT = 10;
+const getTopStudents = (students, limit) => {
+    const firstPositionStudent = students.find(student => { var _a; return (_a = student.studentTerminalReport) === null || _a === void 0 ? void 0 : _a.some(report => report.position === 1); });
+    const sortedStudents = students.sort((a, b) => {
+        const aReport = a.studentTerminalReport[0];
+        const bReport = b.studentTerminalReport[0];
+        if (aReport.position !== bReport.position) {
+            return aReport.position - bReport.position;
+        }
+        return bReport.totalScore - aReport.totalScore;
+    });
+    const topStudents = sortedStudents.slice(0, limit);
+    if (firstPositionStudent && !topStudents.includes(firstPositionStudent)) {
+        topStudents.pop(); // Remove last student to maintain the limit
+        topStudents.unshift(firstPositionStudent); // Add first position student
+    }
+    return topStudents;
+};
 exports.studentAnalytics = {
     getTotalStudents: () => __awaiter(void 0, void 0, void 0, function* () {
         const totalStudents = yield prisma_1.default.student.count();
@@ -25,50 +45,42 @@ exports.studentAnalytics = {
         });
         return countByGender;
     }),
-    getTopPerformingStudentsFromClass: (...args_1) => __awaiter(void 0, [...args_1], void 0, function* (limit = 10) {
-        const classesWithStudents = yield prisma_1.default.classes.findMany({
-            include: {
-                student: {
-                    include: {
-                        studentTerminalReport: {
-                            select: {
-                                position: true,
-                                totalScore: true,
+    getTopPerformingStudentsFromClass: (...args_1) => __awaiter(void 0, [...args_1], void 0, function* (limit = DEFAULT_TOP_STUDENT_LIMIT) {
+        try {
+            const classesWithStudents = yield prisma_1.default.classes.findMany({
+                include: {
+                    student: {
+                        include: {
+                            studentTerminalReport: {
+                                select: {
+                                    position: true,
+                                    totalScore: true,
+                                },
                             },
                         },
                     },
                 },
-            },
-        });
-        const adjustedResults = classesWithStudents.map((classData) => {
-            const allStudents = classData.student;
-            // Ensure the first position student is included
-            const firstPositionStudent = allStudents.find((student) => {
-                var _a;
-                return (_a = student.studentTerminalReport) === null || _a === void 0 ? void 0 : _a.some((report) => report.position === 1);
             });
-            // Sort students by position and totalScore
-            const sortedStudents = allStudents.sort((a, b) => {
-                const aReport = a.studentTerminalReport[0];
-                const bReport = b.studentTerminalReport[0];
-                if (aReport.position !== bReport.position) {
-                    return aReport.position - bReport.position;
-                }
-                return bReport.totalScore - aReport.totalScore;
+            return classesWithStudents.map(classData => {
+                const topStudents = getTopStudents(classData.student, limit);
+                return Object.assign(Object.assign({}, classData), { topPerformingStudents: topStudents });
             });
-            // Take top students based on the limit
-            const topStudents = sortedStudents.slice(0, limit);
-            // Ensure the first position student is part of the results
-            if (firstPositionStudent && !topStudents.includes(firstPositionStudent)) {
-                topStudents.pop(); // Remove the last student if limit is reached
-                topStudents.unshift(firstPositionStudent); // Add the first position student at the beginning
-            }
-            return Object.assign(Object.assign({}, classData), { topPerformingStudents: topStudents });
-        });
-        return adjustedResults;
-    })
+        }
+        catch (error) {
+            console.error("Error fetching top-performing students:", error);
+            (0, errorHandler_1.throwError)(http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, "Error fetching top-performing students");
+        }
+    }),
 };
 exports.tutorAnalytics = {
     getTotalTutors: () => __awaiter(void 0, void 0, void 0, function* () {
+        const totalTutors = yield prisma_1.default.tutor.count();
+        return totalTutors;
+    })
+};
+exports.totalPopulationAnalytics = {
+    Population: () => __awaiter(void 0, void 0, void 0, function* () {
+        const sumOfPopulation = (yield prisma_1.default.student.count()) + (yield prisma_1.default.tutor.count());
+        return sumOfPopulation;
     })
 };

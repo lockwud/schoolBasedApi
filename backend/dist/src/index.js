@@ -8,6 +8,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const morgan_1 = __importDefault(require("morgan"));
 const cors_1 = __importDefault(require("cors"));
 const routes_1 = __importDefault(require("./routes"));
+const errorHandler_1 = require("./middleware/errorHandler");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 4500;
@@ -21,13 +22,7 @@ app.get("/", (req, res) => {
     res.send("Express + TypeScript Server");
 });
 app.use("/api", routes_1.default);
-app.use((error, req, res, next) => {
-    console.log("error handler: ", error.status || 500, next);
-    res.status(error.status || 500).json({
-        status: error.status || 500,
-        error: error.message,
-    });
-});
+app.use(errorHandler_1.ErrorHandler);
 app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
 });

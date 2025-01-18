@@ -42,37 +42,36 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteClass = exports.updateClassDetails = exports.getClassByName = exports.getClassById = exports.getClasses = exports.registerClass = void 0;
-const classService = __importStar(require("../services/classServices"));
+exports.updateTutorSubject = exports.getSubjectTutors = exports.getSubjectsByName = exports.getSubjects = exports.tutorsSubject = exports.saveSubject = void 0;
+const subjectService = __importStar(require("../services/subjectService"));
 const http_status_1 = require("../utils/http-status");
 const catchAsync_1 = require("../utils/catchAsync");
-exports.registerClass = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.saveSubject = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const data = req.body;
-    const addClass = yield classService.addClass(data);
-    res.status(http_status_1.HttpStatus.OK).json(addClass);
+    const addedsubject = yield subjectService.addSubject(data);
+    res.status(http_status_1.HttpStatus.CREATED).json(addedsubject);
 }));
-exports.getClasses = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const fetchedClass = yield classService.fetchClasses();
-    res.status(http_status_1.HttpStatus.OK).json(fetchedClass);
+exports.tutorsSubject = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { lastName, subject } = req.body;
+    const assignedTutor = yield subjectService.assignSubjectToTutors(lastName, subject);
+    res.status(http_status_1.HttpStatus.ACCEPTED).json({ message: `Mr. ${assignedTutor.lastName}has been assigned to teach ${subject}` });
 }));
-exports.getClassById = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const fetchedClass = yield classService.fetchClassById(id);
-    res.status(http_status_1.HttpStatus.OK).json({ fetchedClass });
+exports.getSubjects = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const subjects = yield subjectService.fetchSubjects();
+    res.status(http_status_1.HttpStatus.OK).json(subjects);
 }));
-exports.getClassByName = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { className } = req.body;
-    const fetchedClass = yield classService.fetchClassByName(className);
-    res.status(http_status_1.HttpStatus.OK).json(fetchedClass);
+exports.getSubjectsByName = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { subjectName } = req.body;
+    const fetchedSubject = yield subjectService.fetchSubjectByName(subjectName);
+    res.status(http_status_1.HttpStatus.OK).json(fetchedSubject);
 }));
-exports.updateClassDetails = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const { data } = req.body;
-    const updatedDetails = yield classService.updateClassDetails(id, data);
-    res.status(http_status_1.HttpStatus.OK).json(updatedDetails);
+exports.getSubjectTutors = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { subjectName } = req.body;
+    const subjectTutors = yield subjectService.fetchSubjectTutors(subjectName);
+    res.status(http_status_1.HttpStatus.OK).json({ subjectTutors });
 }));
-exports.deleteClass = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const deletedClass = yield classService.deleteClass(id);
-    res.status(http_status_1.HttpStatus.OK).json(deletedClass);
+exports.updateTutorSubject = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { subjectName, tutorName } = req.body;
+    const updated = yield subjectService.updateSubjectTutor(subjectName, tutorName);
+    res.status(http_status_1.HttpStatus.OK).json({ message: `Mr. ${updated.lastName}, has been assigned to teach ${subjectName}` });
 }));

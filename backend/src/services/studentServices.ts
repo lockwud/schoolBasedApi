@@ -6,6 +6,7 @@ import { signToken, UserPayload } from "../utils/jsonwebtoken";
 import { studentData, studentSchema } from "../validators/studentValidator";
 import { student } from "@prisma/client";
 import { generateReferallCode, generateStudentIndex } from "../utils/referralCodeGenerator";
+import { throwError } from "../middleware/errorHandler";
 
 
 export const registerStudent = async(data: studentData, picture:{photoUrl: string, photoKey: string})=>{
@@ -14,7 +15,7 @@ export const registerStudent = async(data: studentData, picture:{photoUrl: strin
         const errors = validateStudentData.error.issues.map(
             ({ message, path }) => `${path}: ${message}`
             )
-            throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "))
+           throwError(HttpStatus.BAD_REQUEST, errors.join(". "))
     }else{
         const studentIndex = await generateStudentIndex(data.classId)
 
@@ -29,7 +30,7 @@ export const registerStudent = async(data: studentData, picture:{photoUrl: strin
           });
         
           if (!findClass) {
-            throw new HttpException(HttpStatus.NOT_FOUND, `Class with id ${data.classId} not found`);
+           throwError(HttpStatus.NOT_FOUND, `Class with id ${data.classId} not found`);
           }else{
             const generatedPassword = await generateReferallCode()
             const newStudent = await prisma.student.create({
@@ -52,7 +53,7 @@ export const registerStudent = async(data: studentData, picture:{photoUrl: strin
           }
            
         }else{
-            throw new HttpException(HttpStatus.CONFLICT, "Student with this Index already exists")
+           throwError(HttpStatus.CONFLICT, "Student with this Index already exists")
         }
     }
     
@@ -87,7 +88,7 @@ export const fetchStudentByClass = async(className: string)=>{
     })
 
     if(!findClass){
-        throw new HttpException(HttpStatus.NOT_FOUND, `Class  name ${className} not found`)
+       throwError(HttpStatus.NOT_FOUND, `Class  name ${className} not found`)
     }else{
         const retrievedStudent = await prisma.student.findMany({
             where: {
@@ -109,7 +110,7 @@ export const updateStudentDetails = async(studentId: string, data: Partial<stude
         }
     })
     if(!findStudent){
-        throw new HttpException(HttpStatus.NOT_FOUND, `Student with id ${studentId} not found`)
+       throwError(HttpStatus.NOT_FOUND, `Student with id ${studentId} not found`)
     }else{
         const updatedStudentDetails = await prisma.student.update({
             where: {
@@ -131,7 +132,7 @@ export const deleteStudents = async(studentId: string)=>{
         }
     })
     if(!findStudent){
-        throw new HttpException(HttpStatus.NOT_FOUND, `Student with id ${studentId} not found`)
+       throwError(HttpStatus.NOT_FOUND, `Student with id ${studentId} not found`)
     }else{
         const deletedStudent = await prisma.student.delete({
             where: {
@@ -173,7 +174,7 @@ export const automaticRemovalOfStudent = async () => {
         });
         return deletedStudent;
     } else {
-        throw new HttpException(HttpStatus.NOT_FOUND, "No student marked for automatic removal based on attendance");
+       throwError(HttpStatus.NOT_FOUND, "No student marked for automatic removal based on attendance");
     }
 };
 
@@ -185,7 +186,7 @@ export const login = async(studentId: string, password: string)=>{
         }
     })
     if(!findStudent){
-        throw new HttpException(HttpStatus.NOT_FOUND, "Student not found")
+       throwError(HttpStatus.NOT_FOUND, "Student not found")
     }else{
         if(password === findStudent.password){
             const tokenPayload: UserPayload = {
@@ -204,7 +205,7 @@ export const login = async(studentId: string, password: string)=>{
             const token = signToken(tokenPayload)
             return {findStudent, token}
         }else{
-            throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid password")
+           throwError(HttpStatus.UNAUTHORIZED, "Invalid password")
         }
      }
     }
@@ -218,7 +219,7 @@ export const forgotPassword = async(studentId: string)=>{
         }
     })
     if(!findStudent){
-        throw new HttpException(HttpStatus.NOT_FOUND, "Student not found")
+       throwError(HttpStatus.NOT_FOUND, "Student not found")
     }else{
         const newPassword = await generateReferallCode()
         const updatedStudentPassword = await prisma.student.update({
@@ -242,7 +243,7 @@ export const changePassword = async(studentId: string, oldPassword: string, pass
         }
     })
     if(!findStudent){
-        throw new HttpException(HttpStatus.NOT_FOUND, "Student not found")
+       throwError(HttpStatus.NOT_FOUND, "Student not found")
     }else{
         const checkOldPassword = await compare(oldPassword, findStudent.password)
         if(checkOldPassword){
@@ -257,7 +258,7 @@ export const changePassword = async(studentId: string, oldPassword: string, pass
             })
             return updatedStudentPassword
         }else{
-            throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid old password")
+           throwError(HttpStatus.UNAUTHORIZED, "Invalid old password")
         }
     }
 };

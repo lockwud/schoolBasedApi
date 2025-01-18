@@ -33,22 +33,13 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-const validate_payload_1 = require("./../../middleware/validate-payload");
 const express_1 = require("express");
-const admin = __importStar(require("../../controllers/adminController"));
-const jsonwebtoken_1 = require("../../utils/jsonwebtoken");
-const adminRoute = (0, express_1.Router)();
-adminRoute.post("/signup", (0, validate_payload_1.validatePayload)('admin'), admin.signUp);
-adminRoute.post("/login", admin.login);
-adminRoute.post("/verifyOtp", admin.otpVerification);
-adminRoute.post("/forgotPassword", admin.forgotPassword);
-adminRoute.put("/resetPassword/:token", admin.resetPassword);
-adminRoute.get("/", 
-// authenticateJWT,
-// authorizeRole(["admin"]),
-admin.getAdmins);
-adminRoute.get("/:id", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), admin.getAdminById);
-adminRoute.get("/email", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), admin.getAdminByEmail);
-adminRoute.put("/update/:id", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), admin.updateAdminRecords);
-adminRoute.delete("/delete/:id", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), admin.deleteAdmin);
-exports.default = adminRoute;
+const subject = __importStar(require("../../controllers/subjectController"));
+const subjectRoute = (0, express_1.Router)();
+subjectRoute.post("/add", subject.saveSubject);
+subjectRoute.post("/assignTutor", subject.tutorsSubject);
+subjectRoute.put("/update", subject.updateTutorSubject);
+subjectRoute.get("/", subject.getSubjects);
+subjectRoute.get("/tutors", subject.getSubjectTutors);
+subjectRoute.get("/name", subject.getSubjectsByName);
+exports.default = subjectRoute;

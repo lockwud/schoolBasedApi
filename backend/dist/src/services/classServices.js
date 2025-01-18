@@ -13,15 +13,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteClass = exports.updateClassDetails = exports.fetchClassByName = exports.fetchClassById = exports.fetchClasses = exports.addClass = void 0;
-const http_error_1 = __importDefault(require("../utils/http-error"));
 const http_status_1 = require("../utils/http-status");
 const prisma_1 = __importDefault(require("../utils/prisma"));
 const classValidator_1 = require("../validators/classValidator");
+const errorHandler_1 = require("../middleware/errorHandler");
 const addClass = (data) => __awaiter(void 0, void 0, void 0, function* () {
     const validateClassData = classValidator_1.classSchema.safeParse(data);
     if (!validateClassData.success) {
         const errors = validateClassData.error.issues.map(({ message, path }) => `${path}: ${message}`);
-        throw new http_error_1.default(http_status_1.HttpStatus.BAD_REQUEST, errors.join(". "));
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.BAD_REQUEST, errors.join(". "));
     }
     else {
         const checkClassAvailability = yield prisma_1.default.classes.findFirst({
@@ -39,7 +39,7 @@ const addClass = (data) => __awaiter(void 0, void 0, void 0, function* () {
             return saveClassInfo;
         }
         else {
-            throw new http_error_1.default(http_status_1.HttpStatus.CONFLICT, "Class already registered");
+            (0, errorHandler_1.throwError)(http_status_1.HttpStatus.CONFLICT, "Class already registered");
         }
     }
 });
@@ -69,7 +69,7 @@ const fetchClassByName = (className) => __awaiter(void 0, void 0, void 0, functi
 exports.fetchClassByName = fetchClassByName;
 const updateClassDetails = (id, data) => __awaiter(void 0, void 0, void 0, function* () {
     if (!(yield (0, exports.fetchClassById)(id))) {
-        throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, "Class not found");
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.NOT_FOUND, "Class not found");
     }
     else {
         const updatedClassDetails = yield prisma_1.default.classes.update({

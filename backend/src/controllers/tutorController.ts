@@ -6,239 +6,139 @@ import { HttpStatus } from "../utils/http-status";
 // import { sendOtpEmail, generateOtp, sendPasswordResetLink  } from "../utils/emailTransporter";
 import { tutorData } from '../validators/tutorValidator';
 import { generateOtp, sendOtpEmail } from '../utils/emailTransporter';
+import { catchAsync } from '../utils/catchAsync';
 
-export const signUp = async(req: Request, res: Response, next: NextFunction)=>{
-    try{
+export const signUp = catchAsync(async(
+    req: Request, res: Response, next: NextFunction
+)=>{
         const data = req.body satisfies tutorData
         const addTutor = await tutorService.addTutor(data)
         res.status(HttpStatus.CREATED).json(addTutor)
-    }catch(error){
-        const err = error as ErrorResponse
-        next(
-            new HttpException(
-                err.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                err.message
-            )
-        )
-    }
 
-};
+});
 
 
-export const login = async(
+export const login = catchAsync(async(
     req: Request, 
     res: Response, 
     next: NextFunction
 )=>{
-    try{
         const {email, password} = req.body
         const tutorLogin = await tutorService.signIn(email, password)
         const otp = generateOtp();
-        await tutorService.updateTutor(tutorLogin.id, {otp,})
+        await tutorService.updateTutor(tutorLogin!.id, {otp,})
         await sendOtpEmail(email, otp)
-        res.status(HttpStatus.OK).json({message:"check your email for otp"})
-    }catch(error){
-        const err = error as ErrorResponse
-        next(
-            new HttpException(
-                err.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                err.message
-            )
-        )
-    }
-};
+ 
+});
 
 
-export const getTutors = async(
+export const getTutors = catchAsync(async(
     req: Request, 
     res: Response, 
     next: NextFunction
 )=>{
-    try{
         const tutors = await tutorService.fetchTutors()
         res.status(HttpStatus.OK).json(tutors)
-    }catch(error){
-        const err = error as ErrorResponse
-        next(
-            new HttpException(
-                err.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                err.message
-            )
-        )
-    }
-};
+  
+});
 
 
-export const getTtutorById = async(
+export const getTtutorById = catchAsync(async(
     req: Request, 
     res: Response, 
     next: NextFunction
 )=>{
-    try{
         const { id } = req.params
         const fetchedTutor = await tutorService.fetchTutorById(id)
-        res.status(HttpStatus.OK).json({fetchedTutor})
-    }catch(error){
-        const err = error as ErrorResponse
-        next(
-            new HttpException(
-                err.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                err.message
-            )
-        )
-    }
-
-};
+        res.status(HttpStatus.OK).json(fetchedTutor)
+   
+});
 
 
-export const getTutorByEmail = async(
+export const getTutorByEmail = catchAsync(async(
     req: Request,
     res: Response,
     next: NextFunction
 )=>{
-    try{
         const { email } = req.body
         const fetchedTutor = await tutorService.fetchTutorByEmail(email)
-        res.status(HttpStatus.OK).json({fetchedTutor})
-    }catch(error){
-        const err = error as ErrorResponse
-        next(
-            new HttpException(
-                err.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                err.message
-            )
-        )
-    }
-};
+   
+});
 
 
-export const updateTutorDetails = async(
+export const updateTutorDetails = catchAsync(async(
     req: Request, 
     res: Response, 
     next: NextFunction
 )=>{
-    try{
         const { id } = req.params
         const { data } = req.body
         const updatedTutor = await tutorService.updateTutor(id, data)
         res.status(HttpStatus.OK).json(updatedTutor)
-    }catch(error){
-        const err = error as ErrorResponse
-        next(
-            new HttpException(
-                err.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                err.message
-            )
-        )
-    }
-};
+   
+});
 
 
-export const deleteTutor = async(
+export const deleteTutor = catchAsync(async(
     req: Request, 
     res: Response, 
     next: NextFunction
 )=>{
-    try{
         const { id } = req.params
         const deletedTutor = await tutorService.deleteTutor(id)
-        res.status(HttpStatus.OK).json(deletedTutor)
-    }catch(error){
-        const err = error as ErrorResponse
-        next(
-            new HttpException(
-                err.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                err.message
-            )
-        )
-    }
-};
+        res.status(HttpStatus.OK).json({message: "Tutor deleted", deletedTutor})
+   
+});
 
 
-export const sendPasswordResetLink = async(
+export const sendPasswordResetLink = catchAsync(async(
     req: Request, 
     res: Response, 
     next: NextFunction
 )=>{
-    try{
         const { email } = req.body
         const passwordResetLink = process.env.PASSWORD_RESET_URL
         const link = await process.env.PASSWORD_RESET_URL// generate password reset link
         const token = await tutorService.forgotPasswordLink(email,link,passwordResetLink)
         res.status(HttpStatus.OK).json({message: 'Password reset link sent', token})
-    }catch(error){
-        const err = error as ErrorResponse
-        next(
-            new HttpException(
-                err.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                err.message
-            )
-        )
-    }
-};
+   
+});
 
 
-export const resetPassword = async(
+export const resetPassword = catchAsync(async(
     req: Request, 
     res: Response, 
     next: NextFunction
 )=>{
-    try{
         const { password } = req.body
         const { token } = req.params
         const fetchedTutor = await tutorService.resetPassword(password, token)
         res.status(HttpStatus.OK).json({message: 'Password reset successful'})
-    }catch(error){
-        const err = error as ErrorResponse
-        next(
-            new HttpException(
-                err.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                err.message
-            )
-        )
-    }
-};
+  
+});
 
 
 
-export const otpVerification = async(
+export const otpVerification = catchAsync(async(
     req: Request, 
     res: Response, 
     next: NextFunction
 )=>{
-    try{
         const { email, otp } = req.body
         const token = await tutorService.verifyOtp(email, otp)
         res.status(HttpStatus.OK).json({message: 'OTP verified', token})
-    }catch(error){
-        const err = error as ErrorResponse
-        next(
-            new HttpException(
-                err.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                err.message
-            )
-        )
-    }
-};
+  
+});
 
 
-export const deleteTutorRecords = async(
+export const deleteTutorRecords = catchAsync(async(
     req: Request, 
     res: Response, 
     next: NextFunction
     
 )=>{
-    try{
         const { id } = req.params
         const deletedTutorRecords = await tutorService.deleteTutor(id)
         res.status(HttpStatus.OK).json(deletedTutorRecords)
-    }catch(error){
-        const err = error as ErrorResponse
-        next(
-            new HttpException(
-                err.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                err.message
-            )
-        )
-    }
-};
+   
+});

@@ -46,126 +46,62 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updatePassword = exports.requestPassword = exports.autoDeleteStudent = exports.deleteStudent = exports.updateStudent = exports.fetchStudentById = exports.fetchStudents = exports.login = exports.addStudent = void 0;
-const http_error_1 = __importDefault(require("../utils/http-error"));
 const studentService = __importStar(require("../services/studentServices"));
 const http_status_1 = require("../utils/http-status");
 const cloudinary_1 = __importDefault(require("../utils/cloudinary"));
-const addStudent = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const data = req.body;
-        const photo = req.file ? req.file.path : undefined;
-        const picture = {
-            photoUrl: "",
-            photoKey: "",
-        };
-        if (photo) {
-            const uploaded = yield cloudinary_1.default.uploader.upload(photo, {
-                folder: "students/",
-            });
-            picture.photoUrl = uploaded.secure_url;
-            picture.photoKey = uploaded.public_id;
-        }
-        const newStudent = yield studentService.registerStudent(data, picture);
-        res.status(http_status_1.HttpStatus.CREATED).json(newStudent);
+const catchAsync_1 = require("../utils/catchAsync");
+exports.addStudent = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const data = req.body;
+    const photo = req.file ? req.file.path : undefined;
+    const picture = {
+        photoUrl: "",
+        photoKey: "",
+    };
+    if (photo) {
+        const uploaded = yield cloudinary_1.default.uploader.upload(photo, {
+            folder: "students/",
+        });
+        picture.photoUrl = uploaded.secure_url;
+        picture.photoKey = uploaded.public_id;
     }
-    catch (error) {
-        const err = error;
-        next(new http_error_1.default(err.status || http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, err.message));
-    }
-});
-exports.addStudent = addStudent;
-const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { studentId, password } = req.body;
-        const student = yield studentService.login(studentId, password);
-        res.status(http_status_1.HttpStatus.ACCEPTED).json({ student });
-    }
-    catch (error) {
-        const err = error;
-        next(new http_error_1.default(http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, err.message));
-    }
-});
-exports.login = login;
-const fetchStudents = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const fetchedStudents = yield studentService.fetchStudents();
-        res.status(http_status_1.HttpStatus.OK).json(fetchedStudents);
-    }
-    catch (error) {
-        const err = error;
-        next(new http_error_1.default(http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, err.message));
-    }
-});
-exports.fetchStudents = fetchStudents;
-const fetchStudentById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { studentId } = req.body;
-        const fetchedStudent = yield studentService.fetchStudentById(studentId);
-        res.status(http_status_1.HttpStatus.OK).json(fetchedStudent);
-    }
-    catch (error) {
-        const err = error;
-        next(new http_error_1.default(http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, err.message));
-    }
-});
-exports.fetchStudentById = fetchStudentById;
-const updateStudent = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { studentId } = req.body;
-        const data = req.body;
-        const updatedStudent = yield studentService.updateStudentDetails(studentId, data);
-        res.status(http_status_1.HttpStatus.OK).json(updatedStudent);
-    }
-    catch (error) {
-        const err = error;
-        next(new http_error_1.default(http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, err.message));
-    }
-});
-exports.updateStudent = updateStudent;
-const deleteStudent = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { studentId } = req.body;
-        yield studentService.deleteStudents(studentId);
-        res.status(http_status_1.HttpStatus.NO_CONTENT).json("student record deleted");
-    }
-    catch (error) {
-        const err = error;
-        next(new http_error_1.default(http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, err.message));
-    }
-});
-exports.deleteStudent = deleteStudent;
-const autoDeleteStudent = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const deleteStudent = yield studentService.automaticRemovalOfStudent();
-        res.status(http_status_1.HttpStatus.NO_CONTENT).json("student record deleted");
-    }
-    catch (error) {
-        const err = error;
-        next(new http_error_1.default(http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, err.message));
-    }
-});
-exports.autoDeleteStudent = autoDeleteStudent;
-const requestPassword = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { studentId } = req.body;
-        const password = yield studentService.forgotPassword(studentId);
-        res.status(http_status_1.HttpStatus.OK).json("Go to the administration for your password, \n Kindly change password after getting a password from the admin");
-    }
-    catch (error) {
-        const err = error;
-        next(new http_error_1.default(http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, err.message));
-    }
-});
-exports.requestPassword = requestPassword;
-const updatePassword = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { studentId, oldPassword, password } = req.body;
-        yield studentService.changePassword(studentId, oldPassword, password);
-        res.status(http_status_1.HttpStatus.OK).json("Password reset successfully");
-    }
-    catch (error) {
-        const err = error;
-        next(new http_error_1.default(http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, err.message));
-    }
-});
-exports.updatePassword = updatePassword;
+    const newStudent = yield studentService.registerStudent(data, picture);
+    res.status(http_status_1.HttpStatus.CREATED).json(newStudent);
+}));
+exports.login = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { studentId, password } = req.body;
+    const student = yield studentService.login(studentId, password);
+    res.status(http_status_1.HttpStatus.ACCEPTED).json({ student });
+}));
+exports.fetchStudents = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const fetchedStudents = yield studentService.fetchStudents();
+    res.status(http_status_1.HttpStatus.OK).json(fetchedStudents);
+}));
+exports.fetchStudentById = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { studentId } = req.body;
+    const fetchedStudent = yield studentService.fetchStudentById(studentId);
+}));
+exports.updateStudent = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { studentId } = req.body;
+    const data = req.body;
+    const updatedStudent = yield studentService.updateStudentDetails(studentId, data);
+    res.status(http_status_1.HttpStatus.OK).json(updatedStudent);
+}));
+exports.deleteStudent = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { studentId } = req.body;
+    yield studentService.deleteStudents(studentId);
+    res.status(http_status_1.HttpStatus.NO_CONTENT).json("student record deleted");
+}));
+exports.autoDeleteStudent = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const deleteStudent = yield studentService.automaticRemovalOfStudent();
+    res.status(http_status_1.HttpStatus.NO_CONTENT).json("student record deleted");
+}));
+exports.requestPassword = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { studentId } = req.body;
+    const password = yield studentService.forgotPassword(studentId);
+    res.status(http_status_1.HttpStatus.OK).json("Go to the administration for your password, \n Kindly change password after getting a password from the admin");
+}));
+exports.updatePassword = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { studentId, oldPassword, password } = req.body;
+    yield studentService.changePassword(studentId, oldPassword, password);
+    res.status(http_status_1.HttpStatus.OK).json("Password reset successfully");
+}));

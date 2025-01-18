@@ -24,21 +24,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.changePassword = exports.forgotPassword = exports.login = exports.automaticRemovalOfStudent = exports.deleteStudents = exports.updateStudentDetails = exports.fetchStudentByClass = exports.fetchStudentById = exports.fetchStudents = exports.registerStudent = void 0;
-const http_error_1 = __importDefault(require("../utils/http-error"));
 const http_status_1 = require("../utils/http-status");
 const prisma_1 = __importDefault(require("../utils/prisma"));
 const bcrypt_1 = require("../utils/bcrypt");
 const jsonwebtoken_1 = require("../utils/jsonwebtoken");
 const studentValidator_1 = require("../validators/studentValidator");
 const referralCodeGenerator_1 = require("../utils/referralCodeGenerator");
+const errorHandler_1 = require("../middleware/errorHandler");
 const registerStudent = (data, picture) => __awaiter(void 0, void 0, void 0, function* () {
     const validateStudentData = studentValidator_1.studentSchema.safeParse(data);
     if (!validateStudentData.success) {
         const errors = validateStudentData.error.issues.map(({ message, path }) => `${path}: ${message}`);
-        throw new http_error_1.default(http_status_1.HttpStatus.BAD_REQUEST, errors.join(". "));
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.BAD_REQUEST, errors.join(". "));
     }
     else {
-        const studentIndex = yield (0, referralCodeGenerator_1.generateStudentIndex)();
+        const studentIndex = yield (0, referralCodeGenerator_1.generateStudentIndex)(data.classId);
         const findStudent = yield prisma_1.default.student.findUnique({
             where: {
                 studentId: studentIndex
@@ -49,7 +49,7 @@ const registerStudent = (data, picture) => __awaiter(void 0, void 0, void 0, fun
                 where: { id: data.classId },
             });
             if (!findClass) {
-                throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, `Class with id ${data.classId} not found`);
+                (0, errorHandler_1.throwError)(http_status_1.HttpStatus.NOT_FOUND, `Class with id ${data.classId} not found`);
             }
             else {
                 const generatedPassword = yield (0, referralCodeGenerator_1.generateReferallCode)();
@@ -72,7 +72,7 @@ const registerStudent = (data, picture) => __awaiter(void 0, void 0, void 0, fun
             }
         }
         else {
-            throw new http_error_1.default(http_status_1.HttpStatus.CONFLICT, "Student with this Index already exists");
+            (0, errorHandler_1.throwError)(http_status_1.HttpStatus.CONFLICT, "Student with this Index already exists");
         }
     }
 });
@@ -102,7 +102,7 @@ const fetchStudentByClass = (className) => __awaiter(void 0, void 0, void 0, fun
         }
     });
     if (!findClass) {
-        throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, `Class  name ${className} not found`);
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.NOT_FOUND, `Class  name ${className} not found`);
     }
     else {
         const retrievedStudent = yield prisma_1.default.student.findMany({
@@ -124,7 +124,7 @@ const updateStudentDetails = (studentId, data) => __awaiter(void 0, void 0, void
         }
     });
     if (!findStudent) {
-        throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, `Student with id ${studentId} not found`);
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.NOT_FOUND, `Student with id ${studentId} not found`);
     }
     else {
         const updatedStudentDetails = yield prisma_1.default.student.update({
@@ -144,7 +144,7 @@ const deleteStudents = (studentId) => __awaiter(void 0, void 0, void 0, function
         }
     });
     if (!findStudent) {
-        throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, `Student with id ${studentId} not found`);
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.NOT_FOUND, `Student with id ${studentId} not found`);
     }
     else {
         const deletedStudent = yield prisma_1.default.student.delete({
@@ -183,7 +183,7 @@ const automaticRemovalOfStudent = () => __awaiter(void 0, void 0, void 0, functi
         return deletedStudent;
     }
     else {
-        throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, "No student marked for automatic removal based on attendance");
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.NOT_FOUND, "No student marked for automatic removal based on attendance");
     }
 });
 exports.automaticRemovalOfStudent = automaticRemovalOfStudent;
@@ -194,7 +194,7 @@ const login = (studentId, password) => __awaiter(void 0, void 0, void 0, functio
         }
     });
     if (!findStudent) {
-        throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, "Student not found");
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.NOT_FOUND, "Student not found");
     }
     else {
         if (password === findStudent.password) {
@@ -216,7 +216,7 @@ const login = (studentId, password) => __awaiter(void 0, void 0, void 0, functio
                 return { findStudent, token };
             }
             else {
-                throw new http_error_1.default(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid password");
+                (0, errorHandler_1.throwError)(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid password");
             }
         }
     }
@@ -229,7 +229,7 @@ const forgotPassword = (studentId) => __awaiter(void 0, void 0, void 0, function
         }
     });
     if (!findStudent) {
-        throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, "Student not found");
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.NOT_FOUND, "Student not found");
     }
     else {
         const newPassword = yield (0, referralCodeGenerator_1.generateReferallCode)();
@@ -252,7 +252,7 @@ const changePassword = (studentId, oldPassword, password) => __awaiter(void 0, v
         }
     });
     if (!findStudent) {
-        throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, "Student not found");
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.NOT_FOUND, "Student not found");
     }
     else {
         const checkOldPassword = yield (0, bcrypt_1.compare)(oldPassword, findStudent.password);
@@ -269,7 +269,7 @@ const changePassword = (studentId, oldPassword, password) => __awaiter(void 0, v
             return updatedStudentPassword;
         }
         else {
-            throw new http_error_1.default(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid old password");
+            (0, errorHandler_1.throwError)(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid old password");
         }
     }
 });

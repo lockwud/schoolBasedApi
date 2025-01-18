@@ -24,7 +24,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyOtp = exports.resetPassword = exports.forgotPasswordLink = exports.deleteTutor = exports.updateTutor = exports.fetchTutorByEmail = exports.fetchTutorById = exports.fetchTutors = exports.signIn = exports.addTutor = void 0;
-const http_error_1 = __importDefault(require("../utils/http-error"));
 const http_status_1 = require("../utils/http-status");
 const prisma_1 = __importDefault(require("../utils/prisma"));
 const bcrypt_1 = require("../utils/bcrypt");
@@ -32,68 +31,71 @@ const jsonwebtoken_1 = require("../utils/jsonwebtoken");
 const emailTransporter_1 = require("../utils/emailTransporter");
 const tutorValidator_1 = require("../validators/tutorValidator");
 const referralCodeGenerator_1 = require("../utils/referralCodeGenerator");
+const errorHandler_1 = require("../middleware/errorHandler");
 const addTutor = (data) => __awaiter(void 0, void 0, void 0, function* () {
     const validateTutorData = tutorValidator_1.tutorSchema.safeParse(data);
     if (!validateTutorData.success) {
         const errors = validateTutorData.error.issues.map(({ message, path }) => `${path}: ${message}`);
-        throw new http_error_1.default(http_status_1.HttpStatus.BAD_REQUEST, errors.join(". "));
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.BAD_REQUEST, errors.join(". "));
     }
-    else {
-        const checkTutorAvailability = yield prisma_1.default.tutor.findUnique({
+    // Check if the tutor already exists
+    const checkTutorAvailability = yield prisma_1.default.tutor.findUnique({
+        where: {
+            email: data.email,
+        },
+    });
+    if (!checkTutorAvailability) {
+        // Validate the provided registration code
+        const findAdminRegistrationCode = yield prisma_1.default.admin.findUnique({
             where: {
-                email: data.email
-            }
+                generatedRegistrationCodes: data.registeredCode,
+            },
         });
-        if (!checkTutorAvailability) {
-            //check registrationCode
-            const findAdminRegistrationCode = yield prisma_1.default.admin.findUnique({
-                where: {
-                    generatedRegistrationCodes: data.registeredCode
-                }
-            });
-            if (!findAdminRegistrationCode) {
-                throw new http_error_1.default(http_status_1.HttpStatus.FORBIDDEN, "Invalid registration code");
-            }
-            else {
-                if (findAdminRegistrationCode.maxUsedCode <= findAdminRegistrationCode.totalCodeUsed) {
-                    throw new http_error_1.default(http_status_1.HttpStatus.FORBIDDEN, "Maximum number of codes used");
-                }
-                else {
-                    yield prisma_1.default.admin.update({
-                        where: {
-                            id: findAdminRegistrationCode.id,
-                        },
-                        data: {
-                            maxUsedCode: {
-                                decrement: 1,
-                            },
-                            totalCodeUsed: {
-                                increment: 1,
-                            }
-                        }
-                    });
-                    const generatedPassword = yield (0, referralCodeGenerator_1.generateReferallCode)();
-                    const savedTutor = yield prisma_1.default.tutor.create({
-                        data: {
-                            firstName: data.firstName,
-                            lastName: data.lastName,
-                            gender: data.gender,
-                            email: data.email,
-                            password: generatedPassword,
-                            contact: data.contact,
-                            registeredCode: data.registeredCode
-                        }
-                    });
-                    const { password } = savedTutor, tutorWithoutPassword = __rest(savedTutor, ["password"]);
-                    return tutorWithoutPassword;
-                }
-            }
+        if (!findAdminRegistrationCode) {
+            (0, errorHandler_1.throwError)(http_status_1.HttpStatus.FORBIDDEN, "Invalid registration code");
         }
         else {
-            throw new http_error_1.default(http_status_1.HttpStatus.CONFLICT, "Email already exists");
+            const { maxUsedCode, totalCodeUsed, id, email } = findAdminRegistrationCode;
+            // Check if the max usage limit for the code has been reached
+            if (totalCodeUsed >= maxUsedCode + 1) {
+                // Generate a new registration code for the admin
+                const newRegistrationCode = yield (0, referralCodeGenerator_1.generateReferallCode)();
+                yield prisma_1.default.admin.update({
+                    where: { id },
+                    data: {
+                        generatedRegistrationCodes: newRegistrationCode,
+                        maxUsedCode: maxUsedCode, // Adjust max usage for the new code
+                        totalCodeUsed: 0, // Reset the usage counter for the new code
+                    },
+                });
+                (0, errorHandler_1.throwError)(http_status_1.HttpStatus.FORBIDDEN, `The provided registration code has reached its maximum usage. A new registration code (${newRegistrationCode}) has been generated for Admin (${email}). Please use the new code.`);
+            }
+            // Update code usage
+            yield prisma_1.default.admin.update({
+                where: { id },
+                data: {
+                    totalCodeUsed: { increment: 1 },
+                },
+            });
+            const generatedPassword = yield (0, referralCodeGenerator_1.generateReferallCode)();
+            const savedTutor = yield prisma_1.default.tutor.create({
+                data: {
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    gender: data.gender,
+                    email: data.email,
+                    password: generatedPassword,
+                    contact: data.contact,
+                    registeredCode: data.registeredCode,
+                },
+            });
+            const { password } = savedTutor, tutorWithoutPassword = __rest(savedTutor, ["password"]);
+            return tutorWithoutPassword;
         }
     }
-    ;
+    else {
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.CONFLICT, "Email already exists");
+    }
 });
 exports.addTutor = addTutor;
 const signIn = (email, password) => __awaiter(void 0, void 0, void 0, function* () {
@@ -103,12 +105,12 @@ const signIn = (email, password) => __awaiter(void 0, void 0, void 0, function* 
         }
     });
     if (!fetchedTutor) {
-        throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, "Tutor does not exist");
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.NOT_FOUND, "Tutor does not exist");
     }
     else {
         const verifiedPassword = yield (0, bcrypt_1.compare)(password, fetchedTutor.password);
         if (!verifiedPassword) {
-            throw new http_error_1.default(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid email or password");
+            (0, errorHandler_1.throwError)(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid email or password");
         }
         else {
             return fetchedTutor;
@@ -120,6 +122,9 @@ const fetchTutors = () => __awaiter(void 0, void 0, void 0, function* () {
     const getAllTutors = yield prisma_1.default.tutor.findMany({
         orderBy: {
             createdAt: "desc"
+        },
+        include: {
+            subject: true
         }
     });
     return getAllTutors;
@@ -150,7 +155,7 @@ const updateTutor = (id, data) => __awaiter(void 0, void 0, void 0, function* ()
         }
     });
     if (!findTutor) {
-        throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, "Tutor not found");
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.NOT_FOUND, "Tutor not found");
     }
     else {
         const updatedTutor = yield prisma_1.default.tutor.update({
@@ -170,7 +175,7 @@ const deleteTutor = (id) => __awaiter(void 0, void 0, void 0, function* () {
         }
     });
     if (!findTutor) {
-        throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, "Tutor not found");
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.NOT_FOUND, "Tutor not found");
     }
     else {
         yield prisma_1.default.tutor.delete({
@@ -184,7 +189,7 @@ const deleteTutor = (id) => __awaiter(void 0, void 0, void 0, function* () {
 exports.deleteTutor = deleteTutor;
 const forgotPasswordLink = (email, link, passwordResetLink) => __awaiter(void 0, void 0, void 0, function* () {
     if (!(yield (0, exports.fetchTutorByEmail)(email))) {
-        throw new http_error_1.default(http_status_1.HttpStatus.NOT_FOUND, "Tutor not found");
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.NOT_FOUND, "Tutor not found");
     }
     else {
         // Sign the token with JWT
@@ -212,7 +217,7 @@ exports.forgotPasswordLink = forgotPasswordLink;
 const resetPassword = (newPassword, token) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         if (!newPassword || !token) {
-            throw new http_error_1.default(http_status_1.HttpStatus.BAD_REQUEST, "Missing required fields ");
+            (0, errorHandler_1.throwError)(http_status_1.HttpStatus.BAD_REQUEST, "Missing required fields ");
         }
         else {
             const findToken = yield prisma_1.default.tutor.findFirst({
@@ -222,12 +227,12 @@ const resetPassword = (newPassword, token) => __awaiter(void 0, void 0, void 0, 
                 }
             });
             if (!findToken) {
-                throw new http_error_1.default(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid token");
+                (0, errorHandler_1.throwError)(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid token");
             }
             else {
                 const hashedPassword = yield (0, bcrypt_1.hash)(newPassword);
                 if (!hashedPassword) {
-                    throw new http_error_1.default(http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, "Error hashing password");
+                    (0, errorHandler_1.throwError)(http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, "Error hashing password");
                 }
                 else {
                     // Update the password and mark reset as completed
@@ -247,18 +252,18 @@ const resetPassword = (newPassword, token) => __awaiter(void 0, void 0, void 0, 
         }
     }
     catch (error) {
-        throw new http_error_1.default(http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, "Error resetting password");
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, "Error resetting password");
     }
 });
 exports.resetPassword = resetPassword;
 const verifyOtp = (email, otp) => __awaiter(void 0, void 0, void 0, function* () {
     const tutor = yield prisma_1.default.tutor.findUnique({ where: { email } });
     if (!tutor) {
-        throw new http_error_1.default(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid OTP or Tutor not found");
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid OTP or Tutor not found");
     }
     // Check if the OTP matches
     if (tutor.otp !== otp) {
-        throw new http_error_1.default(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid OTP");
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.UNAUTHORIZED, "Invalid OTP");
     }
     // Generate a JWT token if OTP is correct
     const token = (0, jsonwebtoken_1.signToken)({ id: tutor.id, role: 'tutor' });

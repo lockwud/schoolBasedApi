@@ -1,0 +1,30 @@
+import {z} from "zod"
+
+export const attendanceStatus = z.enum([
+    "present",
+    "absent",
+    "partial"
+])
+
+
+export const attendanceSchema = z.object({
+    studentId: z.string({
+        required_error: "Please provide student Id"
+    }).trim().min(10, "Invalid Index"),
+    date: z.date({
+        required_error: "Please provide date",
+    }).min(new Date(2022, 0, 1),) 
+    .max(new Date(), "Date cannot be in the future"),
+    attendanceStatus: attendanceStatus,
+    reason: z.string().optional(),
+    classId: z.string({
+        required_error: "Please provide the class Id"
+    }),
+    tutorId: z.string({
+        required_error: "Please provide the tutor Id"
+    })
+
+});
+
+
+export type attendanceDto = z.infer<typeof attendanceSchema>

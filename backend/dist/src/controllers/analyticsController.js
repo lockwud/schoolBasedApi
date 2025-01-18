@@ -8,41 +8,34 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchStudentsByGender = exports.fetchTotalStudents = void 0;
-const http_error_1 = __importDefault(require("../utils/http-error"));
+exports.fetchTotalPopulation = exports.fetchTotalTutors = exports.fetchTopPerformingStudent = exports.fetchStudentsByGender = exports.fetchTotalStudents = void 0;
 const http_status_1 = require("../utils/http-status");
 const analyticsService_1 = require("../services/analyticsService");
-const fetchTotalStudents = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const totalStudents = yield analyticsService_1.studentAnalytics.getTotalStudents();
-        res.status(http_status_1.HttpStatus.OK).json({ totalStudents });
+const catchAsync_1 = require("../utils/catchAsync");
+exports.fetchTotalStudents = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const totalStudents = yield analyticsService_1.studentAnalytics.getTotalStudents();
+    res.status(http_status_1.HttpStatus.OK).json({ totalStudents });
+}));
+exports.fetchStudentsByGender = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { gender } = req.query;
+    if (typeof gender !== "string" || !["male", "female"].includes(gender)) {
+        return res.status(http_status_1.HttpStatus.BAD_REQUEST).json({
+            message: "Invalid gender. Expected 'male' or 'female'.",
+        });
     }
-    catch (error) {
-        const err = error;
-        next(new http_error_1.default(err.status || http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, err.message));
-    }
-});
-exports.fetchTotalStudents = fetchTotalStudents;
-const fetchStudentsByGender = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { gender } = req.query;
-        // Validate the `gender` query parameter
-        if (typeof gender !== "string" || !["male", "female"].includes(gender)) {
-            return res.status(http_status_1.HttpStatus.BAD_REQUEST).json({
-                message: "Invalid gender. Expected 'male' or 'female'.",
-            });
-        }
-        // Use the validated `gender` value
-        const countByGender = yield analyticsService_1.studentAnalytics.getStudentsByGender(gender);
-        res.status(http_status_1.HttpStatus.OK).json({ countByGender });
-    }
-    catch (error) {
-        const err = error;
-        next(new http_error_1.default(err.status || http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, err.message));
-    }
-});
-exports.fetchStudentsByGender = fetchStudentsByGender;
+    const countByGender = yield analyticsService_1.studentAnalytics.getStudentsByGender(gender);
+    res.status(http_status_1.HttpStatus.OK).json({ countByGender });
+}));
+exports.fetchTopPerformingStudent = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const topTenStudents = yield analyticsService_1.studentAnalytics.getTopPerformingStudentsFromClass();
+    res.status(http_status_1.HttpStatus.OK).json(topTenStudents);
+}));
+exports.fetchTotalTutors = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const totalTutors = yield analyticsService_1.tutorAnalytics.getTotalTutors();
+    res.status(http_status_1.HttpStatus.OK).json(totalTutors);
+}));
+exports.fetchTotalPopulation = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const entirePopulation = yield analyticsService_1.totalPopulationAnalytics.Population();
+    res.status(http_status_1.HttpStatus.OK).json(entirePopulation);
+}));

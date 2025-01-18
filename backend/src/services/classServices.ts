@@ -3,6 +3,7 @@ import HttpException from "../utils/http-error";
 import { HttpStatus } from "../utils/http-status";
 import prisma from "../utils/prisma";
 import { classData, classSchema } from "../validators/classValidator";
+import { throwError } from "../middleware/errorHandler";
 
 
 export const addClass = async(data: classData)=>{
@@ -11,7 +12,7 @@ export const addClass = async(data: classData)=>{
         const errors = validateClassData.error.issues.map(
             ({ message, path }) => `${path}: ${message}`
           );
-          throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "));
+          throwError(HttpStatus.BAD_REQUEST, errors.join(". "));
     }else{
         const checkClassAvailability = await prisma.classes.findFirst({
             where:{
@@ -29,7 +30,7 @@ export const addClass = async(data: classData)=>{
             return saveClassInfo
 
         }else{
-            throw new HttpException(HttpStatus.CONFLICT, "Class already registered")
+            throwError(HttpStatus.CONFLICT, "Class already registered")
         }
     }
 };
@@ -63,7 +64,7 @@ export const fetchClassByName = async(className: string)=>{
 
 export const updateClassDetails = async(id: string, data: Partial <classes>)=>{
     if(!await fetchClassById(id)){
-        throw new HttpException(HttpStatus.NOT_FOUND, "Class not found")
+        throwError(HttpStatus.NOT_FOUND, "Class not found")
     }else{
         const updatedClassDetails = await prisma.classes.update({
             where: {

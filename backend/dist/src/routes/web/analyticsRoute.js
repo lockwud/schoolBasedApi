@@ -38,4 +38,7 @@ const analytics = __importStar(require("../../controllers/analyticsController"))
 const analyticsRoute = (0, express_1.Router)();
 analyticsRoute.get("/totalStudents", analytics.fetchTotalStudents);
 analyticsRoute.get("/studentsByGender", analytics.fetchStudentsByGender);
+analyticsRoute.get("/topPerforming", analytics.fetchTopPerformingStudent);
+analyticsRoute.get("/totalTutors", analytics.fetchTotalTutors);
+analyticsRoute.get("/population", analytics.fetchTotalPopulation);
 exports.default = analyticsRoute;

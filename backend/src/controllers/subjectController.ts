@@ -5,137 +5,76 @@ import HttpException from "../utils/http-error";
 import * as subjectService from "../services/subjectService"
 import { subjectData } from '../validators/subjectValidator';
 import { HttpStatus } from '../utils/http-status';
+import { catchAsync } from '../utils/catchAsync';
 
 
-export const saveSubject = async(
+export const saveSubject = catchAsync(async(
     req: Request,
     res: Response,
     next: NextFunction
 )=>{
-    try{
         const data = req.body satisfies subjectData
         const addedsubject = await subjectService.addSubject(data)
         res.status(HttpStatus.CREATED).json(addedsubject)
 
-    }catch(error){
-        const err = error as ErrorResponse;
-        next(
-            new HttpException(
-                err.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                err.message
-            )
-        )
-    }
-};
+});
 
 
-export const tutorsSubject = async(
+export const tutorsSubject = catchAsync(async(
     req: Request,
     res: Response,
     next: NextFunction
 )=>{
-    try{
         const {lastName, subject} = req.body
         const assignedTutor = await subjectService.assignSubjectToTutors(lastName,subject)
         res.status(HttpStatus.ACCEPTED).json({message: `Mr. ${assignedTutor.lastName}has been assigned to teach ${subject}`})
 
-    }catch(error){
-        const err = error as ErrorResponse;
-        next(
-            new HttpException(
-                err.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                err.message
-            )
-        )
-    }
-};
+});
 
 
-export const getSubjects = async(
+export const getSubjects = catchAsync(async(
     req: Request,
     res: Response,
     next: NextFunction
 )=>{
-    try{
         const subjects = await subjectService.fetchSubjects()
         res.status(HttpStatus.OK).json(subjects)
 
-    }catch(error){
-        const err = error as ErrorResponse;
-        next(
-            new HttpException(
-                err.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                err.message
-            )
-        )
-    }
-};
+});
 
 
-export const getSubjectsByName = async(
+export const getSubjectsByName = catchAsync(async(
     req: Request,
     res: Response,
     next: NextFunction
 )=>{
-    try{
         const {subjectName} = req.body
         const fetchedSubject = await subjectService.fetchSubjectByName(subjectName)
-        res.status(HttpStatus.OK).json({fetchedSubject})
-
-    }catch(error){
-        const err = error as ErrorResponse;
-        next(
-            new HttpException(
-                err.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                err.message
-            )
-        )
-    }
-};
+        res.status(HttpStatus.OK).json(fetchedSubject)
+ 
+});
 
 
-export const getSubjectTutors = async(
+export const getSubjectTutors = catchAsync(async(
     req: Request,
     res: Response,
     next: NextFunction
 )=>{
-    try{
         const {subjectName} = req.body
         const subjectTutors = await subjectService.fetchSubjectTutors(subjectName)
         res.status(HttpStatus.OK).json({subjectTutors})
 
-
-    }catch(error){
-        const err = error as ErrorResponse;
-        next(
-            new HttpException(
-                err.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                err.message
-            )
-        )
-    }
-};
+});
 
 
-export const updateTutorSubject = async(
+export const updateTutorSubject = catchAsync(async(
     req: Request,
     res: Response,
     next: NextFunction
 )=>{
-    try{
         const {subjectName, tutorName} = req.body
         const updated = await subjectService.updateSubjectTutor(subjectName, tutorName)
         res.status(HttpStatus.OK).json({message:`Mr. ${updated.lastName}, has been assigned to teach ${subjectName}`})
 
-
-    }catch(error){
-        const err = error as ErrorResponse;
-        next(
-            new HttpException(
-                err.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                err.message
-            )
-        )
-    }
-}
+});
 

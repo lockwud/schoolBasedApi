@@ -3,6 +3,7 @@ import HttpException from "../utils/http-error";
 import { HttpStatus } from "../utils/http-status";
 import { subjectSchema, subjectData } from "../validators/subjectValidator";
 import prisma from "../utils/prisma";
+import { throwError } from '../middleware/errorHandler';
 
 export const addSubject = async(data: subjectData)=>{
     const validateSubjectData = subjectSchema.safeParse(data)
@@ -10,7 +11,7 @@ export const addSubject = async(data: subjectData)=>{
         const errors = validateSubjectData.error.issues.map(
             ({ message, path }) => `${path}: ${message}`
           );
-          throw new HttpException(HttpStatus.BAD_REQUEST, errors.join(". "));
+          throwError(HttpStatus.BAD_REQUEST, errors.join(". "));
     }else{
         const checkSubjectAvailability = await prisma.subject.findUnique({
             where:{
@@ -25,7 +26,7 @@ export const addSubject = async(data: subjectData)=>{
             })
             return subject
         }else{
-            throw new HttpException(HttpStatus.CONFLICT, "Subject already created")
+            throwError(HttpStatus.CONFLICT, "Subject already created")
         }
     }
 };
@@ -39,7 +40,7 @@ export const assignSubjectToTutors = async (tutorsName: string, subject: string)
     });
 
     if (!findTutor) {
-        throw new HttpException(HttpStatus.NOT_FOUND, "No tutor found");
+        throwError(HttpStatus.NOT_FOUND, "No tutor found");
     }
 
     const findSubject = await prisma.subject.findUnique({
@@ -52,16 +53,16 @@ export const assignSubjectToTutors = async (tutorsName: string, subject: string)
     });
 
     if (!findSubject) {
-        throw new HttpException(HttpStatus.NOT_FOUND, "Subject not found");
+        throwError(HttpStatus.NOT_FOUND, "Subject not found");
     }
 
     // Check if the tutor is already assigned to the subject
-    const isAlreadyAssigned = findSubject.tutors.some(
-        (tutor) => tutor.id === findTutor.id
+    const isAlreadyAssigned = findSubject!.tutors.some(
+        (tutor) => tutor.id === findTutor!.id
     );
 
     if (isAlreadyAssigned) {
-        throw new HttpException(
+        throwError(
             HttpStatus.CONFLICT,
             "Tutor is already assigned to this subject"
         );
@@ -70,11 +71,11 @@ export const assignSubjectToTutors = async (tutorsName: string, subject: string)
     // Assign the subject to the tutor
     const updatedTutor = await prisma.tutor.update({
         where: {
-            id: findTutor.id,
+            id: findTutor!.id,
         },
         data: {
             subject: {
-                connect: { id: findSubject.id },
+                connect: { id: findSubject!.id },
             },
         },
     });
@@ -102,6 +103,9 @@ export const fetchSubjectByName = async(subjectName: string)=>{
             tutors: true
         }
     })
+    if(!fetchedSubject){
+        throwError(HttpStatus.NOT_FOUND, "subject not found")
+    }
     return fetchedSubject
 };
 
@@ -133,16 +137,16 @@ export const updateSubjectTutor = async (subjectName: string, tutorName: string)
     });
 
     if (!findSubject || !findTutor) {
-        throw new HttpException(HttpStatus.NOT_FOUND, "Subject or tutor not found");
+        throwError(HttpStatus.NOT_FOUND, "Subject or tutor not found");
     }
 
     const updatedTutor = await prisma.tutor.update({
         where: {
-            id: findTutor.id,
+            id: findTutor!.id,
         },
         data: {
             subject: {
-                connect: { id: findSubject.id }, 
+                connect: { id: findSubject!.id }, 
             },
         },
     });

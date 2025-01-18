@@ -56,6 +56,8 @@ model tutor {
   hashedResetLinkExpired  Boolean             @default(false)
   passwordResetCompleted  Boolean             @default(false)
   passwordResetExpiration DateTime?
+
+  attendance attendance[]
 }
 
 model student {
@@ -86,12 +88,12 @@ model student {
 }
 
 model subject {
-  id        String    @id @default(uuid())
-  subjectName      String @unique
-  tutors    tutor[]
-  students  student[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id          String    @id @default(uuid())
+  subjectName String    @unique
+  tutors      tutor[]
+  students    student[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   assignment assignment[]
 
@@ -120,16 +122,20 @@ model attendance {
   student               student?                @relation(fields: [studentId], references: [id])
   date                  DateTime
   attendanceStatus      status
+  reason                String?
   createdAt             DateTime                @default(now())
   updatedAt             DateTime                @updatedAt
   classId               String
   class                 classes                 @relation(fields: [classId], references: [id])
+  tutorId               String
+  tutor                tutor                 @relation(fields: [tutorId], references: [id])
   studentTerminalReport studentTerminalReport[]
 }
 
 enum status {
   present
   absent
+  partial
 }
 
 model assignment {
@@ -215,7 +221,6 @@ model studentTerminalReport {
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 }
-
 
 enum gender {
   male

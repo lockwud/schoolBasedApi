@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import cors from "cors";
 import mainRouter from "./routes";
+import { ErrorHandler } from "./middleware/errorHandler";
 
 dotenv.config();
 
@@ -22,13 +23,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api", mainRouter);
 
-app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  console.log("error handler: ", error.status || 500, next);
-  res.status(error.status || 500).json({
-    status: error.status || 500,
-    error: error.message,
-  });
-});
+app.use(ErrorHandler);
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
