@@ -1,6 +1,4 @@
-import { ErrorResponse } from './../utils/types';
 import { Request, Response, NextFunction } from "express";
-import HttpException from "../utils/http-error";
 import * as adminService from "../services/adminServices"
 import { HttpStatus } from "../utils/http-status";
 import { sendOtpEmail, generateOtp, sendPasswordResetLink  } from "../utils/emailTransporter";
