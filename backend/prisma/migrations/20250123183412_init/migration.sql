@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "status" AS ENUM ('present', 'absent');
+CREATE TYPE "status" AS ENUM ('present', 'absent', 'partial');
 
 -- CreateEnum
 CREATE TYPE "gender" AS ENUM ('male', 'female');
@@ -24,7 +24,7 @@ CREATE TABLE "admin" (
     "hashedResetLink" TEXT,
     "hashedResetLinkExpired" BOOLEAN NOT NULL DEFAULT false,
     "generatedRegistrationCodes" TEXT NOT NULL,
-    "maxUsedCode" INTEGER NOT NULL DEFAULT 3,
+    "maxUsedCode" INTEGER NOT NULL DEFAULT 5,
     "totalCodeUsed" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "admin_pkey" PRIMARY KEY ("id")
@@ -60,7 +60,7 @@ CREATE TABLE "student" (
     "id" TEXT NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
-    "otherName" TEXT NOT NULL,
+    "otherName" TEXT,
     "gender" "gender" NOT NULL,
     "photoUrl" TEXT NOT NULL,
     "photoKey" TEXT NOT NULL,
@@ -69,7 +69,6 @@ CREATE TABLE "student" (
     "contact" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "tutorId" TEXT NOT NULL,
     "classId" TEXT NOT NULL,
     "del_flag" BOOLEAN NOT NULL,
 
@@ -79,8 +78,7 @@ CREATE TABLE "student" (
 -- CreateTable
 CREATE TABLE "subject" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "tutorId" TEXT NOT NULL,
+    "subjectName" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -105,9 +103,11 @@ CREATE TABLE "attendance" (
     "studentId" TEXT,
     "date" TIMESTAMP(3) NOT NULL,
     "attendanceStatus" "status" NOT NULL,
+    "reason" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "classId" TEXT NOT NULL,
+    "tutorId" TEXT NOT NULL,
 
     CONSTRAINT "attendance_pkey" PRIMARY KEY ("id")
 );
@@ -145,7 +145,7 @@ CREATE TABLE "guardian" (
     "id" TEXT NOT NULL,
     "fullName" TEXT NOT NULL,
     "gender" "gender" NOT NULL,
-    "studentBatchNumber" TEXT NOT NULL,
+    "studentId" TEXT NOT NULL,
     "relationship" TEXT NOT NULL,
     "contact" TEXT NOT NULL,
     "email" TEXT,
@@ -159,7 +159,7 @@ CREATE TABLE "guardian" (
 CREATE TABLE "paymentRequest" (
     "id" TEXT NOT NULL,
     "guadianId" TEXT NOT NULL,
-    "studentBatchNumber" TEXT NOT NULL,
+    "studentId" TEXT NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
     "paymentType" "paymentType" NOT NULL,
     "status" "paymentStatus" NOT NULL,
@@ -189,6 +189,7 @@ CREATE TABLE "studentTerminalReport" (
     "totalScore" INTEGER NOT NULL,
     "averageScore" DOUBLE PRECISION NOT NULL,
     "classId" TEXT NOT NULL,
+    "className" TEXT,
     "position" INTEGER NOT NULL,
     "numRoll" INTEGER NOT NULL,
     "tutorsRemarks" TEXT[],
@@ -200,6 +201,12 @@ CREATE TABLE "studentTerminalReport" (
 
 -- CreateTable
 CREATE TABLE "_studentTosubject" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_subjectTotutor" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
 );
@@ -235,16 +242,25 @@ CREATE UNIQUE INDEX "tutor_passwordResetToken_key" ON "tutor"("passwordResetToke
 CREATE UNIQUE INDEX "student_studentId_key" ON "student"("studentId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "student_classId_key" ON "student"("classId");
+CREATE UNIQUE INDEX "subject_subjectName_key" ON "subject"("subjectName");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "guardian_email_key" ON "guardian"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "paymentRequest_studentId_key" ON "paymentRequest"("studentId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_studentTosubject_AB_unique" ON "_studentTosubject"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_studentTosubject_B_index" ON "_studentTosubject"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_subjectTotutor_AB_unique" ON "_subjectTotutor"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_subjectTotutor_B_index" ON "_subjectTotutor"("B");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_attendanceTostudentTerminalReport_AB_unique" ON "_attendanceTostudentTerminalReport"("A", "B");
@@ -265,13 +281,7 @@ ALTER TABLE "tutor" ADD CONSTRAINT "tutor_classId_fkey" FOREIGN KEY ("classId") 
 ALTER TABLE "tutor" ADD CONSTRAINT "tutor_registeredCode_fkey" FOREIGN KEY ("registeredCode") REFERENCES "admin"("generatedRegistrationCodes") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "student" ADD CONSTRAINT "student_tutorId_fkey" FOREIGN KEY ("tutorId") REFERENCES "tutor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "student" ADD CONSTRAINT "student_classId_fkey" FOREIGN KEY ("classId") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "subject" ADD CONSTRAINT "subject_tutorId_fkey" FOREIGN KEY ("tutorId") REFERENCES "tutor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "attendance" ADD CONSTRAINT "attendance_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "student"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -280,25 +290,28 @@ ALTER TABLE "attendance" ADD CONSTRAINT "attendance_studentId_fkey" FOREIGN KEY 
 ALTER TABLE "attendance" ADD CONSTRAINT "attendance_classId_fkey" FOREIGN KEY ("classId") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "attendance" ADD CONSTRAINT "attendance_tutorId_fkey" FOREIGN KEY ("tutorId") REFERENCES "tutor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "assignment" ADD CONSTRAINT "assignment_subjectId_fkey" FOREIGN KEY ("subjectId") REFERENCES "subject"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "assignment" ADD CONSTRAINT "assignment_tutorId_fkey" FOREIGN KEY ("tutorId") REFERENCES "tutor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "solveAssignment" ADD CONSTRAINT "solveAssignment_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "student"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "solveAssignment" ADD CONSTRAINT "solveAssignment_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "student"("studentId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "solveAssignment" ADD CONSTRAINT "solveAssignment_assignmentId_fkey" FOREIGN KEY ("assignmentId") REFERENCES "assignment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "guardian" ADD CONSTRAINT "guardian_studentBatchNumber_fkey" FOREIGN KEY ("studentBatchNumber") REFERENCES "student"("studentId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "guardian" ADD CONSTRAINT "guardian_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "student"("studentId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "paymentRequest" ADD CONSTRAINT "paymentRequest_guadianId_fkey" FOREIGN KEY ("guadianId") REFERENCES "guardian"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "paymentRequest" ADD CONSTRAINT "paymentRequest_studentBatchNumber_fkey" FOREIGN KEY ("studentBatchNumber") REFERENCES "student"("studentId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "paymentRequest" ADD CONSTRAINT "paymentRequest_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "student"("studentId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "teachingMaterials" ADD CONSTRAINT "teachingMaterials_subjectId_fkey" FOREIGN KEY ("subjectId") REFERENCES "subject"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -307,7 +320,7 @@ ALTER TABLE "teachingMaterials" ADD CONSTRAINT "teachingMaterials_subjectId_fkey
 ALTER TABLE "teachingMaterials" ADD CONSTRAINT "teachingMaterials_tutorId_fkey" FOREIGN KEY ("tutorId") REFERENCES "tutor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "studentTerminalReport" ADD CONSTRAINT "studentTerminalReport_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "student"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "studentTerminalReport" ADD CONSTRAINT "studentTerminalReport_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "student"("studentId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "studentTerminalReport" ADD CONSTRAINT "studentTerminalReport_classId_fkey" FOREIGN KEY ("classId") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -317,6 +330,12 @@ ALTER TABLE "_studentTosubject" ADD CONSTRAINT "_studentTosubject_A_fkey" FOREIG
 
 -- AddForeignKey
 ALTER TABLE "_studentTosubject" ADD CONSTRAINT "_studentTosubject_B_fkey" FOREIGN KEY ("B") REFERENCES "subject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_subjectTotutor" ADD CONSTRAINT "_subjectTotutor_A_fkey" FOREIGN KEY ("A") REFERENCES "subject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_subjectTotutor" ADD CONSTRAINT "_subjectTotutor_B_fkey" FOREIGN KEY ("B") REFERENCES "tutor"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_attendanceTostudentTerminalReport" ADD CONSTRAINT "_attendanceTostudentTerminalReport_A_fkey" FOREIGN KEY ("A") REFERENCES "attendance"("id") ON DELETE CASCADE ON UPDATE CASCADE;

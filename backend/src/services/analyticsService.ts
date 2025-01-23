@@ -38,9 +38,12 @@ export const studentAnalytics = {
         return totalStudents;
     },
 
-    getStudentsByGender: async (gender: gender) => {
-        const countByGender = await prisma.student.count({
-            where: { gender },
+    getStudentsByGender: async () => {
+        const countByGender = await prisma.student.groupBy({
+            by: [ 'gender' ],
+            _count:{
+                _all: true
+            }
         });
         return countByGender;
     },
