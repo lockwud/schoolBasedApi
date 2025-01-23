@@ -1,7 +1,5 @@
-import HttpException from "../utils/http-error";
 import { Request, Response, NextFunction } from "express";
 import { HttpStatus } from "../utils/http-status";
-import { ErrorResponse } from "../utils/types";
 import { studentAnalytics, totalPopulationAnalytics, tutorAnalytics } from "../services/analyticsService";
 import { catchAsync } from "../utils/catchAsync";
 
@@ -22,13 +20,8 @@ export const fetchStudentsByGender = catchAsync(async (
     res: Response,
     next: NextFunction
 ) => {
-        const { gender } = req.query;
-         if (typeof gender !== "string" || !["male", "female"].includes(gender)) {
-            return res.status(HttpStatus.BAD_REQUEST).json({
-                message: "Invalid gender. Expected 'male' or 'female'.",
-            });
-        }
-        const countByGender = await studentAnalytics.getStudentsByGender(gender as "male" | "female");
+        
+        const countByGender = await studentAnalytics.getStudentsByGender();
         res.status(HttpStatus.OK).json({ countByGender });
    
 });
