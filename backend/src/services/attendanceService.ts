@@ -28,7 +28,7 @@ export const createAttendance = async (attendanceData: attendanceDto | attendanc
     where: {
       OR: dataArray.map((data) => ({
         studentId: data.studentId,
-        date: data.date,
+        date: data.date.toISOString(),
       })),
     },
   });
