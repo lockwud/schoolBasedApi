@@ -11,13 +11,11 @@ export const attendanceSchema = z.object({
     studentId: z.string({
         required_error: "Please provide student Id"
     }).trim().min(10, "Invalid Index"),
-    date: z.preprocess(
-        (arg) => (typeof arg === "string" ? new Date(arg) : arg),
+    date: 
         z.date({
           required_error: "Please provide a valid date",
         }).min(new Date(2022, 0, 1), "Date cannot be before January 1, 2022")
-        .max(new Date(), "Date cannot be in the future")
-      ),
+        .max(new Date(), "Date cannot be in the future"),
     attendanceStatus: attendanceStatus,
     reason: z.string().optional(),
     classId: z.string({
