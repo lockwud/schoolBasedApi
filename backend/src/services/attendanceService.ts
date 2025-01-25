@@ -41,7 +41,7 @@ export const createAttendance = async (attendanceData: attendanceDto | attendanc
   }
 
   const newAttendances = await prisma.attendance.createMany({
-    data: {...dataArray},
+    data: [...dataArray],
     skipDuplicates: true,
   });
 
