@@ -1,10 +1,7 @@
 import { throwError } from "../middleware/errorHandler";
-import HttpException from "../utils/http-error";
 import { HttpStatus } from "../utils/http-status";
 import prisma from "../utils/prisma";
 import { attendanceSchema, attendanceDto } from "../validators/attendanceValidator";
-
-
 
 
 export const createAttendance = async (attendanceData: attendanceDto | attendanceDto[]) => {
@@ -31,7 +28,7 @@ export const createAttendance = async (attendanceData: attendanceDto | attendanc
     where: {
       OR: dataArray.map((data) => ({
         studentId: data.studentId,
-        date: data.date.toISOString(),
+        date: data.date,
       })),
     },
   });
