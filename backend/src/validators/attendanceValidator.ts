@@ -14,7 +14,7 @@ export const attendanceSchema = z.object({
     date: 
         z.date({
           required_error: "Please provide a valid date",
-        }).min(new Date(2022, 0, 1), "Date cannot be before January 1, 2022")
+        }).min(new Date(2023, 0, 1), "Date cannot be before January 1, 2023")
         .max(new Date(), "Date cannot be in the future"),
     attendanceStatus: attendanceStatus,
     reason: z.string().optional(),
