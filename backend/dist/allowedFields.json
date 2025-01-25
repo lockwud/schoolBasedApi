@@ -104,16 +104,19 @@
       "studentId",
       "date",
       "attendanceStatus",
+      "reason",
       "createdAt",
       "updatedAt",
-      "classId"
+      "classId",
+      "tutorId"
     ]
   },
   {
     "modelName": "status",
     "fields": [
       "present",
-      "absent"
+      "absent",
+      "partial"
     ]
   },
   {

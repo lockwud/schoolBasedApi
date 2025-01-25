@@ -36,7 +36,7 @@ const createAttendance = (attendanceData) => __awaiter(void 0, void 0, void 0, f
         where: {
             OR: dataArray.map((data) => ({
                 studentId: data.studentId,
-                date: data.date,
+                date: data.date.toISOString(),
             })),
         },
     });
@@ -44,7 +44,7 @@ const createAttendance = (attendanceData) => __awaiter(void 0, void 0, void 0, f
         (0, errorHandler_1.throwError)(http_status_1.HttpStatus.CONFLICT, "Some attendance records already exist for the given student(s) and date(s)");
     }
     const newAttendances = yield prisma_1.default.attendance.createMany({
-        data: dataArray,
+        data: Object.assign({}, dataArray),
         skipDuplicates: true,
     });
     return { count: newAttendances.count };

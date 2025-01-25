@@ -100,6 +100,9 @@ const fetchSubjectByName = (subjectName) => __awaiter(void 0, void 0, void 0, fu
             tutors: true
         }
     });
+    if (!fetchedSubject) {
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.NOT_FOUND, "subject not found");
+    }
     return fetchedSubject;
 });
 exports.fetchSubjectByName = fetchSubjectByName;

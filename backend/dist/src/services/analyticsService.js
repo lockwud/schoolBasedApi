@@ -39,9 +39,12 @@ exports.studentAnalytics = {
         const totalStudents = yield prisma_1.default.student.count();
         return totalStudents;
     }),
-    getStudentsByGender: (gender) => __awaiter(void 0, void 0, void 0, function* () {
-        const countByGender = yield prisma_1.default.student.count({
-            where: { gender },
+    getStudentsByGender: () => __awaiter(void 0, void 0, void 0, function* () {
+        const countByGender = yield prisma_1.default.student.groupBy({
+            by: ['gender'],
+            _count: {
+                _all: true
+            }
         });
         return countByGender;
     }),

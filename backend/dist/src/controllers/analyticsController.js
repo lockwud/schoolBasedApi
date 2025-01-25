@@ -18,13 +18,7 @@ exports.fetchTotalStudents = (0, catchAsync_1.catchAsync)((req, res, next) => __
     res.status(http_status_1.HttpStatus.OK).json({ totalStudents });
 }));
 exports.fetchStudentsByGender = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { gender } = req.query;
-    if (typeof gender !== "string" || !["male", "female"].includes(gender)) {
-        return res.status(http_status_1.HttpStatus.BAD_REQUEST).json({
-            message: "Invalid gender. Expected 'male' or 'female'.",
-        });
-    }
-    const countByGender = yield analyticsService_1.studentAnalytics.getStudentsByGender(gender);
+    const countByGender = yield analyticsService_1.studentAnalytics.getStudentsByGender();
     res.status(http_status_1.HttpStatus.OK).json({ countByGender });
 }));
 exports.fetchTopPerformingStudent = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
