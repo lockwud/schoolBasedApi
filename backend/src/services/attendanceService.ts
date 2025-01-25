@@ -27,7 +27,7 @@ export const createAttendance = async (attendanceData: attendanceDto | attendanc
   const duplicateRecords = await prisma.attendance.findMany({
     where: {
       OR: dataArray.map((data) => ({
-        studentIndex: data.studentIndex,
+        studentIndex: data.studentId,
         date: data.date,
       })),
     },

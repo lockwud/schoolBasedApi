@@ -8,7 +8,7 @@ export const attendanceStatus = z.enum([
 
 
 export const attendanceSchema = z.object({
-    studentIndex: z
+    studentId: z
       .string({ required_error: "Please provide student Id" })
       .trim()
       .min(10, "Invalid Index"),

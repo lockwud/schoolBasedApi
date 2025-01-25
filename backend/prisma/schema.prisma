@@ -119,7 +119,7 @@ model classes {
 model attendance {
   id                    String                  @id @default(uuid())
   studentId             String?
-  student               student?                @relation(fields: [studentId], references: [id])
+  student               student?                @relation(fields: [studentId], references: [studentId])
   date                  DateTime
   attendanceStatus      status
   reason                String?
