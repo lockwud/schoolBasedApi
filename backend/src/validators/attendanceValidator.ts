@@ -8,7 +8,7 @@ export const attendanceStatus = z.enum([
 
 
 export const attendanceSchema = z.object({
-    studentId: z
+    studentIndex: z
       .string({ required_error: "Please provide student Id" })
       .trim()
       .min(10, "Invalid Index"),
@@ -16,6 +16,7 @@ export const attendanceSchema = z.object({
       (arg) => {
         if (typeof arg === "string") {
           const parsedDate = new Date(arg);
+          console.log("Preprocessed Date:", arg);
           return isNaN(parsedDate.getTime()) ? null : parsedDate;
         }
         return arg;
