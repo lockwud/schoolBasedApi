@@ -13,3 +13,13 @@ export const createAttendance = catchAsync(async (
     const result = await attendanceService.createAttendance(data);
     res.status(HttpStatus.CREATED).json(result);
 });
+
+
+export const getAttendanceRecords = catchAsync(async (
+    req: Request, 
+    res: Response, 
+    next: NextFunction
+) => {
+    const allAttendances = await attendanceService.fetchAttendanceRecords();
+    res.status(HttpStatus.OK).json(allAttendances);
+});

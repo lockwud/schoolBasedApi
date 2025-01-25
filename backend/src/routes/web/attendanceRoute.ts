@@ -6,7 +6,7 @@ attendanceRoute.post("/mark",
     attendance.createAttendance
 );
 
-attendanceRoute.get("/all",
+attendanceRoute.get("/",
     attendance.getAttendanceRecords
 );
 
