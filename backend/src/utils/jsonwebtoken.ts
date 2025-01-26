@@ -82,7 +82,7 @@ export const setInvalidToken = (): string => {
     );
   }
   return jwt.sign({ logout: "logout" }, process.env.JWT_SECRET, {
-    expiresIn: "30s", // Short-lived token
+    expiresIn: "1hr", // Short-lived token
   });
 };
 

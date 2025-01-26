@@ -2,14 +2,19 @@ import { throwError } from "../middleware/errorHandler";
 import { HttpStatus } from "../utils/http-status";
 import prisma from "../utils/prisma";
 import { attendanceSchema, attendanceDto } from "../validators/attendanceValidator";
-
+import { startOfDay, isEqual } from 'date-fns';
 
 export const createAttendance = async (attendanceData: attendanceDto | attendanceDto[]) => {
-  const dataArray = Array.isArray(attendanceData) ? attendanceData : [attendanceData]; // Ensure it's an array
+  const dataArray = Array.isArray(attendanceData) ? attendanceData : [attendanceData]; 
+  // Normalize date to ensure comparison is based on the day only
+  const normalizedDataArray = dataArray.map((data) => ({
+    ...data,
+    date: startOfDay(new Date(data.date)), 
+  }));
 
   // Validate each attendance record
   const errors: string[] = [];
-  for (const data of dataArray) {
+  for (const data of normalizedDataArray) {
     const validation = attendanceSchema.safeParse(data);
     if (!validation.success) {
       const validationErrors = validation.error.issues.map(
@@ -23,29 +28,33 @@ export const createAttendance = async (attendanceData: attendanceDto | attendanc
     throwError(HttpStatus.BAD_REQUEST, errors.join(". "));
   }
 
-  // Check for duplicates
   const duplicateRecords = await prisma.attendance.findMany({
     where: {
-      OR: dataArray.map((data) => ({
+      OR: normalizedDataArray.map((data) => ({
         studentId: data.studentId,
-        date: data.date,
+        date: startOfDay(new Date(data.date)), // Ensure only the date part is compared
       })),
     },
   });
 
-  if (duplicateRecords.length > 0) {
+  const duplicateIds = new Set(duplicateRecords.map((record) => record.studentId));
+  const nonDuplicateData = normalizedDataArray.filter(
+    (data) => !duplicateIds.has(data.studentId)
+  );
+
+  if (nonDuplicateData.length === 0) {
     throwError(
       HttpStatus.CONFLICT,
-      "Some attendance records already exist for the given student(s) and date(s)"
+      "Attendance has already been recorded for the given student(s) on the selected date(s)."
     );
   }
 
   const newAttendances = await prisma.attendance.createMany({
-    data: [...dataArray],
-    skipDuplicates: true,
+    data: [...nonDuplicateData],
+    skipDuplicates: true, 
   });
 
-  return { count: newAttendances.count }; 
+  return { count: newAttendances.count };
 };
 
 
