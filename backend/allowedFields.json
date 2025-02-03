@@ -1,9 +1,5 @@
 [
   {
-    "modelName": "",
-    "fields": []
-  },
-  {
     "modelName": "client",
     "fields": [
       "provider"
@@ -17,46 +13,87 @@
     ]
   },
   {
-    "modelName": "admin",
+    "modelName": "superAdmin",
+    "fields": [
+      "id",
+      "fullname",
+      "superAdminId",
+      "email",
+      "password",
+      "phone",
+      "status",
+      "otp",
+      "token",
+      "otpAttempts",
+      "verified",
+      "otpExpiresAt",
+      "passwordResetToken",
+      "hashedResetLink",
+      "resetLinkExpiresAt",
+      "role",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "modelName": "role",
+    "fields": [
+      "superAdmin",
+      "admin",
+      "student",
+      "tutor",
+      "guardian",
+      "parent"
+    ]
+  },
+  {
+    "modelName": "parent",
+    "fields": [
+      "mother",
+      "father",
+      "guardian"
+    ]
+  },
+  {
+    "modelName": "school",
     "fields": [
       "id",
       "name",
-      "email",
-      "password",
-      "otp",
-      "otpExpired",
+      "schoolType",
+      "feeRequired",
       "createdAt",
       "updatedAt",
-      "passwordResetToken",
-      "hashedResetLink",
-      "hashedResetLinkExpired",
-      "generatedRegistrationCodes",
-      "maxUsedCode",
-      "totalCodeUsed"
+      "superAdminId"
+    ]
+  },
+  {
+    "modelName": "admin",
+    "fields": [
+      "id",
+      "fullname",
+      "email",
+      "password",
+      "createdAt",
+      "updatedAt",
+      "schoolId"
     ]
   },
   {
     "modelName": "tutor",
     "fields": [
       "id",
-      "firstName",
-      "lastName",
-      "gender",
+      "firstname",
+      "surname",
+      "othername",
+      "dob",
       "email",
       "password",
       "contact",
-      "otp",
-      "otpExpired",
+      "role",
+      "adminId",
+      "schoolId",
       "createdAt",
-      "updatedAt",
-      "classId",
-      "del_flag",
-      "registeredCode",
-      "passwordResetToken",
-      "hashedResetLink",
-      "hashedResetLinkExpired",
-      "passwordResetCompleted",
-      "passwordResetExpiration"
+      "updatedAt"
     ]
   },
   {
@@ -75,7 +112,9 @@
       "createdAt",
       "updatedAt",
       "classId",
-      "del_flag"
+      "adminId",
+      "schoolId",
+      "subjectId"
     ]
   },
   {
@@ -84,7 +123,9 @@
       "id",
       "subjectName",
       "createdAt",
-      "updatedAt"
+      "updatedAt",
+      "schoolId",
+      "studentTerminalReportId"
     ]
   },
   {
@@ -94,7 +135,8 @@
       "className",
       "capacity",
       "createdAt",
-      "updatedAt"
+      "updatedAt",
+      "schoolId"
     ]
   },
   {
@@ -108,15 +150,9 @@
       "createdAt",
       "updatedAt",
       "classId",
-      "tutorId"
-    ]
-  },
-  {
-    "modelName": "status",
-    "fields": [
-      "present",
-      "absent",
-      "partial"
+      "tutorId",
+      "adminId",
+      "studentTerminalReportId"
     ]
   },
   {
@@ -163,11 +199,12 @@
     "modelName": "paymentRequest",
     "fields": [
       "id",
-      "guadianId",
       "studentId",
       "amount",
       "paymentType",
-      "status"
+      "attendanceStatus",
+      "guardianId",
+      "paymentDate"
     ]
   },
   {
@@ -196,7 +233,104 @@
       "position",
       "numRoll",
       "createdAt",
+      "updatedAt",
+      "guardianId"
+    ]
+  },
+  {
+    "modelName": "healthRecord",
+    "fields": [
+      "id",
+      "studentId",
+      "allergies",
+      "medications",
+      "emergencyContact",
+      "createdAt",
       "updatedAt"
+    ]
+  },
+  {
+    "modelName": "transport",
+    "fields": [
+      "id",
+      "driverName",
+      "vehicleNo",
+      "route",
+      "capacity",
+      "availableSeats",
+      "createdAt",
+      "updatedAt",
+      "schoolId"
+    ]
+  },
+  {
+    "modelName": "timetable",
+    "fields": [
+      "id",
+      "classId",
+      "subjectId",
+      "dayOfWeek",
+      "startTime",
+      "endTime",
+      "createdAt",
+      "updatedAt",
+      "schoolId",
+      "tutorId"
+    ]
+  },
+  {
+    "modelName": "event",
+    "fields": [
+      "id",
+      "title",
+      "description",
+      "date",
+      "createdAt",
+      "updatedAt",
+      "schoolId"
+    ]
+  },
+  {
+    "modelName": "library",
+    "fields": [
+      "id",
+      "bookTitle",
+      "author",
+      "availableCopies",
+      "schoolId",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "modelName": "feedback",
+    "fields": [
+      "id",
+      "userId",
+      "content",
+      "createdAt",
+      "schoolId"
+    ]
+  },
+  {
+    "modelName": "notification",
+    "fields": [
+      "id",
+      "adminId",
+      "studentId",
+      "message",
+      "isRead",
+      "createdAt"
+    ]
+  },
+  {
+    "modelName": "discipline",
+    "fields": [
+      "id",
+      "studentId",
+      "reason",
+      "actionTaken",
+      "createdAt"
     ]
   },
   {
@@ -204,6 +338,31 @@
     "fields": [
       "male",
       "female"
+    ]
+  },
+  {
+    "modelName": "status",
+    "fields": [
+      "active",
+      "inactive",
+      "graduated",
+      "withdrawn",
+      "deceased",
+      "transfer",
+      "transferredOut",
+      "transferredIn",
+      "temporary",
+      "suspended",
+      "deleted",
+      "banned"
+    ]
+  },
+  {
+    "modelName": "attendanceStatus",
+    "fields": [
+      "present",
+      "absent",
+      "partial"
     ]
   },
   {

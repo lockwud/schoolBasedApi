@@ -37,4 +37,5 @@ const express_1 = require("express");
 const attendance = __importStar(require("../../controllers/attendanceController"));
 const attendanceRoute = (0, express_1.Router)();
 attendanceRoute.post("/mark", attendance.createAttendance);
+attendanceRoute.get("/", attendance.getAttendanceRecords);
 exports.default = attendanceRoute;

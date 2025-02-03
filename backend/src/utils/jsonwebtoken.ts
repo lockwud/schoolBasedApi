@@ -7,7 +7,7 @@ import { HttpStatus } from "./http-status";
 // Define the payload to handle both students and tutors
 export interface UserPayload {
   id: string;
-  role: 'student' | 'tutor' | 'admin' | 'guardian';
+  role: 'superAdmin'|'student' | 'tutor' | 'admin' | 'guardian'| 'parent';
   
 }
 

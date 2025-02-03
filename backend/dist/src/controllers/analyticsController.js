@@ -9,27 +9,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchTotalPopulation = exports.fetchTotalTutors = exports.fetchTopPerformingStudent = exports.fetchStudentsByGender = exports.fetchTotalStudents = void 0;
-const http_status_1 = require("../utils/http-status");
-const analyticsService_1 = require("../services/analyticsService");
+exports.analyticsController = void 0;
 const catchAsync_1 = require("../utils/catchAsync");
-exports.fetchTotalStudents = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const totalStudents = yield analyticsService_1.studentAnalytics.getTotalStudents();
-    res.status(http_status_1.HttpStatus.OK).json({ totalStudents });
-}));
-exports.fetchStudentsByGender = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const countByGender = yield analyticsService_1.studentAnalytics.getStudentsByGender();
-    res.status(http_status_1.HttpStatus.OK).json({ countByGender });
-}));
-exports.fetchTopPerformingStudent = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const topTenStudents = yield analyticsService_1.studentAnalytics.getTopPerformingStudentsFromClass();
-    res.status(http_status_1.HttpStatus.OK).json(topTenStudents);
-}));
-exports.fetchTotalTutors = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const totalTutors = yield analyticsService_1.tutorAnalytics.getTotalTutors();
-    res.status(http_status_1.HttpStatus.OK).json(totalTutors);
-}));
-exports.fetchTotalPopulation = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const entirePopulation = yield analyticsService_1.totalPopulationAnalytics.Population();
-    res.status(http_status_1.HttpStatus.OK).json(entirePopulation);
-}));
+const analyticsService_1 = require("../services/analyticsService");
+exports.analyticsController = {
+    getAllAnalytics: (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        const { limit } = req.query;
+        // Run all analytics in parallel
+        const [totalStudents, studentsByGender, topPerformingStudents, totalTutors, totalPopulation,] = yield Promise.all([
+            analyticsService_1.analyticsService.getTotalStudents(),
+            analyticsService_1.analyticsService.getStudentsByGender(),
+            analyticsService_1.analyticsService.getTopPerformingStudentsFromClass(Number(limit) || 10),
+            analyticsService_1.analyticsService.getTotalTutors(),
+            analyticsService_1.analyticsService.getTotalPopulation(),
+        ]);
+        // Combine results into a single object
+        const analyticsData = {
+            totalStudents,
+            studentsByGender,
+            topPerformingStudents,
+            totalTutors,
+            totalPopulation,
+        };
+        res.status(200).json(analyticsData);
+    })),
+};

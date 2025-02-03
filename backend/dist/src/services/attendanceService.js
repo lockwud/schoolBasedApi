@@ -17,11 +17,14 @@ const errorHandler_1 = require("../middleware/errorHandler");
 const http_status_1 = require("../utils/http-status");
 const prisma_1 = __importDefault(require("../utils/prisma"));
 const attendanceValidator_1 = require("../validators/attendanceValidator");
+const date_fns_1 = require("date-fns");
 const createAttendance = (attendanceData) => __awaiter(void 0, void 0, void 0, function* () {
-    const dataArray = Array.isArray(attendanceData) ? attendanceData : [attendanceData]; // Ensure it's an array
+    const dataArray = Array.isArray(attendanceData) ? attendanceData : [attendanceData];
+    // Normalize date to ensure comparison is based on the day only
+    const normalizedDataArray = dataArray.map((data) => (Object.assign(Object.assign({}, data), { date: (0, date_fns_1.startOfDay)(new Date(data.date)) })));
     // Validate each attendance record
     const errors = [];
-    for (const data of dataArray) {
+    for (const data of normalizedDataArray) {
         const validation = attendanceValidator_1.attendanceSchema.safeParse(data);
         if (!validation.success) {
             const validationErrors = validation.error.issues.map(({ message, path }) => `${path}: ${message}`);
@@ -31,20 +34,21 @@ const createAttendance = (attendanceData) => __awaiter(void 0, void 0, void 0, f
     if (errors.length > 0) {
         (0, errorHandler_1.throwError)(http_status_1.HttpStatus.BAD_REQUEST, errors.join(". "));
     }
-    // Check for duplicates
     const duplicateRecords = yield prisma_1.default.attendance.findMany({
         where: {
-            OR: dataArray.map((data) => ({
+            OR: normalizedDataArray.map((data) => ({
                 studentId: data.studentId,
-                date: data.date.toISOString(),
+                date: (0, date_fns_1.startOfDay)(new Date(data.date)), // Ensure only the date part is compared
             })),
         },
     });
-    if (duplicateRecords.length > 0) {
-        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.CONFLICT, "Some attendance records already exist for the given student(s) and date(s)");
+    const duplicateIds = new Set(duplicateRecords.map((record) => record.studentId));
+    const nonDuplicateData = normalizedDataArray.filter((data) => !duplicateIds.has(data.studentId));
+    if (nonDuplicateData.length === 0) {
+        (0, errorHandler_1.throwError)(http_status_1.HttpStatus.CONFLICT, "Attendance has already been recorded for the given student(s) on the selected date(s).");
     }
     const newAttendances = yield prisma_1.default.attendance.createMany({
-        data: Object.assign({}, dataArray),
+        data: [...nonDuplicateData],
         skipDuplicates: true,
     });
     return { count: newAttendances.count };

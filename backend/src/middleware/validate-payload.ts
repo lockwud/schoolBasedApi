@@ -3,7 +3,7 @@ import { RequestHandler, Request, Response, NextFunction } from "express";
 import { HttpStatus } from "../utils/http-status";
 export const validatePayload: (model: string) => RequestHandler =
   (model) => async (req: Request, res: Response, next: NextFunction) => {
-    const modelFields = await allowedFields.find(
+    const modelFields =  allowedFields.find(
       (field) => field.modelName === model
     );
     const payload = req.body;

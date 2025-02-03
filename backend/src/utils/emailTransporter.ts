@@ -35,7 +35,7 @@ export const generateOtp = (): string => {
   };
 
 
-  export const sendPasswordResetLink = async (email: string, link: string | any, hashedResetLink: string | "null")=>{
+  export const sendPasswordResetLink = async (email: string, link: string | any, resetToken: string | "null")=>{
     const transporter = nodemailer.createTransport({
       service: "gmail", 
       auth: {
@@ -48,7 +48,7 @@ export const generateOtp = (): string => {
     from: process.env.EMAIL_USER,
     to: email,
     subject: "Forgot password",
-    text: `Click on this link to reset your password ${link + hashedResetLink}`,
+    text: `Click on this link to reset your password ${link + resetToken}`,
   };
 
   try {

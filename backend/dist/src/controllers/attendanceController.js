@@ -42,7 +42,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createAttendance = void 0;
+exports.getAttendanceRecords = exports.createAttendance = void 0;
 const catchAsync_1 = require("../utils/catchAsync");
 const attendanceService = __importStar(require("../services/attendanceService"));
 const http_status_1 = require("../utils/http-status");
@@ -50,4 +50,8 @@ exports.createAttendance = (0, catchAsync_1.catchAsync)((req, res, next) => __aw
     const data = req.body;
     const result = yield attendanceService.createAttendance(data);
     res.status(http_status_1.HttpStatus.CREATED).json(result);
+}));
+exports.getAttendanceRecords = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const allAttendances = yield attendanceService.fetchAttendanceRecords();
+    res.status(http_status_1.HttpStatus.OK).json(allAttendances);
 }));

@@ -6,6 +6,7 @@ import studentRoute from "./studentRoute";
 import analyticsRoute from "./analyticsRoute";
 import subjectRoute from "./subjectRoute";
 import attendanceRoute from "./attendanceRoute";
+import superAdminRoute from "./superAdminRoute";
 const webRouter = Router();
 
 webRouter.use("/admins", adminRoute)
@@ -15,7 +16,7 @@ webRouter.use("/students", studentRoute)
 webRouter.use("/analytics", analyticsRoute)
 webRouter.use("/subjects", subjectRoute)
 webRouter.use("/attendances", attendanceRoute)
-
+webRouter.use('/superAdmin',superAdminRoute)
 
 
 export default webRouter;

@@ -49,7 +49,7 @@ const setInvalidToken = () => {
         throw new http_error_1.default(http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, "JWT secret is missing");
     }
     return jsonwebtoken_1.default.sign({ logout: "logout" }, process.env.JWT_SECRET, {
-        expiresIn: "30s", // Short-lived token
+        expiresIn: "1hr", // Short-lived token
     });
 };
 exports.setInvalidToken = setInvalidToken;

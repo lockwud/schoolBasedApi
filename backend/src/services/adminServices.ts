@@ -1,10 +1,8 @@
-import HttpException from "../utils/http-error";
 import { HttpStatus } from "../utils/http-status";
 import prisma from "../utils/prisma";
 import {hash, compare} from "../utils/bcrypt"
 import { adminData, adminSchema } from "../validators/adminValidator";
 import { signToken } from "../utils/jsonwebtoken";
-import { admin } from "@prisma/client";
 import { sendPasswordResetLink } from "../utils/emailTransporter"
 import { generateReferallCode } from "../utils/referralCodeGenerator";
 import { throwError } from "../middleware/errorHandler";
