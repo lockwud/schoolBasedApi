@@ -2,9 +2,6 @@ import {z} from "zod"
 
 export const superAdminSchema = z.object({
     fullname: z.string({required_error: "Full name is required"}).trim().min(3, "Full name should be at least 3 characters long"),
-    superAdminId: z.string({required_error: "Generate Super Admin Id"})
-    .trim()
-    .min(4, "Super Admin Id short"),
     email: z.string().email({message: "Invalid email address"}),
     password: z.string({required_error: "Password is required"}).min(8, "Password should be at least 8 characters long")
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, "Password should contain at least one uppercase letter, one lowercase letter, one number, and one special character")

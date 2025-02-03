@@ -1,71 +1,71 @@
-import { validatePayload } from './../../middleware/validate-payload';
-import { Router } from "express";
-import * as tutor from "../../controllers/tutorController"
-import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
-const tutorRoute = Router();
+// import { validatePayload } from './../../middleware/validate-payload';
+// import { Router } from "express";
+// import * as tutor from "../../controllers/tutorController"
+// import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
+// const tutorRoute = Router();
 
-// All enpoint for admin tutor relation
-tutorRoute.post("/admin/signup", 
-    validatePayload('tutor'),
-    // authenticateJWT,
-    // authorizeRole(["admin"]),
-    tutor.signUp
-);
-
-
-// All enpoint for tutor self registration and crud
-
-tutorRoute.post("/signup", 
-    validatePayload('tutor'),
-    tutor.signUp
-);
-tutorRoute.post("/login",
-    tutor.login 
-);
-
-tutorRoute.post("/auth/verifyOtp",
-  tutor.otpVerification
-)
-
-tutorRoute.get("/", 
-    // authenticateJWT,
-    // authorizeRole(["admin", "tutor"]),
-    tutor.getTutors
-);
+// // All enpoint for admin tutor relation
+// tutorRoute.post("/admin/signup", 
+//     validatePayload('tutor'),
+//     // authenticateJWT,
+//     // authorizeRole(["admin"]),
+//     tutor.signUp
+// );
 
 
-tutorRoute.get("/:id", 
-    authenticateJWT,
-    authorizeRole(["admin", "tutor"]),
-    tutor.getTtutorById
-);
+// // All enpoint for tutor self registration and crud
+
+// tutorRoute.post("/signup", 
+//     validatePayload('tutor'),
+//     tutor.signUp
+// );
+// tutorRoute.post("/login",
+//     tutor.login 
+// );
+
+// tutorRoute.post("/auth/verifyOtp",
+//   tutor.otpVerification
+// )
+
+// tutorRoute.get("/", 
+//     // authenticateJWT,
+//     // authorizeRole(["admin", "tutor"]),
+//     tutor.getTutors
+// );
 
 
-tutorRoute.get("/email",
-    authenticateJWT,
-    authorizeRole(["admin", "tutor"]),
-    tutor.getTutorByEmail
-);
-
-tutorRoute.put("/update/:id",
-    authenticateJWT,
-    authorizeRole(["admin", "tutor"]),
-    tutor.updateTutorDetails
-);
+// tutorRoute.get("/:id", 
+//     authenticateJWT,
+//     authorizeRole(["admin", "tutor"]),
+//     tutor.getTtutorById
+// );
 
 
-tutorRoute.delete("/delete/:id",
-    authenticateJWT,
-    authorizeRole(["admin", "tutor"]),
-    tutor.deleteTutor
-);
+// tutorRoute.get("/email",
+//     authenticateJWT,
+//     authorizeRole(["admin", "tutor"]),
+//     tutor.getTutorByEmail
+// );
 
-tutorRoute.post("/forgotPassword",
-    tutor.sendPasswordResetLink
-);
+// tutorRoute.put("/update/:id",
+//     authenticateJWT,
+//     authorizeRole(["admin", "tutor"]),
+//     tutor.updateTutorDetails
+// );
 
-tutorRoute.put("/resetPassword/:token",
-    tutor.resetPassword
-);
 
-export default tutorRoute;
+// tutorRoute.delete("/delete/:id",
+//     authenticateJWT,
+//     authorizeRole(["admin", "tutor"]),
+//     tutor.deleteTutor
+// );
+
+// tutorRoute.post("/forgotPassword",
+//     tutor.sendPasswordResetLink
+// );
+
+// tutorRoute.put("/resetPassword/:token",
+//     tutor.resetPassword
+// );
+
+// export default tutorRoute;

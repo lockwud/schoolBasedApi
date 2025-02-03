@@ -1,62 +1,62 @@
-import { validatePayload } from './../../middleware/validate-payload';
-import { Router } from "express";
-import * as student from "../../controllers/studentController"
-// import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
-import upload from "../../utils/multer"
+// import { validatePayload } from './../../middleware/validate-payload';
+// import { Router } from "express";
+// import * as student from "../../controllers/studentController"
+// // import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
+// import upload from "../../utils/multer"
 
-const studentRoute = Router();
+// const studentRoute = Router();
 
-// All endpoints for admin-student relationship
-studentRoute.post("/register",
-    upload.single("photo"),
-    validatePayload('student'),
-    student.addStudent
-);
+// // All endpoints for admin-student relationship
+// studentRoute.post("/register",
+//     upload.single("photo"),
+//     validatePayload('student'),
+//     student.addStudent
+// );
 
-studentRoute.post("/login",
-    student.login
-);
-
-
-studentRoute.get("/",
-    // authenticateJWT,
-    // authorizeRole(["admin"]),
-    student.fetchStudents
-);
+// studentRoute.post("/login",
+//     student.login
+// );
 
 
-studentRoute.get("/:id",
-    // authenticateJWT,
-    // authorizeRole(["admin"]),
-    student.fetchStudentById
-);
+// studentRoute.get("/",
+//     // authenticateJWT,
+//     // authorizeRole(["admin"]),
+//     student.fetchStudents
+// );
 
 
-studentRoute.put("/:id",
-    student.updateStudent
-);
+// studentRoute.get("/:id",
+//     // authenticateJWT,
+//     // authorizeRole(["admin"]),
+//     student.fetchStudentById
+// );
 
 
-studentRoute.delete("/:id",
-    // authenticateJWT,
-    // authorizeRole(["admin"]),
-    student.deleteStudent
-);
+// studentRoute.put("/:id",
+//     student.updateStudent
+// );
 
 
-studentRoute.put("/autoDelete",
-    // authenticateJWT,
-    // authorizeRole(["admin"]),
-    student.autoDeleteStudent
-);
+// studentRoute.delete("/:id",
+//     // authenticateJWT,
+//     // authorizeRole(["admin"]),
+//     student.deleteStudent
+// );
 
 
-studentRoute.post("/forgotPassword",
-    student.requestPassword
-);
+// studentRoute.put("/autoDelete",
+//     // authenticateJWT,
+//     // authorizeRole(["admin"]),
+//     student.autoDeleteStudent
+// );
 
-studentRoute.put("/resetPassword",
-    student.updatePassword
-)
 
-export default studentRoute;
+// studentRoute.post("/forgotPassword",
+//     student.requestPassword
+// );
+
+// studentRoute.put("/resetPassword",
+//     student.updatePassword
+// )
+
+// export default studentRoute;

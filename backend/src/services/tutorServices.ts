@@ -1,290 +1,290 @@
-import HttpException from "../utils/http-error";
-import { HttpStatus } from "../utils/http-status";
-import prisma from "../utils/prisma";
-import {hash, compare} from "../utils/bcrypt"
-import { signToken } from "../utils/jsonwebtoken";
-import { sendPasswordResetLink } from "../utils/emailTransporter"
-import { tutorData, tutorSchema } from "../validators/tutorValidator";
-import { tutor } from "@prisma/client";
-import { generateReferallCode } from "../utils/referralCodeGenerator";
-import { throwError } from "../middleware/errorHandler";
+// import HttpException from "../utils/http-error";
+// import { HttpStatus } from "../utils/http-status";
+// import prisma from "../utils/prisma";
+// import {hash, compare} from "../utils/bcrypt"
+// import { signToken } from "../utils/jsonwebtoken";
+// import { sendPasswordResetLink } from "../utils/emailTransporter"
+// import { tutorData, tutorSchema } from "../validators/tutorValidator";
+// import { tutor } from "@prisma/client";
+// import { generateReferallCode } from "../utils/referralCodeGenerator";
+// import { throwError } from "../middleware/errorHandler";
 
-export const addTutor = async (data: tutorData) => {
-    const validateTutorData = tutorSchema.safeParse(data);
-    if (!validateTutorData.success) {
-        const errors = validateTutorData.error.issues.map(
-            ({ message, path }) => `${path}: ${message}`
-        );
-       throwError(HttpStatus.BAD_REQUEST, errors.join(". "));
-    }
+// export const addTutor = async (data: tutorData) => {
+//     const validateTutorData = tutorSchema.safeParse(data);
+//     if (!validateTutorData.success) {
+//         const errors = validateTutorData.error.issues.map(
+//             ({ message, path }) => `${path}: ${message}`
+//         );
+//        throwError(HttpStatus.BAD_REQUEST, errors.join(". "));
+//     }
 
-    // Check if the tutor already exists
-    const checkTutorAvailability = await prisma.tutor.findUnique({
-        where: {
-            email: data.email,
-        },
-    });
+//     // Check if the tutor already exists
+//     const checkTutorAvailability = await prisma.tutor.findUnique({
+//         where: {
+//             email: data.email,
+//         },
+//     });
 
-    if (!checkTutorAvailability) {
-        // Validate the provided registration code
-        const findAdminRegistrationCode = await prisma.admin.findUnique({
-            where: {
-                generatedRegistrationCodes: data.registeredCode,
-            },
-        });
+//     if (!checkTutorAvailability) {
+//         // Validate the provided registration code
+//         const findAdminRegistrationCode = await prisma.admin.findUnique({
+//             where: {
+//                 generatedRegistrationCodes: data.registeredCode,
+//             },
+//         });
 
-        if (!findAdminRegistrationCode) {
-           throwError(HttpStatus.FORBIDDEN, "Invalid registration code");
-        } else {
-            const { maxUsedCode, totalCodeUsed, id, email } = findAdminRegistrationCode;
+//         if (!findAdminRegistrationCode) {
+//            throwError(HttpStatus.FORBIDDEN, "Invalid registration code");
+//         } else {
+//             const { maxUsedCode, totalCodeUsed, id, email } = findAdminRegistrationCode;
 
-            // Check if the max usage limit for the code has been reached
-            if (totalCodeUsed >= maxUsedCode+1) {
-                // Generate a new registration code for the admin
-                const newRegistrationCode = await generateReferallCode();
+//             // Check if the max usage limit for the code has been reached
+//             if (totalCodeUsed >= maxUsedCode+1) {
+//                 // Generate a new registration code for the admin
+//                 const newRegistrationCode = await generateReferallCode();
 
-                await prisma.admin.update({
-                    where: { id },
-                    data: {
-                        generatedRegistrationCodes: newRegistrationCode,
-                        maxUsedCode: maxUsedCode, // Adjust max usage for the new code
-                        totalCodeUsed: 0, // Reset the usage counter for the new code
-                    },
-                });
+//                 await prisma.admin.update({
+//                     where: { id },
+//                     data: {
+//                         generatedRegistrationCodes: newRegistrationCode,
+//                         maxUsedCode: maxUsedCode, // Adjust max usage for the new code
+//                         totalCodeUsed: 0, // Reset the usage counter for the new code
+//                     },
+//                 });
 
-               throwError(
-                    HttpStatus.FORBIDDEN,
-                    `The provided registration code has reached its maximum usage. A new registration code (${newRegistrationCode}) has been generated for Admin (${email}). Please use the new code.`
-                );
-            }
+//                throwError(
+//                     HttpStatus.FORBIDDEN,
+//                     `The provided registration code has reached its maximum usage. A new registration code (${newRegistrationCode}) has been generated for Admin (${email}). Please use the new code.`
+//                 );
+//             }
 
-            // Update code usage
-            await prisma.admin.update({
-                where: { id },
-                data: {
-                    totalCodeUsed: { increment: 1 },
-                },
-            });
+//             // Update code usage
+//             await prisma.admin.update({
+//                 where: { id },
+//                 data: {
+//                     totalCodeUsed: { increment: 1 },
+//                 },
+//             });
 
-            const generatedPassword = await generateReferallCode();
+//             const generatedPassword = await generateReferallCode();
 
-            const savedTutor = await prisma.tutor.create({
-                data: {
-                    firstName: data.firstName,
-                    lastName: data.lastName,
-                    gender: data.gender,
-                    email: data.email,
-                    password: generatedPassword,
-                    contact: data.contact,
-                    registeredCode: data.registeredCode,
-                },
-            });
+//             const savedTutor = await prisma.tutor.create({
+//                 data: {
+//                     firstName: data.firstName,
+//                     lastName: data.lastName,
+//                     gender: data.gender,
+//                     email: data.email,
+//                     password: generatedPassword,
+//                     contact: data.contact,
+//                     registeredCode: data.registeredCode,
+//                 },
+//             });
 
-            const { password, ...tutorWithoutPassword } = savedTutor;
-            return tutorWithoutPassword;
-        }
-    } else {
-       throwError(HttpStatus.CONFLICT, "Email already exists");
-    }
-};
-
-
-export const signIn = async(email: string, password: string)=>{
-    const fetchedTutor = await prisma.tutor.findUnique({
-        where:{
-            email
-        }
-    })
-   if(!fetchedTutor){
-   throwError(HttpStatus.NOT_FOUND, "Tutor does not exist")
-   }else{
-    const verifiedPassword = await compare(password, fetchedTutor.password)
-    if(!verifiedPassword){
-       throwError(HttpStatus.UNAUTHORIZED, "Invalid email or password")
-    }else{
-        return fetchedTutor
-    }
-   }
-};
+//             const { password, ...tutorWithoutPassword } = savedTutor;
+//             return tutorWithoutPassword;
+//         }
+//     } else {
+//        throwError(HttpStatus.CONFLICT, "Email already exists");
+//     }
+// };
 
 
-export const fetchTutors = async()=>{
-    const getAllTutors = await prisma.tutor.findMany({
+// export const signIn = async(email: string, password: string)=>{
+//     const fetchedTutor = await prisma.tutor.findUnique({
+//         where:{
+//             email
+//         }
+//     })
+//    if(!fetchedTutor){
+//    throwError(HttpStatus.NOT_FOUND, "Tutor does not exist")
+//    }else{
+//     const verifiedPassword = await compare(password, fetchedTutor.password)
+//     if(!verifiedPassword){
+//        throwError(HttpStatus.UNAUTHORIZED, "Invalid email or password")
+//     }else{
+//         return fetchedTutor
+//     }
+//    }
+// };
+
+
+// export const fetchTutors = async()=>{
+//     const getAllTutors = await prisma.tutor.findMany({
        
-        orderBy:{
-            createdAt: "desc"
-        },
-        include:{
-            subject: true
-        }
-    })
-    return getAllTutors
-};
+//         orderBy:{
+//             createdAt: "desc"
+//         },
+//         include:{
+//             subject: true
+//         }
+//     })
+//     return getAllTutors
+// };
 
 
-export const fetchTutorById = async(id: string)=>{
-    const fetchedTutor = await prisma.tutor.findUnique({
-        where:{
-            id
-        }
-    })
-    return fetchedTutor
-};
+// export const fetchTutorById = async(id: string)=>{
+//     const fetchedTutor = await prisma.tutor.findUnique({
+//         where:{
+//             id
+//         }
+//     })
+//     return fetchedTutor
+// };
 
 
-export const fetchTutorByEmail = async(email: string)=>{
-    const fetchedTutor = await prisma.tutor.findUnique({
-        where:{
-            email
-        }
-    })
-    return fetchedTutor
-};
+// export const fetchTutorByEmail = async(email: string)=>{
+//     const fetchedTutor = await prisma.tutor.findUnique({
+//         where:{
+//             email
+//         }
+//     })
+//     return fetchedTutor
+// };
 
 
-export const updateTutor = async(id: string, data: Partial<tutor>)=>{
+// export const updateTutor = async(id: string, data: Partial<tutor>)=>{
   
-        const findTutor = await prisma.tutor.findUnique({
-            where:{
-                id
-            }
-        })
-        if(!findTutor){
-           throwError(HttpStatus.NOT_FOUND, "Tutor not found")
-        }else{
-            const updatedTutor = await prisma.tutor.update({
-                where:{
-                    id
-                },
-                data
-            })
-            return updatedTutor
-        }
-};
+//         const findTutor = await prisma.tutor.findUnique({
+//             where:{
+//                 id
+//             }
+//         })
+//         if(!findTutor){
+//            throwError(HttpStatus.NOT_FOUND, "Tutor not found")
+//         }else{
+//             const updatedTutor = await prisma.tutor.update({
+//                 where:{
+//                     id
+//                 },
+//                 data
+//             })
+//             return updatedTutor
+//         }
+// };
 
 
-export const deleteTutor = async(id: string)=>{
-    const findTutor = await prisma.tutor.findUnique({
-        where:{
-            id
-        }
-    })
-    if(!findTutor){
-       throwError(HttpStatus.NOT_FOUND, "Tutor not found")
-    }else{
-        await prisma.tutor.delete({
-            where:{
-                id
-            }
-        })
-        return {message: "Tutor deleted successfully"}
-    }
-};
+// export const deleteTutor = async(id: string)=>{
+//     const findTutor = await prisma.tutor.findUnique({
+//         where:{
+//             id
+//         }
+//     })
+//     if(!findTutor){
+//        throwError(HttpStatus.NOT_FOUND, "Tutor not found")
+//     }else{
+//         await prisma.tutor.delete({
+//             where:{
+//                 id
+//             }
+//         })
+//         return {message: "Tutor deleted successfully"}
+//     }
+// };
 
 
 
-export const forgotPasswordLink = async (email: string, link: string | undefined, passwordResetLink: string | undefined) => {
-    if (!(await fetchTutorByEmail(email))) {
-       throwError(HttpStatus.NOT_FOUND, "Tutor not found");
-    } else {
-        // Sign the token with JWT
-        const token = signToken({ id: email, role: 'tutor' });
+// export const forgotPasswordLink = async (email: string, link: string | undefined, passwordResetLink: string | undefined) => {
+//     if (!(await fetchTutorByEmail(email))) {
+//        throwError(HttpStatus.NOT_FOUND, "Tutor not found");
+//     } else {
+//         // Sign the token with JWT
+//         const token = signToken({ id: email, role: 'tutor' });
         
-        // Generate a hashed resetLink
-        const hashedResetLink = await hash(passwordResetLink || "null");
+//         // Generate a hashed resetLink
+//         const hashedResetLink = await hash(passwordResetLink || "null");
 
-        // Set an expiration time (e.g., 5 minutes from now)
-        const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes in milliseconds
+//         // Set an expiration time (e.g., 5 minutes from now)
+//         const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes in milliseconds
 
-        // Update the reset token, hashed reset link, and expiration in the tutor table
-        await prisma.tutor.update({
-            where: { email },
-            data: {
-                passwordResetToken: token,
-                hashedResetLink: hashedResetLink,
-                passwordResetExpiration: expiresAt,
-                hashedResetLinkExpired: false,
-            }
-        });
+//         // Update the reset token, hashed reset link, and expiration in the tutor table
+//         await prisma.tutor.update({
+//             where: { email },
+//             data: {
+//                 passwordResetToken: token,
+//                 hashedResetLink: hashedResetLink,
+//                 passwordResetExpiration: expiresAt,
+//                 hashedResetLinkExpired: false,
+//             }
+//         });
 
-        // Send email with password reset link
-        await sendPasswordResetLink(email, link, hashedResetLink);
+//         // Send email with password reset link
+//         await sendPasswordResetLink(email, link, hashedResetLink);
 
-        return { token };
-    }
-};
+//         return { token };
+//     }
+// };
 
 
  
-export const resetPassword = async (newPassword: string, token: string) => {
-    try {
-        if (!newPassword || !token) {
-           throwError(HttpStatus.BAD_REQUEST, "Missing required fields ");
-        } else {
-            const findToken = await prisma.tutor.findFirst({
-                where: {
-                    passwordResetToken: token,
-                    passwordResetExpiration: new Date()
-                }
-            });
+// export const resetPassword = async (newPassword: string, token: string) => {
+//     try {
+//         if (!newPassword || !token) {
+//            throwError(HttpStatus.BAD_REQUEST, "Missing required fields ");
+//         } else {
+//             const findToken = await prisma.tutor.findFirst({
+//                 where: {
+//                     passwordResetToken: token,
+//                     passwordResetExpiration: new Date()
+//                 }
+//             });
 
-            if (!findToken) {
-               throwError(HttpStatus.UNAUTHORIZED, "Invalid token");
-            } else {
-                const hashedPassword = await hash(newPassword);
+//             if (!findToken) {
+//                throwError(HttpStatus.UNAUTHORIZED, "Invalid token");
+//             } else {
+//                 const hashedPassword = await hash(newPassword);
                 
-                if (!hashedPassword) {
-                   throwError(
-                        HttpStatus.INTERNAL_SERVER_ERROR,
-                        "Error hashing password"
-                    );
-                } else {
-                    // Update the password and mark reset as completed
-                    await prisma.tutor.update({
-                        where: { id: findToken.id },
-                        data: {
-                            password: hashedPassword,
-                            passwordResetToken: null,
-                            hashedResetLink: null,
-                            passwordResetCompleted: true,
-                            hashedResetLinkExpired: true
-                        },
-                    });
-                    return "Password reset successful";
-                }
-            }
-        }
-    } catch (error) {
-       throwError(HttpStatus.INTERNAL_SERVER_ERROR, "Error resetting password");
-    }
-};
+//                 if (!hashedPassword) {
+//                    throwError(
+//                         HttpStatus.INTERNAL_SERVER_ERROR,
+//                         "Error hashing password"
+//                     );
+//                 } else {
+//                     // Update the password and mark reset as completed
+//                     await prisma.tutor.update({
+//                         where: { id: findToken.id },
+//                         data: {
+//                             password: hashedPassword,
+//                             passwordResetToken: null,
+//                             hashedResetLink: null,
+//                             passwordResetCompleted: true,
+//                             hashedResetLinkExpired: true
+//                         },
+//                     });
+//                     return "Password reset successful";
+//                 }
+//             }
+//         }
+//     } catch (error) {
+//        throwError(HttpStatus.INTERNAL_SERVER_ERROR, "Error resetting password");
+//     }
+// };
 
 
 
 
-export const verifyOtp = async (email: string, otp: string) => {
-    const tutor = await prisma.tutor.findUnique({ where: { email } });
+// export const verifyOtp = async (email: string, otp: string) => {
+//     const tutor = await prisma.tutor.findUnique({ where: { email } });
   
-    if (!tutor) {
-     throwError(HttpStatus.UNAUTHORIZED, "Invalid OTP or Tutor not found");
-    }
+//     if (!tutor) {
+//      throwError(HttpStatus.UNAUTHORIZED, "Invalid OTP or Tutor not found");
+//     }
   
-    // Check if the OTP matches
-    if (tutor!.otp !== otp) {
-     throwError(HttpStatus.UNAUTHORIZED, "Invalid OTP");
-    }
+//     // Check if the OTP matches
+//     if (tutor!.otp !== otp) {
+//      throwError(HttpStatus.UNAUTHORIZED, "Invalid OTP");
+//     }
   
-    // Generate a JWT token if OTP is correct
-    const token = signToken({ id: tutor!.id,role:'tutor' });
+//     // Generate a JWT token if OTP is correct
+//     const token = signToken({ id: tutor!.id,role:'tutor' });
   
-    // Clear the OTP from the database after successful verification
-    await prisma.tutor.update({
-        where: {
-            id: tutor!.id
-        },
-        data: { otp: null },
+//     // Clear the OTP from the database after successful verification
+//     await prisma.tutor.update({
+//         where: {
+//             id: tutor!.id
+//         },
+//         data: { otp: null },
         
-    });
+//     });
   
-    return token;
-  };
+//     return token;
+//   };

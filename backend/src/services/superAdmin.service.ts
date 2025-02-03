@@ -31,9 +31,17 @@ export const createSuperAdmin = async(data: superAdminData)=>{
                 },
             });
 
-            const token = signToken({ id: saveSuperAdmin.id, role: "superAdmin" });
-            const { password,...superAdminDataWithoutPassword } = saveSuperAdmin;
-            return { superAdminDataWithoutPassword, token };
+            const signedToken = signToken({ id: saveSuperAdmin.id, role: "superAdmin" });
+            const superAdmin = await prisma.superAdmin.update({
+                where: {
+                    id: saveSuperAdmin.id,
+                },
+                data: {
+                    token: signedToken,
+                },
+            })
+            const { password,...superAdminDataWithoutPassword } = superAdmin;
+            return { superAdminDataWithoutPassword };
         }else{
             throwError(HttpStatus.CONFLICT, "Super admin already exists");
         }

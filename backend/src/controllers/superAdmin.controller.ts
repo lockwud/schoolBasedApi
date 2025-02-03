@@ -3,7 +3,6 @@ import { HttpStatus } from "../utils/http-status"
 import { catchAsync } from "../utils/catchAsync"
 import { phoneValidator, checkMobileNetwork } from "../utils/phone.check"
 import * as superAdminService from "../services/superAdmin.service"
-import { sendPasswordResetLink } from "../utils/emailTransporter"
 
 export const signUpSuperAdmin = catchAsync(async (
     req: Request, 
@@ -11,13 +10,12 @@ export const signUpSuperAdmin = catchAsync(async (
     next: NextFunction
 ) => {
     const data = req.body
-    const { phone } = data.phone;
+    const { phone } = data
     const validatedPhone = await phoneValidator(phone);
-    const validatedPhoneWithNetwork = await checkMobileNetwork(validatedPhone!);
-    data.phone = validatedPhoneWithNetwork;
+    await checkMobileNetwork(validatedPhone!);
+    data.phone = validatedPhone
     const superAdmin = await superAdminService.createSuperAdmin(data);
     res.status(HttpStatus.CREATED).json(superAdmin);
-// Rest of the sign up logic goes here
 });
 
 
