@@ -1,5 +1,5 @@
 import {Router} from "express"
-import webRouter from "./web/webRouter";
+import webRouter from "./web/web.route";
 const mainRouter = Router();
 
 

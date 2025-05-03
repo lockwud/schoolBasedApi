@@ -69,6 +69,9 @@ model admin {
   fullname      String
   email         String         @unique
   password      String
+  phone         String?
+  role          String         // e.g., Headmaster, Assistant Headmaster
+  status        String         @default("active") // e.g., active, inactive
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   schoolId      String
@@ -89,6 +92,9 @@ model tutor {
   password          String
   contact           String
   role              role                @default(tutor)
+  specialization    String?             // e.g., Mathematics, Science
+  qualification     String?             // e.g., B.Ed, M.Ed
+  nationality       String?             // e.g., Ghanaian, British
   adminId           String?
   schoolId          String
   createdAt         DateTime            @default(now())
@@ -109,17 +115,20 @@ model student {
   lastName        String
   otherName       String?
   gender          gender
+  dob             DateTime
   photoUrl        String?
   photoKey        String?
   studentId       String                  @unique
   password        String?
   contact         String?
+  guardianContact String?
+  level           String                  // e.g., Basic, Junior High, Senior High
+  scholarshipStatus String?               // e.g., Full, Partial, None
   createdAt       DateTime                @default(now())
   updatedAt       DateTime                @updatedAt
   classId         String
   adminId         String?
   schoolId        String
-  subjectId       String?
   attendance      attendance[]
   discipline      discipline[]
   feedbacks       feedback[]
@@ -131,8 +140,10 @@ model student {
   admin           admin?                  @relation(fields: [adminId], references: [id])
   class           classes                 @relation(fields: [classId], references: [id])
   school          school                  @relation(fields: [schoolId], references: [id])
-  subject         subject?                @relation(fields: [subjectId], references: [id])
-  reports         studentTerminalReport[]
+
+  subject subject[]
+
+  studentTerminalReport studentTerminalReport[]
 }
 
 model subject {
