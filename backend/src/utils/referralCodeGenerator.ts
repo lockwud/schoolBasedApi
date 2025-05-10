@@ -8,6 +8,17 @@ export const generateReferallCode = async()=>{
     return code
 };
 
+export const createClass = async (schoolId: string) => {
+  await prisma.classes.create({
+    data: {
+      className: "Class A",
+      capacity: 30,
+      school: {
+        connect: { id: schoolId }, // Provide the school ID to connect the relation
+      },
+    },
+  });
+};
 
 export const generateStudentIndex = async (classId: string): Promise<string> => {
   try {
@@ -28,7 +39,7 @@ export const generateStudentIndex = async (classId: string): Promise<string> => 
     const classInfo = await prisma.classes.findUnique({
       where: { id: classId },
       include: {
-        student: {
+        students: {
           orderBy: {
             studentId: 'desc', // Get the latest student in this class
           },
@@ -41,7 +52,7 @@ export const generateStudentIndex = async (classId: string): Promise<string> => 
       throw new Error(`Class with id ${classId} not found`);
     }
 
-    const { className, student } = classInfo;
+    const { className, students } = classInfo;
 
     // Check if a starting index is defined for the given class
     if (!classStartingIndexes[className]) {
@@ -50,8 +61,8 @@ export const generateStudentIndex = async (classId: string): Promise<string> => 
 
     // Determine the next index
     let nextIndex =
-      student.length > 0
-        ? BigInt(student[0].studentId.toString()) + BigInt(1) // Continue from the last student index
+      students.length > 0
+        ? BigInt(students[0].studentId.toString()) + BigInt(1) // Continue from the last student index
         : BigInt(classStartingIndexes[className]); // Start from the base class's starting index
 
     // Check for index availability and ensure uniqueness

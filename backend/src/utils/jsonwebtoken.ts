@@ -1,3 +1,4 @@
+import { superAdmin } from './../../node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/.prisma/client/index.d';
 import { Request, Response, NextFunction } from "express";
 import jwt  from "jsonwebtoken";
 import HttpException from "./http-error";
@@ -18,6 +19,8 @@ declare global {
       tutor?: UserPayload;   // tutor payload with role
       admin?:UserPayload;
       guardian?: UserPayload;
+      parent?: UserPayload;
+      superAdmin?: UserPayload;
     }
   }
 }
@@ -44,6 +47,12 @@ export const authenticateJWT = (
         req.student = decoded as UserPayload;
       } else if (decoded && (decoded as UserPayload).role === "tutor") {
         req.tutor = decoded as UserPayload;
+      }else if (decoded && (decoded as UserPayload).role === "guardian") {
+        req.guardian = decoded as UserPayload;
+      } else if (decoded && (decoded as UserPayload).role === "parent") {
+        req.guardian = decoded as UserPayload;
+      } else if (decoded && (decoded as UserPayload).role === "superAdmin") {
+        req.student = decoded as UserPayload;
       }else if (decoded && (decoded as UserPayload).role === "admin"){
         req.admin = decoded as UserPayload;
       }

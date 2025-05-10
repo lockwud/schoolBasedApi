@@ -2,7 +2,7 @@ import { HttpStatus } from "../utils/http-status";
 import prisma from "../utils/prisma";
 import {hash, compare} from "../utils/bcrypt"
 import { signToken } from "../utils/jsonwebtoken";
-import { generateOtp, sendPasswordResetLink } from "../utils/emailTransporter"
+import { generateOtp, sendOtpEmail, sendPasswordResetLink } from "../utils/emailTransporter"
 import { throwError } from "../middleware/errorHandler";
 import { superAdminData, superAdminSchema } from "../validators/superAdmin.validator";
 
@@ -57,21 +57,24 @@ export const loginSuperAdmin = async(email: string, password: string)=>{
         throwError(HttpStatus.NOT_FOUND, "Super admin not found");
     }else{
         const isValidPassword = await compare(password, findSuperAdmin.password);
-        if(isValidPassword){
-           const otpCode = generateOtp();
-           await prisma.superAdmin.update({
-            where: {
-                id: findSuperAdmin.id,
-            },
-            data: {
-               otp: otpCode,
-            }
-           })
-
-           return {message: "Check your email for otp"};
-        }else{
+        if(!isValidPassword){
             throwError(HttpStatus.UNAUTHORIZED, "Invalid password");
         }
+           const otp = await generateOtp();
+            await sendOtpEmail(email, otp);
+
+           await prisma.superAdmin.update({
+            where: { email },
+            data: { otp },
+
+           })
+           setTimeout(async () => {
+            await prisma.superAdmin.update({
+                where: { email },
+                data: { otp: null },
+            });
+           }, 5 * 60 * 1000);
+           return {message: "Check your email for otp"};
     }
 };
 

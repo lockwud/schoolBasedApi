@@ -27,9 +27,9 @@ export const addTutor = async (data: tutorData) => {
 
     if (!checkTutorAvailability) {
         // Validate the provided registration code
-        const findAdminRegistrationCode = await prisma.admin.findUnique({
+        const findAdminRegistrationCode = await prisma.admin.findFirst({
             where: {
-                generatedRegistrationCodes: data.registeredCode,
+                generatedRegistrationCodes: { has: data.registrationCode },
             },
         });
 
@@ -39,14 +39,14 @@ export const addTutor = async (data: tutorData) => {
             const { maxUsedCode, totalCodeUsed, id, email } = findAdminRegistrationCode;
 
             // Check if the max usage limit for the code has been reached
-            if (totalCodeUsed >= maxUsedCode+1) {
+            if ((totalCodeUsed ?? 0) >= ((maxUsedCode ?? 0) + 1)) {
                 // Generate a new registration code for the admin
                 const newRegistrationCode = await generateReferallCode();
 
                 await prisma.admin.update({
                     where: { id },
                     data: {
-                        generatedRegistrationCodes: newRegistrationCode,
+                        generatedRegistrationCodes: [newRegistrationCode],
                         maxUsedCode: maxUsedCode, // Adjust max usage for the new code
                         totalCodeUsed: 0, // Reset the usage counter for the new code
                     },
@@ -70,13 +70,13 @@ export const addTutor = async (data: tutorData) => {
 
             const savedTutor = await prisma.tutor.create({
                 data: {
-                    firstName: data.firstName,
-                    lastName: data.lastName,
+                    firstname: data.firstname,
+                    surname: data.surname,  
                     gender: data.gender,
                     email: data.email,
-                    password: generatedPassword,
+                    password: generatedPassword, 
                     contact: data.contact,
-                    registeredCode: data.registeredCode,
+                    registrationCode: [data.registrationCode],
                 },
             });
 
@@ -115,7 +115,7 @@ export const fetchTutors = async()=>{
             createdAt: "desc"
         },
         include:{
-            subject: true
+            subjects: true
         }
     })
     return getAllTutors
@@ -180,85 +180,6 @@ export const deleteTutor = async(id: string)=>{
         return {message: "Tutor deleted successfully"}
     }
 };
-
-
-
-export const forgotPasswordLink = async (email: string, link: string | undefined, passwordResetLink: string | undefined) => {
-    if (!(await fetchTutorByEmail(email))) {
-       throwError(HttpStatus.NOT_FOUND, "Tutor not found");
-    } else {
-        // Sign the token with JWT
-        const token = signToken({ id: email, role: 'tutor' });
-        
-        // Generate a hashed resetLink
-        const hashedResetLink = await hash(passwordResetLink || "null");
-
-        // Set an expiration time (e.g., 5 minutes from now)
-        const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes in milliseconds
-
-        // Update the reset token, hashed reset link, and expiration in the tutor table
-        await prisma.tutor.update({
-            where: { email },
-            data: {
-                passwordResetToken: token,
-                hashedResetLink: hashedResetLink,
-                passwordResetExpiration: expiresAt,
-                hashedResetLinkExpired: false,
-            }
-        });
-
-        // Send email with password reset link
-        await sendPasswordResetLink(email, link, hashedResetLink);
-
-        return { token };
-    }
-};
-
-
- 
-export const resetPassword = async (newPassword: string, token: string) => {
-    try {
-        if (!newPassword || !token) {
-           throwError(HttpStatus.BAD_REQUEST, "Missing required fields ");
-        } else {
-            const findToken = await prisma.tutor.findFirst({
-                where: {
-                    passwordResetToken: token,
-                    passwordResetExpiration: new Date()
-                }
-            });
-
-            if (!findToken) {
-               throwError(HttpStatus.UNAUTHORIZED, "Invalid token");
-            } else {
-                const hashedPassword = await hash(newPassword);
-                
-                if (!hashedPassword) {
-                   throwError(
-                        HttpStatus.INTERNAL_SERVER_ERROR,
-                        "Error hashing password"
-                    );
-                } else {
-                    // Update the password and mark reset as completed
-                    await prisma.tutor.update({
-                        where: { id: findToken.id },
-                        data: {
-                            password: hashedPassword,
-                            passwordResetToken: null,
-                            hashedResetLink: null,
-                            passwordResetCompleted: true,
-                            hashedResetLinkExpired: true
-                        },
-                    });
-                    return "Password reset successful";
-                }
-            }
-        }
-    } catch (error) {
-       throwError(HttpStatus.INTERNAL_SERVER_ERROR, "Error resetting password");
-    }
-};
-
 
 
 

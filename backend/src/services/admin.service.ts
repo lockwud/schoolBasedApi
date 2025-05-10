@@ -1,11 +1,15 @@
+import { otpVerification } from './../controllers/admin.controller';
+import jwt from 'jsonwebtoken';
 import { HttpStatus } from "../utils/http-status";
 import prisma from "../utils/prisma";
 import {hash, compare} from "../utils/bcrypt"
 import { adminData, adminSchema } from "../validators/adminValidator";
-import { signToken } from "../utils/jsonwebtoken";
-import { sendPasswordResetLink } from "../utils/emailTransporter"
+import { authenticateJWT, signToken, UserPayload } from "../utils/jsonwebtoken";
+import { generateOtp, sendOtpEmail, sendPasswordResetLink } from "../utils/emailTransporter"
 import { generateReferallCode } from "../utils/referralCodeGenerator";
 import { throwError } from "../middleware/errorHandler";
+import { admin } from "@prisma/client";
+import { set } from "date-fns";
 
 export const registerAdmin = async (data: adminData) => {
     const validateAdminData = adminSchema.safeParse(data);
@@ -31,10 +35,12 @@ export const registerAdmin = async (data: adminData) => {
         const saveAdmin = await prisma.admin.create({
             data: {
                 ...data,
-                generatedRegistrationCodes: registrationCodes,
-                maxUsedCode: 5, 
+                generatedRegistrationCodes: [registrationCodes],
+                maxUsedCode: 5,
                 totalCodeUsed: 0,
                 password: HashedAdminPassword,
+                schoolId: data.schoolId!,
+                
             },
         });
 
@@ -47,22 +53,27 @@ export const registerAdmin = async (data: adminData) => {
 };
 
 
-
-export const signInAdmin = async(email: string, password: string)=>{
-    const findAdmin = await prisma.admin.findUnique({where: {email}})
-    if(!findAdmin){
-       throwError(HttpStatus.NOT_FOUND, "Admin does not exist")
-
-    }else{
-        const verifiedPassword = await compare(password, findAdmin.password)
-        if(!verifiedPassword){
-           throwError(HttpStatus.UNAUTHORIZED, "Invalid email or password")
-        }else{
-            return findAdmin
-        }
-
+export const signInAdmin = async (email: string, password: string) => {
+    const findAdmin = await prisma.admin.findUnique({ where: { email } });
+    if (!findAdmin) {
+      throwError(HttpStatus.NOT_FOUND, "Admin does not exist");
     }
-}
+  
+    const verifyPassword = await compare(password, findAdmin?.password!);
+    if (!verifyPassword) {
+      throwError(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+    }
+  
+    const otp = await generateOtp();
+    await sendOtpEmail(email, otp);
+  
+    await prisma.admin.update({
+      where: { email },
+      data: { otp },
+    });
+  
+    return { message: "OTP sent to your email. Please verify to continue." };
+  };
 
 
 export const verifyOtp = async (email: string, otp: string) => {
@@ -70,7 +81,7 @@ export const verifyOtp = async (email: string, otp: string) => {
   
     // Check if admin exists
     if (!admin) {
-      throwError(HttpStatus.UNAUTHORIZED, "Invalid OTP or not found");
+      throwError(HttpStatus.UNAUTHORIZED, "Invalid email ");
     }
   
     // Check if the OTP matches
@@ -160,76 +171,78 @@ export const deleteAdminRecords = async(id: string)=>{
 };
 
 
-export const forgotPasswordLink = async(email: string, link: string| undefined, passwordResetLink: string | undefined)=>{
+export const forgotPassword = async(email: string)=>{
     if(!(await fetchAdminByEmail(email) )){
        throwError(HttpStatus.NOT_FOUND, "Admin does not exist");
     }else{
-         //sign the token with jwt
-         const token = signToken({ id: email, role:'admin' });
-          // Generate a hashed resetLink
-          const hashedResetLink = await hash(passwordResetLink || "null");
-         // Update the reset token and hashed reset link in the admin table
-         await prisma.admin.update({
-             where: {
-                 email: email
-             },
-             data: { 
-                 passwordResetToken: token,  // this token will be used to verify the reset link in the frontend
-                 hashedResetLink: hashedResetLink 
-
-             },
-         });
- 
-         // Send email with password reset link
-         await sendPasswordResetLink(email, link,hashedResetLink)
-
-         return {token}
+        const otp = await generateOtp();
+        await sendOtpEmail(email, otp)
+        await prisma.admin.update({
+            where:{
+                email
+            },
+            data:{
+                otp,
+            }
+        })
+        setTimeout(async()=>{
+            await prisma.admin.update({
+                where:{
+                    email
+                },
+                data:{
+                    otp: null
+                }
+            })
+        }
+        , 300000)
+        return {message: "Check your email for otp"}
 
     }
 }
 
- 
-export const resetPassword = async(newPassword: string, token: string)=>{
-    try {
-        if(!newPassword || !token){
-           throwError(HttpStatus.BAD_REQUEST, "Missing required fields ");
-        }else{
-            const findToken =  await prisma.admin.findFirst({
+export const verifytOtp = async(email: string, otp: string)=>{
+    const findAdmin = await prisma.admin.findUnique({where: {email}})
+    if(!findAdmin){
+       throwError(HttpStatus.NOT_FOUND, "Admin does not exist");
+    }else{
+        if(findAdmin.otp === otp){
+            const token = signToken({ id: findAdmin.id, role: "admin" });
+            await prisma.admin.update({
                 where:{
-                    passwordResetToken: token
+                    email
+                },
+                data:{
+                    otp: null,
+                    token: token
                 }
             })
-            if(!findToken){
-               throwError(HttpStatus.UNAUTHORIZED, "Invalid token")
-            }else{
-                const hashedPassword = await hash(newPassword)
-                if(!hashedPassword){
-                   throwError(
-                        HttpStatus.INTERNAL_SERVER_ERROR,
-                        "Error hashing password"
-                      );
-                }else{
-                    await prisma.admin.update({
-                        where: {
-                            passwordResetToken: token
-                        },
-                        data: { 
-                            password: hashedPassword,
-                            passwordResetToken: null,
-                            hashedResetLink: null,
-                            otp: null                      
-                         },
-                    });
-                    return "Password reset successful"
-                }
-            }
-        }
-        
- 
-    } catch (error) {
-       throwError(HttpStatus.INTERNAL_SERVER_ERROR, "Error reseting password");
-      
-    }
 
-  };
+            return {token}
+        }else{
+            throwError(HttpStatus.UNAUTHORIZED, "Invalid OTP");
+        }
+    }
+}
+
+ 
+export const resetPassword = async (newPassword: string, token: string) => {
+    // Find the user by token
+    const admin = await prisma.admin.findFirst({ where: { token } });
+    if (!admin) {
+      throwError(HttpStatus.UNAUTHORIZED, "Invalid or expired token");
+    }
   
+    const hashedPassword = await hash(newPassword);
+  
+    await prisma.admin.update({
+      where: { id: admin?.id! },
+      data: {
+        password: hashedPassword,
+        token: null, 
+      },
+    });
+
+  
+    return { message: "Password reset successfully"};
+  };

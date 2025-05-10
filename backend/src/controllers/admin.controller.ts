@@ -21,10 +21,6 @@ export const login = catchAsync(
     )=>{
         const {email, password} = req.body;
         const adminLogin = await adminService.signInAdmin(email, password)
-        const otp = generateOtp();
-        
-        await adminService.updateAdmin(adminLogin!.id, {otp,})
-        await sendOtpEmail(email, otp)
         res.status(HttpStatus.OK).json({message: "check your email for otp"})
 });
 
@@ -104,7 +100,7 @@ export const forgotPassword = catchAsync(async(
         const { email } = req.body;
         const passwordResetLink = process.env.PASSWORD_RESET_URL
         const link = await process.env.PASSWORD_RESET_URL// generate password reset link
-        const token = await adminService.forgotPasswordLink(email,link,passwordResetLink)
+        const token = await adminService.forgotPassword(email)
         res.status(HttpStatus.OK).json({message: "check email for reset link", token})
    
 });

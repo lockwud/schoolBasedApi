@@ -35,25 +35,6 @@
     ]
   },
   {
-    "modelName": "role",
-    "fields": [
-      "superAdmin",
-      "admin",
-      "student",
-      "tutor",
-      "guardian",
-      "parent"
-    ]
-  },
-  {
-    "modelName": "parent",
-    "fields": [
-      "mother",
-      "father",
-      "guardian"
-    ]
-  },
-  {
     "modelName": "school",
     "fields": [
       "id",
@@ -72,6 +53,16 @@
       "fullname",
       "email",
       "password",
+      "phone",
+      "role",
+      "schoolType",
+      "status",
+      "otp",
+      "token",
+      "otpAttempts",
+      "verified",
+      "maxUsedCode",
+      "totalCodeUsed",
       "createdAt",
       "updatedAt",
       "schoolId"
@@ -84,13 +75,18 @@
       "firstname",
       "surname",
       "othername",
-      "dob",
+      "gender",
       "email",
       "password",
       "contact",
+      "otp",
+      "otpAttempts",
+      "verified",
+      "otpExpiresAt",
+      "token",
       "role",
-      "adminId",
-      "schoolId",
+      "specialization",
+      "qualification",
       "createdAt",
       "updatedAt"
     ]
@@ -103,17 +99,23 @@
       "lastName",
       "otherName",
       "gender",
+      "dob",
       "photoUrl",
       "photoKey",
       "studentId",
       "password",
+      "otp",
+      "token",
+      "otpAttempts",
       "contact",
+      "guardianContact",
+      "level",
+      "scholarshipStatus",
       "createdAt",
       "updatedAt",
       "classId",
       "adminId",
-      "schoolId",
-      "subjectId"
+      "schoolId"
     ]
   },
   {
@@ -382,6 +384,25 @@
       "cash",
       "card",
       "mobileMoney"
+    ]
+  },
+  {
+    "modelName": "role",
+    "fields": [
+      "superAdmin",
+      "admin",
+      "student",
+      "tutor",
+      "guardian",
+      "parent"
+    ]
+  },
+  {
+    "modelName": "parent",
+    "fields": [
+      "mother",
+      "father",
+      "guardian"
     ]
   }
 ]

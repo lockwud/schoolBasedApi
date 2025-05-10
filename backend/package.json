@@ -12,7 +12,8 @@
     "migrate": "npx prisma migrate dev --name init && pnpm extra:fields",
     "generate": "npx prisma generate",
     "extra:fields": "ts-node extractFields.ts",
-    "migrate:dev": "npx prisma migrate deploy"
+    "migrate:dev": "npx prisma migrate deploy",
+    "reset": "npx prisma migrate reset"
   },
   "keywords": [],
   "author": "",
@@ -35,7 +36,7 @@
     "@types/morgan": "^1.9.9",
     "@types/multer": "^1.4.12",
     "@types/swagger-ui-express": "^4.1.7",
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "cloudinary": "^2.5.0",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
