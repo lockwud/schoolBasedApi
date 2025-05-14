@@ -8,69 +8,66 @@ datasource db {
 }
 
 model superAdmin {
-  id                 String    @id @default(uuid())
-  fullname           String
-  email              String    @unique
-  password           String
-  phone              String    @unique
-  status             status    @default(active)
-  otp                String?
-  token              String?
-  otpAttempts        Int?      @default(0)
-  verified           Boolean   @default(false)
-  otpExpiresAt       DateTime?
-  passwordResetToken String?
-  hashedResetLink    String?
-  resetLinkExpiresAt DateTime?
-  role               role      @default(superAdmin)
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-  schools            school[]  @relation("SuperAdminSchools")
+  id          String   @id @default(uuid())
+  fullname    String
+  email       String   @unique
+  password    String
+  phone       String   @unique
+  status      status   @default(active)
+  otp         String?
+  token       String?
+  otpAttempts Int?     @default(0)
+  verified    Boolean  @default(false)
+  role        role     @default(superAdmin)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  school school[]
 }
 
 model school {
-  id           String      @id @default(uuid())
-  name         String      @unique
-  schoolType   String
-  feeRequired  Boolean     @default(true)
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  superAdminId String
-  admins       admin[]
-  classes      classes[]
-  events       event[]
-  feedbacks    feedback[]
-  libraries    library[]
-  superAdmin   superAdmin  @relation("SuperAdminSchools", fields: [superAdminId], references: [id])
-  students     student[]
-  subjects     subject[]
-  schedules    timetable[]
-  transports   transport[]
+  id             String         @id @default(uuid())
+  schoolName     String         @unique
+  categrory      schoolCategory
+  type           schoolTypes
+  feesRequired   Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  maxtotalAdmins Int            @default(3)
+  superAdminId   String
+  superAdmin     superAdmin     @relation(fields: [superAdminId], references: [id])
+  admins         admin[]
+  classes        classes[]
+  events         event[]
+  feedbacks      feedback[]
+  libraries      library[]
+  students       student[]
+  subjects       subject[]
+  schedules      timetable[]
+
+  tutor tutor[]
 }
 
 model admin {
-  id                         String         @id @default(uuid())
-  fullname                   String
-  email                      String         @unique
-  password                   String
-  phone                      String?
-  role                       role @default(admin)  // e.g., admin, superAdmin
-  schoolType                 String?
-  status                     String         @default("active") // e.g., active, inactive
-  otp                        String?
-  token                      String?
-  otpAttempts                Int?           @default(0)
-  verified                   Boolean        @default(false)
-  generatedRegistrationCodes String?       // Single string
-  maxUsedCode                Int?           @default(5)
-  totalCodeUsed              Int?           @default(0)
-  createdAt                  DateTime       @default(now())
-  updatedAt                  DateTime       @updatedAt
-  schoolId                   String
-  school                     school         @relation(fields: [schoolId], references: [id])
-  attendance                 attendance[]
-  notifications              notification[]
-  students                   student[]
+  id                    String         @id @default(uuid())
+  fullname              String
+  email                 String         @unique
+  password              String
+  phone                 String         @unique
+  role                  adminRole
+  status                status         @default(inactive)
+  otp                   String?
+  token                 String?
+  otpAttempts           Int?           @default(0)
+  verified              Boolean        @default(false)
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  schoolCode            String
+  tutorRegistrationCode String[]       @unique
+  school                school         @relation(fields: [schoolCode], references: [id])
+  attendance            attendance[]
+  notifications         notification[]
+  students              student[]
 
   tutor tutor[]
 }
@@ -80,3 +77,378 @@ model tutor {
   firstname         String
   surname           String
   othername         String?
+  gender  gender
+  email             String              @unique
+  password          String
+  pictureUrl        String?
+  pictureKey        String?
+  phone             String
+  role              role                @default(tutor)
+  specialization    specialization
+  qualification     qualification
+  registrationCode  String
+  admin             admin               @relation(fields: [registrationCode], references: [tutorRegistrationCode])
+  schoolId          String
+  school            school              @relation(fields: [schoolId], references: [id])
+  otp               String?
+  token             String?
+  otpAttempts       Int?                @default(0)
+  verified          Boolean             @default(false)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  assignments       assignment[]
+  attendance        attendance[]
+  teachingMaterials teachingMaterials[]
+  schedules         timetable[]
+  classes           classes[]           @relation("classesTotutor")
+  subjects          subject[]           @relation("subjectTotutor")
+}
+
+model student {
+  id                String            @id @default(uuid())
+  firstName         String
+  lastName          String
+  otherName         String?
+  gender            gender
+  dob               DateTime
+  photoUrl          String?
+  photoKey          String?
+  studentId         String            @unique
+  password          String
+  contact           String?
+  guardianContact   String
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  classId           String
+  adminId           String?
+  schoolId          String
+  attendance        attendance[]
+  discipline        discipline[]
+  feedbacks         feedback[]
+  guardians         guardian[]
+  healthRecords     healthRecord[]
+  notification      notification[]
+  paymentRequest    paymentRequest[]
+  solveAssignment   solveAssignment[]
+  admin             admin?            @relation(fields: [adminId], references: [id])
+  class             classes           @relation(fields: [classId], references: [id])
+  school            school            @relation(fields: [schoolId], references: [id])
+
+  subject subject[]
+
+  studentTerminalReport studentTerminalReport[]
+}
+
+model subject {
+  id                      String                 @id @default(uuid())
+  subjectName             String                 @unique
+  createdAt               DateTime               @default(now())
+  updatedAt               DateTime               @updatedAt
+  schoolId                String?
+  studentTerminalReportId String?
+  assignments             assignment[]
+  students                student[]
+  school                  school?                @relation(fields: [schoolId], references: [id])
+  studentTerminalReport   studentTerminalReport? @relation(fields: [studentTerminalReportId], references: [id])
+  materials               teachingMaterials[]
+  timetable               timetable[]
+  tutors                  tutor[]                @relation("subjectTotutor")
+}
+
+model classes {
+  id                    String                  @id @default(uuid())
+  className             String
+  capacity              Int
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  schoolId              String
+  attendance            attendance[]
+  school                school                  @relation(fields: [schoolId], references: [id])
+  students              student[]
+  studentTerminalReport studentTerminalReport[]
+  schedules             timetable[]
+  tutors                tutor[]                 @relation("classesTotutor")
+}
+
+model attendance {
+  id                      String                 @id @default(uuid())
+  studentId               String
+  date                    DateTime
+  attendanceStatus        attendanceStatus
+  reason                  String?
+  createdAt               DateTime               @default(now())
+  updatedAt               DateTime               @updatedAt
+  classId                 String
+  tutorId                 String
+  adminId                 String?
+  studentTerminalReportId String?
+  admin                   admin?                 @relation(fields: [adminId], references: [id])
+  class                   classes                @relation(fields: [classId], references: [id])
+  student                 student                @relation(fields: [studentId], references: [studentId])
+  studentTerminalReport   studentTerminalReport? @relation(fields: [studentTerminalReportId], references: [id])
+  tutor                   tutor                  @relation(fields: [tutorId], references: [id])
+}
+
+model assignment {
+  id              String            @id @default(uuid())
+  subjectId       String
+  tutorId         String
+  title           String
+  description     String
+  dueDate         DateTime
+  isDone          Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  subject         subject           @relation(fields: [subjectId], references: [id])
+  tutor           tutor             @relation(fields: [tutorId], references: [id])
+  solveAssignment solveAssignment[]
+}
+
+model solveAssignment {
+  id           String     @id @default(uuid())
+  studentId    String
+  assignmentId String
+  score        Int
+  isDone       Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  assignment   assignment @relation(fields: [assignmentId], references: [id])
+  student      student    @relation(fields: [studentId], references: [studentId])
+}
+
+model guardian {
+  id             String                  @id @default(uuid())
+  fullName       String
+  gender         gender
+  studentId      String
+  relationship   String
+  contact        String
+  email          String?                 @unique
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+  student        student                 @relation(fields: [studentId], references: [studentId])
+  paymentRequest paymentRequest[]
+  reports        studentTerminalReport[]
+}
+
+model paymentRequest {
+  id               String        @id @default(uuid())
+  studentId        String
+  amount           Float
+  paymentType      paymentType
+  attendanceStatus paymentStatus
+  guardianId       String
+  paymentDate      DateTime      @default(now())
+  guardian         guardian      @relation(fields: [guardianId], references: [id])
+  student          student       @relation(fields: [studentId], references: [studentId])
+}
+
+model teachingMaterials {
+  id          String   @id @default(uuid())
+  subjectId   String
+  title       String
+  description String
+  file        String
+  tutorId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  subject     subject  @relation(fields: [subjectId], references: [id])
+  tutor       tutor    @relation(fields: [tutorId], references: [id])
+}
+
+model studentTerminalReport {
+  id               String       @id @default(uuid())
+  studentId        String
+  numOfSubject     Int
+  totalScore       Int
+  averageScore     Float
+  classId          String
+  className        String?
+  position         Int
+  numRoll          Int
+  tutorsRemarks    String[]
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  guardianId       String?
+  attendanceReport attendance[]
+  class            classes      @relation(fields: [classId], references: [id])
+  guardian         guardian?    @relation(fields: [guardianId], references: [id])
+  student          student      @relation(fields: [studentId], references: [studentId])
+  subjectReport    subject[]
+}
+
+model healthRecord {
+  id               String   @id @default(uuid())
+  studentId        String
+  allergies        String?
+  medications      String?
+  emergencyContact String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  student          student  @relation(fields: [studentId], references: [studentId])
+}
+
+model timetable {
+  id        String   @id @default(uuid())
+  classId   String
+  subjectId String
+  dayOfWeek String
+  startTime DateTime
+  endTime   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  schoolId  String?
+  tutorId   String?
+  class     classes  @relation(fields: [classId], references: [id])
+  school    school?  @relation(fields: [schoolId], references: [id])
+  subject   subject  @relation(fields: [subjectId], references: [id])
+  tutor     tutor?   @relation(fields: [tutorId], references: [id])
+}
+
+model event {
+  id           String   @id @default(uuid())
+  title        String
+  description  String
+  date         DateTime
+  participants String[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  schoolId     String?
+  school       school?  @relation(fields: [schoolId], references: [id])
+}
+
+model library {
+  id              String   @id @default(uuid())
+  bookTitle       String
+  author          String
+  availableCopies Int
+  schoolId        String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now())
+  school          school   @relation(fields: [schoolId], references: [id])
+}
+
+model feedback {
+  id        String   @id @default(uuid())
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+  schoolId  String?
+  school    school?  @relation(fields: [schoolId], references: [id])
+  user      student  @relation(fields: [userId], references: [studentId])
+}
+
+model notification {
+  id        String   @id @default(uuid())
+  adminId   String?
+  studentId String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  admin     admin?   @relation(fields: [adminId], references: [id])
+  student   student? @relation(fields: [studentId], references: [studentId])
+}
+
+model discipline {
+  id          String   @id @default(uuid())
+  studentId   String
+  reason      String
+  actionTaken String
+  createdAt   DateTime @default(now())
+  student     student  @relation(fields: [studentId], references: [studentId])
+}
+
+enum role {
+  superAdmin
+  admin
+  student
+  tutor
+  guardian
+  parent
+}
+
+enum adminRole {
+  Headmaster
+  AssistantHeadmaster
+  IT_coordinator
+  Academics
+}
+
+enum schoolTypes {
+  seniorHigh
+  basic_jhs
+}
+
+enum schoolCategory {
+  private
+  government
+}
+
+enum qualification {
+  SHS
+  BED
+  BSC
+  MFIL
+  MED
+  PHD
+  DIP
+}
+
+enum specialization {
+  MATHEMATICS
+  ENGLISH
+  SCIENCE
+  IT
+  SOCIAL
+  ECONOMICS
+  AGRICULTURE
+  ELECTRICALS
+}
+
+enum parent {
+  mother
+  father
+  guardian
+}
+
+enum gender {
+  male
+  female
+}
+
+enum status {
+  active
+  inactive
+  graduated
+  withdrawn
+  deceased
+  transfer
+  transferredOut
+  transferredIn
+  temporary
+  suspended
+  deleted
+  banned
+}
+
+enum attendanceStatus {
+  present
+  absent
+  partial
+}
+
+enum paymentStatus {
+  paid
+  pending
+  cancelled
+  failed
+  refunded
+  partial
+  partiallyRefunded
+}
+
+enum paymentType {
+  cash
+  card
+  mobileMoney
+}
