@@ -116,12 +116,11 @@ model student {
   studentId         String            @unique
   password          String
   contact           String?
-  guardianContact   String
+  parentContact   String
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   classId           String
-  adminId           String?
-  schoolId          String
+  adminId           String
   attendance        attendance[]
   discipline        discipline[]
   feedbacks         feedback[]
@@ -130,10 +129,8 @@ model student {
   notification      notification[]
   paymentRequest    paymentRequest[]
   solveAssignment   solveAssignment[]
-  admin             admin?            @relation(fields: [adminId], references: [id])
+  admin             admin            @relation(fields: [adminId], references: [id])
   class             classes           @relation(fields: [classId], references: [id])
-  school            school            @relation(fields: [schoolId], references: [id])
-
   subject subject[]
 
   studentTerminalReport studentTerminalReport[]
