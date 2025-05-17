@@ -1,5 +1,3 @@
-import { updateClassDetails } from '../controllers/class.controller';
-import HttpException from "../utils/http-error";
 import { HttpStatus } from "../utils/http-status";
 import { subjectSchema, subjectData } from "../validators/subjectValidator";
 import prisma from "../utils/prisma";
@@ -35,7 +33,7 @@ export const addSubject = async(data: subjectData)=>{
 export const assignSubjectToTutors = async (tutorsName: string, subject: string) => {
     const findTutor = await prisma.tutor.findFirst({
         where: {
-            lastName: tutorsName,
+            surname: tutorsName,
         },
     });
 
@@ -74,7 +72,7 @@ export const assignSubjectToTutors = async (tutorsName: string, subject: string)
             id: findTutor!.id,
         },
         data: {
-            subject: {
+            subjects: {
                 connect: { id: findSubject!.id },
             },
         },
@@ -132,7 +130,7 @@ export const updateSubjectTutor = async (subjectName: string, tutorName: string)
 
     const findTutor = await prisma.tutor.findFirst({
         where: {
-            lastName: tutorName,
+            surname: tutorName,
         },
     });
 
@@ -145,7 +143,7 @@ export const updateSubjectTutor = async (subjectName: string, tutorName: string)
             id: findTutor!.id,
         },
         data: {
-            subject: {
+            subjects: {
                 connect: { id: findSubject!.id }, 
             },
         },

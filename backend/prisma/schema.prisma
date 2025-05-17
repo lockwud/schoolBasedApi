@@ -78,8 +78,6 @@ model tutor {
   gender  gender
   email             String              @unique
   password          String
-  pictureUrl        String?
-  pictureKey        String?
   phone             String
   role              role                @default(tutor)
   specialization    specialization
@@ -130,7 +128,7 @@ model student {
   admin             admin            @relation(fields: [adminId], references: [id])
   class             classes?           @relation(fields: [classId], references: [id])
   subject subject[]
-
+  del_flag          Boolean           @default(false)
   studentTerminalReport studentTerminalReport[]
 }
 

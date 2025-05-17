@@ -2,7 +2,7 @@ import { throwError } from "../middleware/errorHandler";
 import { HttpStatus } from "../utils/http-status";
 import prisma from "../utils/prisma";
 import { attendanceSchema, attendanceDto } from "../validators/attendanceValidator";
-import { startOfDay, isEqual } from 'date-fns';
+import { startOfDay } from 'date-fns';
 
 export const createAttendance = async (attendanceData: attendanceDto | attendanceDto[]) => {
   const dataArray = Array.isArray(attendanceData) ? attendanceData : [attendanceData]; 

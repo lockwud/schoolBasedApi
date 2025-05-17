@@ -17,7 +17,7 @@ export const registerStudent = async(data: studentData, picture:{photoUrl: strin
             )
            throwError(HttpStatus.BAD_REQUEST, errors.join(". "))
     }else{
-        const studentIndex = await generateStudentIndex(data.classId)
+        const studentIndex = await generateStudentIndex(data.classId!)
 
         const findStudent = await prisma.student.findUnique({
             where: {
@@ -35,16 +35,11 @@ export const registerStudent = async(data: studentData, picture:{photoUrl: strin
             const generatedPassword = await generateReferallCode()
             const newStudent = await prisma.student.create({
                 data:{
-                    firstName: data.firstName,
-                    lastName: data.lastName,
-                    otherName: data.otherName,
-                    gender: data.gender,
+                    ...data,
                     photoUrl: picture.photoUrl,
                     photoKey: picture.photoKey,
                     studentId: studentIndex,
                     password: generatedPassword,
-                    classId: data.classId,
-                    del_flag: false
                 }
             })
             const {password, ...studentWithoutPassword} = newStudent
@@ -188,14 +183,6 @@ export const login = async(studentId: string, password: string)=>{
     if(!findStudent){
        throwError(HttpStatus.NOT_FOUND, "Student not found")
     }else{
-        if(password === findStudent.password){
-            const tokenPayload: UserPayload = {
-                id: findStudent.studentId,
-                role: 'student'
-            }
-            const token = signToken(tokenPayload)
-            return {findStudent, token}
-        }else{
             const checkPassword = await compare(password, findStudent.password)
             if(checkPassword){
             const tokenPayload: UserPayload = {
@@ -208,7 +195,6 @@ export const login = async(studentId: string, password: string)=>{
            throwError(HttpStatus.UNAUTHORIZED, "Invalid password")
         }
      }
-    }
 };
 
 
@@ -230,7 +216,7 @@ export const forgotPassword = async(studentId: string)=>{
                 password: newPassword
             }
         })
-        return updatedStudentPassword
+        return "Go to the administration for your new password"
     }
 
 };

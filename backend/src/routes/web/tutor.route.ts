@@ -60,12 +60,5 @@ tutorRoute.delete("/delete/:id",
     tutor.deleteTutor
 );
 
-tutorRoute.post("/forgotPassword",
-    tutor.sendPasswordResetLink
-);
-
-tutorRoute.put("/resetPassword/:token",
-    tutor.resetPassword
-);
 
 export default tutorRoute;

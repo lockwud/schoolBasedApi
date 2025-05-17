@@ -6,12 +6,10 @@ export const superAdminSchema = z.object({
     password: z.string({required_error: "Password is required"}).min(8, "Password should be at least 8 characters long")
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, "Password should contain at least one uppercase letter, one lowercase letter, one number, and one special character")
     .trim()
-    .min(1, "Email is required"),
+    .min(1, "Invslid password format"),
     phone: z.string({required_error: "Phone number is required"}).trim().min(10, "Phone number should be at least 10 digits long").max(13, "Phone number should be at most 13 digits long"),
     status: z.enum(["active", "inactive", "deleted"]),
     otp: z.string({required_error: "Please enter otp"}).optional(),
-    passwordResetToken: z.string({required_error: "Password reset token is required"}).optional(),
-    hashedResetLink: z.string({required_error: "Password reset token expiry is required"}).optional(),
     roles: z.array(z.enum(["superAdmin", "admin", "tutor", "student", "guardian", "parent"])).optional(),
 
 })

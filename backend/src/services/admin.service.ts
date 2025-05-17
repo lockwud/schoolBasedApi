@@ -1,15 +1,12 @@
-import { otpVerification } from './../controllers/admin.controller';
-import jwt from 'jsonwebtoken';
 import { HttpStatus } from "../utils/http-status";
 import prisma from "../utils/prisma";
 import {hash, compare} from "../utils/bcrypt"
 import { adminData, adminSchema } from "../validators/adminValidator";
-import { authenticateJWT, signToken, UserPayload } from "../utils/jsonwebtoken";
-import { generateOtp, sendOtpEmail, sendPasswordResetLink } from "../utils/emailTransporter"
+import { generateOtp, sendOtpEmail} from "../utils/emailTransporter"
 import { generateReferallCode } from "../utils/referralCodeGenerator";
 import { throwError } from "../middleware/errorHandler";
 import { admin } from "@prisma/client";
-import { set } from "date-fns";
+import { signToken } from "../utils/jsonwebtoken";
 
 export const registerAdmin = async (data: adminData) => {
     const validateAdminData = adminSchema.safeParse(data);
@@ -29,24 +26,21 @@ export const registerAdmin = async (data: adminData) => {
 
     if (!checkAdminAvailability) {
         const HashedAdminPassword = await hash(data.password);
-        const registrationCodes = await generateReferallCode();
+        const registrationCode = await generateReferallCode();
 
         // Save admin to the database
         const saveAdmin = await prisma.admin.create({
             data: {
                 ...data,
-                generatedRegistrationCodes: [registrationCodes],
-                maxUsedCode: 5,
-                totalCodeUsed: 0,
+                tutorRegistrationCode: registrationCode,
                 password: HashedAdminPassword,
-                schoolId: data.schoolId!,
                 
             },
         });
 
         const token = signToken({ id: saveAdmin.id, role: "admin" });
         const { password, ...adminDataWithoutPassword } = saveAdmin;
-        return { adminDataWithoutPassword, token };
+        return { adminDataWithoutPassword };
     } else {
         throwError(HttpStatus.CONFLICT, "Admin already exists");
     }
@@ -75,34 +69,6 @@ export const signInAdmin = async (email: string, password: string) => {
     return { message: "OTP sent to your email. Please verify to continue." };
   };
 
-
-export const verifyOtp = async (email: string, otp: string) => {
-    const admin = await prisma.admin.findUnique({ where: { email } });
-  
-    // Check if admin exists
-    if (!admin) {
-      throwError(HttpStatus.UNAUTHORIZED, "Invalid email ");
-    }
-  
-    // Check if the OTP matches
-    if (admin!.otp !== otp) {
-      throwError(HttpStatus.UNAUTHORIZED, "Invalid OTP");
-    }
-  
-    // Generate a JWT token if OTP is correct
-    const token = signToken({ id: admin!.id, role: 'admin' });
-  
-    // Clear the OTP from the database after successful verification
-    await prisma.admin.update({
-      where: {
-        id: admin!.id,
-      },
-      data: { otp: null },
-    });
-  
-    return token;
-  };
-  
 
 export const updateAdmin = async(id: string, updateData: Partial<admin> )=>{
     const findAdmin = await prisma.admin.findUnique({
@@ -201,7 +167,7 @@ export const forgotPassword = async(email: string)=>{
     }
 }
 
-export const verifytOtp = async(email: string, otp: string)=>{
+export const verifyOtp = async(email: string, otp: string)=>{
     const findAdmin = await prisma.admin.findUnique({where: {email}})
     if(!findAdmin){
        throwError(HttpStatus.NOT_FOUND, "Admin does not exist");
@@ -242,7 +208,6 @@ export const resetPassword = async (newPassword: string, token: string) => {
         token: null, 
       },
     });
-
   
     return { message: "Password reset successfully"};
   };

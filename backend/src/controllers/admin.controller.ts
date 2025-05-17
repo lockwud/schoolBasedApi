@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as adminService from "../services/admin.service"
 import { HttpStatus } from "../utils/http-status";
-import { sendOtpEmail, generateOtp, sendPasswordResetLink  } from "../utils/emailTransporter";
 import { adminData } from '../validators/adminValidator';
 import { catchAsync } from '../utils/catchAsync';
 
@@ -98,10 +97,9 @@ export const forgotPassword = catchAsync(async(
     req: Request, res: Response, next: NextFunction
 )=>{
         const { email } = req.body;
-        const passwordResetLink = process.env.PASSWORD_RESET_URL
-        const link = await process.env.PASSWORD_RESET_URL// generate password reset link
-        const token = await adminService.forgotPassword(email)
-        res.status(HttpStatus.OK).json({message: "check email for reset link", token})
+      
+        const forgotPassword = await adminService.forgotPassword(email)
+        res.status(HttpStatus.OK).json({message: "check email for otp"})
    
 });
 

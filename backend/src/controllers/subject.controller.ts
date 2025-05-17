@@ -26,7 +26,7 @@ export const tutorsSubject = catchAsync(async(
 )=>{
         const {lastName, subject} = req.body
         const assignedTutor = await subjectService.assignSubjectToTutors(lastName,subject)
-        res.status(HttpStatus.ACCEPTED).json({message: `Mr. ${assignedTutor.lastName}has been assigned to teach ${subject}`})
+        res.status(HttpStatus.ACCEPTED).json({message: `Mr. ${assignedTutor.surname}has been assigned to teach ${subject}`})
 
 });
 
@@ -73,7 +73,7 @@ export const updateTutorSubject = catchAsync(async(
 )=>{
         const {subjectName, tutorName} = req.body
         const updated = await subjectService.updateSubjectTutor(subjectName, tutorName)
-        res.status(HttpStatus.OK).json({message:`Mr. ${updated.lastName}, has been assigned to teach ${subjectName}`})
+        res.status(HttpStatus.OK).json({message:`Mr. ${updated.surname}, has been assigned to teach ${subjectName}`})
 
 });
 

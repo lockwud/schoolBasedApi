@@ -1,5 +1,4 @@
 import { classes } from "@prisma/client";
-import HttpException from "../utils/http-error";
 import { HttpStatus } from "../utils/http-status";
 import prisma from "../utils/prisma";
 import { classData, classSchema } from "../validators/classValidator";
@@ -24,10 +23,12 @@ export const addClass = async(data: classData)=>{
             const saveClassInfo = await prisma.classes.create({
                 data:{
                     className: data.className,
-                    capacity: parseInt(data.capacity)
+                    capacity: parseInt(data.capacity),
+                    schoolId: data.schoolId
                 }
             })
-            return saveClassInfo
+            const {schoolId, ...saveClassInfoWithoutSchoolCode} = saveClassInfo
+            return saveClassInfoWithoutSchoolCode
 
         }else{
             throwError(HttpStatus.CONFLICT, "Class already registered")
@@ -37,8 +38,11 @@ export const addClass = async(data: classData)=>{
 
 
 export const fetchClasses = async() =>{
-    const getAllClases = await prisma.classes.findMany()
-    return getAllClases
+    const getAllClases = await prisma.classes.findMany({
+       
+    })
+
+    return 
 }
 
 

@@ -37,29 +37,8 @@ export const verifyOtp = catchAsync(async(
     next: NextFunction
 )=>{
     const {email, otp} = req.body
-    const verifyOtp = await superAdminService.verifyOtpSuperAdmin(email, otp)
-    res.status(HttpStatus.OK).json({verifyOtp})
+    const verifiedSuperadmin = await superAdminService.verifySuperAdminOtp(email, otp)
+    res.status(HttpStatus.OK).json({verifiedSuperadmin})    
 });
 
-
-export const changePassword = catchAsync(async(
-    req: Request,
-    res: Response,
-    next: NextFunction
-)=>{
-    const {email, password} = req.body
-    const newPassword = await superAdminService.resetPasswordSuperAdmin(email, password)
-    res.status(HttpStatus.OK).json({newPassword})
-});
-
-
-export const sendLink = catchAsync(async(
-    req: Request,
-    res: Response,
-    next: NextFunction
-)=>{
-    const {email} = req.body
-    const link = await superAdminService.sendResetLink(email)
-    res.status(HttpStatus.OK).json({message: "Link sent successfully"})
-});
 

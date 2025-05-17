@@ -1,4 +1,3 @@
-import { superAdmin } from './../../node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/.prisma/client/index.d';
 import { Request, Response, NextFunction } from "express";
 import jwt  from "jsonwebtoken";
 import HttpException from "./http-error";
@@ -50,9 +49,11 @@ export const authenticateJWT = (
       }else if (decoded && (decoded as UserPayload).role === "guardian") {
         req.guardian = decoded as UserPayload;
       } else if (decoded && (decoded as UserPayload).role === "parent") {
-        req.guardian = decoded as UserPayload;
-      } else if (decoded && (decoded as UserPayload).role === "superAdmin") {
-        req.student = decoded as UserPayload;
+        req.parent = decoded as UserPayload;
+      }
+      else if (decoded && (decoded as UserPayload).role === "superAdmin") {
+        req.superAdmin = decoded as UserPayload;
+      
       }else if (decoded && (decoded as UserPayload).role === "admin"){
         req.admin = decoded as UserPayload;
       }
@@ -72,10 +73,11 @@ export const signToken = (payload: UserPayload): string => {
       HttpStatus.INTERNAL_SERVER_ERROR,
       "JWT configuration is missing"
     );
-  }
-  return jwt.sign(payload, process.env.JWT_SECRET, {
+  }            
+  return jwt.sign(payload, process.env.JWT_SECRET as jwt.Secret, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
+  
 };
 
 

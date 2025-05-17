@@ -25,10 +25,7 @@ export const login = catchAsync(async(
 )=>{
         const {email, password} = req.body
         const tutorLogin = await tutorService.signIn(email, password)
-        const otp = generateOtp();
-        await tutorService.updateTutor(tutorLogin!.id, {otp,})
-        await sendOtpEmail(email, otp)
- 
+        res.status(HttpStatus.OK).json({message: tutorLogin})
 });
 
 
@@ -62,6 +59,7 @@ export const getTutorByEmail = catchAsync(async(
 )=>{
         const { email } = req.body
         const fetchedTutor = await tutorService.fetchTutorByEmail(email)
+        res.status(HttpStatus.OK).json(fetchedTutor)
    
 });
 
@@ -91,31 +89,8 @@ export const deleteTutor = catchAsync(async(
 });
 
 
-export const sendPasswordResetLink = catchAsync(async(
-    req: Request, 
-    res: Response, 
-    next: NextFunction
-)=>{
-        const { email } = req.body
-        const passwordResetLink = process.env.PASSWORD_RESET_URL
-        const link = await process.env.PASSWORD_RESET_URL// generate password reset link
-        const token = await tutorService.forgotPasswordLink(email,link,passwordResetLink)
-        res.status(HttpStatus.OK).json({message: 'Password reset link sent', token})
-   
-});
 
 
-export const resetPassword = catchAsync(async(
-    req: Request, 
-    res: Response, 
-    next: NextFunction
-)=>{
-        const { password } = req.body
-        const { token } = req.params
-        const fetchedTutor = await tutorService.resetPassword(password, token)
-        res.status(HttpStatus.OK).json({message: 'Password reset successful'})
-  
-});
 
 
 

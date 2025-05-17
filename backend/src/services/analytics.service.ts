@@ -56,7 +56,7 @@ export const analyticsService = {
   getTopPerformingStudentsFromClass: async (limit: number = DEFAULT_TOP_STUDENT_LIMIT) => {
     const classesWithStudents = await prisma.classes.findMany({
       include: {
-        student: {
+        students: {
           include: {
             studentTerminalReport: {
               select: {
@@ -74,10 +74,10 @@ export const analyticsService = {
 
     return classesWithStudents.map((classData) => {
       // Filter students with valid reports
-      const validStudents = classData.student.filter(
-        (student) =>
-          Array.isArray(student.studentTerminalReport) &&
-          student.studentTerminalReport.length > 0
+      const validStudents = classData.students.filter(
+        (students) =>
+          Array.isArray(students.studentTerminalReport) &&
+          students.studentTerminalReport.length > 0
       );
 
       return {

@@ -74,8 +74,6 @@
       "gender",
       "email",
       "password",
-      "pictureUrl",
-      "pictureKey",
       "phone",
       "role",
       "specialization",
@@ -108,7 +106,8 @@
       "createdAt",
       "updatedAt",
       "classId",
-      "adminId"
+      "adminId",
+      "del_flag"
     ]
   },
   {

@@ -79,7 +79,7 @@ export const loginSuperAdmin = async(email: string, password: string)=>{
 };
 
 
-export const verifyOtpSuperAdmin = async(email: string, otp: string)=>{
+export const verifySuperAdminOtp = async(email: string, otp: string)=>{
     const findSuperAdmin = await prisma.superAdmin.findUnique({ where: { email } });
     if(!findSuperAdmin){
         throwError(HttpStatus.NOT_FOUND, "Super admin not found");
@@ -104,58 +104,3 @@ export const fetchSuperAdminByEmail = async(email: string)=>{
     }
 }
 
-export const resetPasswordSuperAdmin = async(email: string, password: string)=>{
-    const findSuperAdmin = await prisma.superAdmin.findUnique({ where: { email } });
-    if(!findSuperAdmin){
-        throwError(HttpStatus.NOT_FOUND, "Super admin not found");
-    }else{
-        const token = findSuperAdmin.token
-        const resetLinkExpiry = findSuperAdmin.resetLinkExpiresAt;
-
-        if(findSuperAdmin.token === token && findSuperAdmin.resetLinkExpiresAt === resetLinkExpiry){
-            const hashedPassword = await hash(password);
-            await prisma.superAdmin.update({
-                where: {
-                    id: findSuperAdmin.id,
-                },
-                data: {
-                    password: hashedPassword,
-                    passwordResetToken: null,
-                    hashedResetLink: null,
-                    token: null
-                },
-            });
-            
-            return { message: "Password reset successfully"};
-        }else{
-            throwError(HttpStatus.UNAUTHORIZED, "reset link expired");
-        }
-    }
-};
-
-
-export const sendResetLink = async(
-    email: string
-)=>{
-   const superAdmin =  await fetchSuperAdminByEmail(email)
-    if(!superAdmin){
-        throwError(HttpStatus.NOT_FOUND, "Super admin not found");
-    }else{
-        const link = `${process.env.RESET_PASSWORD_LINK}/${email}`
-        const resetToken = superAdmin.token
-        const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes in milliseconds
-        await prisma.superAdmin.update({
-            where: {
-                id: superAdmin.findSuperAdmin.id,
-            },
-            data: {
-                passwordResetToken: resetToken,
-                hashedResetLink: link,
-                resetLinkExpiresAt: expiresAt,
-            },
-        })
-        await sendPasswordResetLink(email, link, resetToken);
-        return "Reset link sent successfully"
-    }
-   
-}
