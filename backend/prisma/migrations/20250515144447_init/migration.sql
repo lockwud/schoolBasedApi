@@ -1,4 +1,22 @@
 -- CreateEnum
+CREATE TYPE "role" AS ENUM ('superAdmin', 'admin', 'student', 'tutor', 'guardian', 'parent');
+
+-- CreateEnum
+CREATE TYPE "schoolTypes" AS ENUM ('seniorHigh', 'basic_jhs');
+
+-- CreateEnum
+CREATE TYPE "schoolCategory" AS ENUM ('private', 'government');
+
+-- CreateEnum
+CREATE TYPE "qualification" AS ENUM ('SHS', 'BED', 'BSC', 'MFIL', 'MED', 'PHD', 'DIP');
+
+-- CreateEnum
+CREATE TYPE "specialization" AS ENUM ('MATHEMATICS', 'ENGLISH', 'SCIENCE', 'IT', 'SOCIAL', 'ECONOMICS', 'AGRICULTURE', 'ELECTRICALS');
+
+-- CreateEnum
+CREATE TYPE "parent" AS ENUM ('mother', 'father', 'guardian');
+
+-- CreateEnum
 CREATE TYPE "gender" AS ENUM ('male', 'female');
 
 -- CreateEnum
@@ -13,12 +31,6 @@ CREATE TYPE "paymentStatus" AS ENUM ('paid', 'pending', 'cancelled', 'failed', '
 -- CreateEnum
 CREATE TYPE "paymentType" AS ENUM ('cash', 'card', 'mobileMoney');
 
--- CreateEnum
-CREATE TYPE "role" AS ENUM ('superAdmin', 'admin', 'student', 'tutor', 'guardian', 'parent');
-
--- CreateEnum
-CREATE TYPE "parent" AS ENUM ('mother', 'father', 'guardian');
-
 -- CreateTable
 CREATE TABLE "superAdmin" (
     "id" TEXT NOT NULL,
@@ -31,10 +43,6 @@ CREATE TABLE "superAdmin" (
     "token" TEXT,
     "otpAttempts" INTEGER DEFAULT 0,
     "verified" BOOLEAN NOT NULL DEFAULT false,
-    "otpExpiresAt" TIMESTAMP(3),
-    "passwordResetToken" TEXT,
-    "hashedResetLink" TEXT,
-    "resetLinkExpiresAt" TIMESTAMP(3),
     "role" "role" NOT NULL DEFAULT 'superAdmin',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -45,11 +53,13 @@ CREATE TABLE "superAdmin" (
 -- CreateTable
 CREATE TABLE "school" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "schoolType" TEXT NOT NULL,
-    "feeRequired" BOOLEAN NOT NULL DEFAULT true,
+    "schoolName" TEXT NOT NULL,
+    "categrory" "schoolCategory" NOT NULL,
+    "type" "schoolTypes" NOT NULL,
+    "feesRequired" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "maxtotalAdmins" INTEGER NOT NULL DEFAULT 3,
     "superAdminId" TEXT NOT NULL,
 
     CONSTRAINT "school_pkey" PRIMARY KEY ("id")
@@ -61,20 +71,17 @@ CREATE TABLE "admin" (
     "fullname" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "phone" TEXT,
+    "phone" TEXT NOT NULL,
     "role" "role" NOT NULL DEFAULT 'admin',
-    "schoolType" TEXT,
-    "status" TEXT NOT NULL DEFAULT 'active',
+    "status" "status" NOT NULL DEFAULT 'inactive',
     "otp" TEXT,
     "token" TEXT,
     "otpAttempts" INTEGER DEFAULT 0,
     "verified" BOOLEAN NOT NULL DEFAULT false,
-    "generatedRegistrationCodes" TEXT[],
-    "maxUsedCode" INTEGER DEFAULT 5,
-    "totalCodeUsed" INTEGER DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "schoolId" TEXT NOT NULL,
+    "schoolCode" TEXT NOT NULL,
+    "tutorRegistrationCode" TEXT NOT NULL,
 
     CONSTRAINT "admin_pkey" PRIMARY KEY ("id")
 );
@@ -88,16 +95,18 @@ CREATE TABLE "tutor" (
     "gender" "gender" NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "contact" TEXT NOT NULL,
+    "pictureUrl" TEXT,
+    "pictureKey" TEXT,
+    "phone" TEXT NOT NULL,
+    "role" "role" NOT NULL DEFAULT 'tutor',
+    "specialization" "specialization" NOT NULL,
+    "qualification" "qualification" NOT NULL,
+    "registrationCode" TEXT NOT NULL,
+    "schoolId" TEXT NOT NULL,
     "otp" TEXT,
+    "token" TEXT,
     "otpAttempts" INTEGER DEFAULT 0,
     "verified" BOOLEAN NOT NULL DEFAULT false,
-    "otpExpiresAt" TIMESTAMP(3),
-    "token" TEXT,
-    "role" "role" NOT NULL DEFAULT 'tutor',
-    "specialization" TEXT,
-    "qualification" TEXT,
-    "registrationCode" TEXT[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -115,19 +124,13 @@ CREATE TABLE "student" (
     "photoUrl" TEXT,
     "photoKey" TEXT,
     "studentId" TEXT NOT NULL,
-    "password" TEXT,
-    "otp" TEXT,
-    "token" TEXT,
-    "otpAttempts" INTEGER,
+    "password" TEXT NOT NULL,
     "contact" TEXT,
-    "guardianContact" TEXT,
-    "level" TEXT NOT NULL,
-    "scholarshipStatus" TEXT,
+    "parentContact" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "classId" TEXT NOT NULL,
-    "adminId" TEXT,
-    "schoolId" TEXT NOT NULL,
+    "classId" TEXT,
+    "adminId" TEXT NOT NULL,
 
     CONSTRAINT "student_pkey" PRIMARY KEY ("id")
 );
@@ -138,8 +141,6 @@ CREATE TABLE "subject" (
     "subjectName" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "schoolId" TEXT,
-    "studentTerminalReportId" TEXT,
 
     CONSTRAINT "subject_pkey" PRIMARY KEY ("id")
 );
@@ -171,34 +172,6 @@ CREATE TABLE "attendance" (
     "studentTerminalReportId" TEXT,
 
     CONSTRAINT "attendance_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "assignment" (
-    "id" TEXT NOT NULL,
-    "subjectId" TEXT NOT NULL,
-    "tutorId" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "dueDate" TIMESTAMP(3) NOT NULL,
-    "isDone" BOOLEAN NOT NULL DEFAULT false,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "assignment_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "solveAssignment" (
-    "id" TEXT NOT NULL,
-    "studentId" TEXT NOT NULL,
-    "assignmentId" TEXT NOT NULL,
-    "score" INTEGER NOT NULL,
-    "isDone" BOOLEAN NOT NULL DEFAULT false,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "solveAssignment_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -273,21 +246,6 @@ CREATE TABLE "healthRecord" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "healthRecord_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "transport" (
-    "id" TEXT NOT NULL,
-    "driverName" TEXT NOT NULL,
-    "vehicleNo" TEXT NOT NULL,
-    "route" TEXT NOT NULL,
-    "capacity" INTEGER NOT NULL,
-    "availableSeats" INTEGER,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "schoolId" TEXT NOT NULL,
-
-    CONSTRAINT "transport_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -380,6 +338,12 @@ CREATE TABLE "_subjectTotutor" (
 );
 
 -- CreateTable
+CREATE TABLE "_classesTosubject" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
 CREATE TABLE "_classesTotutor" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
@@ -392,13 +356,16 @@ CREATE UNIQUE INDEX "superAdmin_email_key" ON "superAdmin"("email");
 CREATE UNIQUE INDEX "superAdmin_phone_key" ON "superAdmin"("phone");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "school_name_key" ON "school"("name");
+CREATE UNIQUE INDEX "school_schoolName_key" ON "school"("schoolName");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "admin_email_key" ON "admin"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "admin_generatedRegistrationCodes_key" ON "admin"("generatedRegistrationCodes");
+CREATE UNIQUE INDEX "admin_phone_key" ON "admin"("phone");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "admin_tutorRegistrationCode_key" ON "admin"("tutorRegistrationCode");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "tutor_email_key" ON "tutor"("email");
@@ -425,6 +392,12 @@ CREATE UNIQUE INDEX "_subjectTotutor_AB_unique" ON "_subjectTotutor"("A", "B");
 CREATE INDEX "_subjectTotutor_B_index" ON "_subjectTotutor"("B");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "_classesTosubject_AB_unique" ON "_classesTosubject"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_classesTosubject_B_index" ON "_classesTosubject"("B");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "_classesTotutor_AB_unique" ON "_classesTotutor"("A", "B");
 
 -- CreateIndex
@@ -434,25 +407,19 @@ CREATE INDEX "_classesTotutor_B_index" ON "_classesTotutor"("B");
 ALTER TABLE "school" ADD CONSTRAINT "school_superAdminId_fkey" FOREIGN KEY ("superAdminId") REFERENCES "superAdmin"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "admin" ADD CONSTRAINT "admin_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "school"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "admin" ADD CONSTRAINT "admin_schoolCode_fkey" FOREIGN KEY ("schoolCode") REFERENCES "school"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "tutor" ADD CONSTRAINT "tutor_registrationCode_fkey" FOREIGN KEY ("registrationCode") REFERENCES "admin"("generatedRegistrationCodes") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "tutor" ADD CONSTRAINT "tutor_registrationCode_fkey" FOREIGN KEY ("registrationCode") REFERENCES "admin"("tutorRegistrationCode") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "student" ADD CONSTRAINT "student_adminId_fkey" FOREIGN KEY ("adminId") REFERENCES "admin"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "tutor" ADD CONSTRAINT "tutor_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "school"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "student" ADD CONSTRAINT "student_classId_fkey" FOREIGN KEY ("classId") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "student" ADD CONSTRAINT "student_adminId_fkey" FOREIGN KEY ("adminId") REFERENCES "admin"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "student" ADD CONSTRAINT "student_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "school"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "subject" ADD CONSTRAINT "subject_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "school"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "subject" ADD CONSTRAINT "subject_studentTerminalReportId_fkey" FOREIGN KEY ("studentTerminalReportId") REFERENCES "studentTerminalReport"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "student" ADD CONSTRAINT "student_classId_fkey" FOREIGN KEY ("classId") REFERENCES "classes"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "classes" ADD CONSTRAINT "classes_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "school"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -471,18 +438,6 @@ ALTER TABLE "attendance" ADD CONSTRAINT "attendance_studentTerminalReportId_fkey
 
 -- AddForeignKey
 ALTER TABLE "attendance" ADD CONSTRAINT "attendance_tutorId_fkey" FOREIGN KEY ("tutorId") REFERENCES "tutor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "assignment" ADD CONSTRAINT "assignment_subjectId_fkey" FOREIGN KEY ("subjectId") REFERENCES "subject"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "assignment" ADD CONSTRAINT "assignment_tutorId_fkey" FOREIGN KEY ("tutorId") REFERENCES "tutor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "solveAssignment" ADD CONSTRAINT "solveAssignment_assignmentId_fkey" FOREIGN KEY ("assignmentId") REFERENCES "assignment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "solveAssignment" ADD CONSTRAINT "solveAssignment_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "student"("studentId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "guardian" ADD CONSTRAINT "guardian_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "student"("studentId") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -510,9 +465,6 @@ ALTER TABLE "studentTerminalReport" ADD CONSTRAINT "studentTerminalReport_studen
 
 -- AddForeignKey
 ALTER TABLE "healthRecord" ADD CONSTRAINT "healthRecord_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "student"("studentId") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "transport" ADD CONSTRAINT "transport_schoolId_fkey" FOREIGN KEY ("schoolId") REFERENCES "school"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "timetable" ADD CONSTRAINT "timetable_classId_fkey" FOREIGN KEY ("classId") REFERENCES "classes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -558,6 +510,12 @@ ALTER TABLE "_subjectTotutor" ADD CONSTRAINT "_subjectTotutor_A_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "_subjectTotutor" ADD CONSTRAINT "_subjectTotutor_B_fkey" FOREIGN KEY ("B") REFERENCES "tutor"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_classesTosubject" ADD CONSTRAINT "_classesTosubject_A_fkey" FOREIGN KEY ("A") REFERENCES "classes"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_classesTosubject" ADD CONSTRAINT "_classesTosubject_B_fkey" FOREIGN KEY ("B") REFERENCES "subject"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_classesTotutor" ADD CONSTRAINT "_classesTotutor_A_fkey" FOREIGN KEY ("A") REFERENCES "classes"("id") ON DELETE CASCADE ON UPDATE CASCADE;

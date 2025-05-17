@@ -67,40 +67,83 @@ interface ExtractedModel {
   modelName: string;
   fields: string[];
 }
+// const extractModels = (data: Declarations): ExtractedModel[] => {
+//   writeFileSync("./generatedSchema.json", JSON.stringify(data, null, 2));
+
+//   return data.declarations.map((model) => {
+//     if (model.name) {
+//       const modelName = model.name.value;
+//       const fields = model.members
+//         .filter((member) => {
+//           if (member.type && member.type.kind && member.type.kind === "list") {
+//             return false;
+//           }
+//           if (
+//             member.attributes &&
+//             member.attributes.some((attr) =>
+//               attr.path.value.includes("relation")
+//             )
+//           ) {
+//             return false;
+//           }
+//           // if (member.attributes && member.attributes.length > 0) return false;
+//           return true;
+//         })
+//         .map((member) => member.name.value);
+//       return {
+//         modelName,
+//         fields,
+//       };
+//     } else {
+//       return {
+//         modelName: "",
+//         fields: [],
+//       };
+//     }
+//   });
+// };
+
 const extractModels = (data: Declarations): ExtractedModel[] => {
   writeFileSync("./generatedSchema.json", JSON.stringify(data, null, 2));
-  return data.declarations.map((model) => {
-    if (model.name) {
-      const modelName = model.name.value;
-      const fields = model.members
-        .filter((member) => {
-          if (member.type && member.type.kind && member.type.kind === "list") {
-            return false;
-          }
-          if (
-            member.attributes &&
-            member.attributes.some((attr) =>
+
+  if (!data.declarations || !Array.isArray(data.declarations)) {
+    return [];
+  }
+
+  return data.declarations.map((model, modelIndex) => {
+    const modelName = model?.name?.value ?? `UnnamedModel_${modelIndex}`;
+
+    const fields = (model.members || [])
+      .filter((member, memberIndex) => {
+        if (!member || !member.name || !member.name.value) {
+          return false;
+        }
+
+        if (member.type?.kind === "list") {
+          return false;
+        }
+
+        if (
+          member.attributes &&
+          member.attributes.some(
+            (attr) => Array.isArray(attr.path?.value) &&
               attr.path.value.includes("relation")
-            )
-          ) {
-            return false;
-          }
-          // if (member.attributes && member.attributes.length > 0) return false;
-          return true;
-        })
-        .map((member) => member.name.value);
-      return {
-        modelName,
-        fields,
-      };
-    } else {
-      return {
-        modelName: "",
-        fields: [],
-      };
-    }
+          )
+        ) {
+          return false;
+        }
+
+        return true;
+      })
+      .map((member) => member.name?.value || "unknown");
+
+    return {
+      modelName,
+      fields,
+    };
   });
 };
+
 
 const allowedFields = extractModels(parsedSchema as Declarations);
 

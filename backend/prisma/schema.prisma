@@ -41,8 +41,6 @@ model school {
   events         event[]
   feedbacks      feedback[]
   libraries      library[]
-  students       student[]
-  subjects       subject[]
   schedules      timetable[]
 
   tutor tutor[]
@@ -54,7 +52,7 @@ model admin {
   email                 String         @unique
   password              String
   phone                 String         @unique
-  role                  adminRole
+  role                  role          @default(admin)
   status                status         @default(inactive)
   otp                   String?
   token                 String?
@@ -63,7 +61,7 @@ model admin {
   createdAt             DateTime       @default(now())
   updatedAt             DateTime       @updatedAt
   schoolCode            String
-  tutorRegistrationCode String[]       @unique
+  tutorRegistrationCode String @unique
   school                school         @relation(fields: [schoolCode], references: [id])
   attendance            attendance[]
   notifications         notification[]
@@ -96,7 +94,7 @@ model tutor {
   verified          Boolean             @default(false)
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
-  assignments       assignment[]
+  // assignments       assignment[]
   attendance        attendance[]
   teachingMaterials teachingMaterials[]
   schedules         timetable[]
@@ -119,7 +117,7 @@ model student {
   parentContact   String
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
-  classId           String
+  classId           String?
   adminId           String
   attendance        attendance[]
   discipline        discipline[]
@@ -128,9 +126,9 @@ model student {
   healthRecords     healthRecord[]
   notification      notification[]
   paymentRequest    paymentRequest[]
-  solveAssignment   solveAssignment[]
+  // solveAssignment   solveAssignment[]
   admin             admin            @relation(fields: [adminId], references: [id])
-  class             classes           @relation(fields: [classId], references: [id])
+  class             classes?           @relation(fields: [classId], references: [id])
   subject subject[]
 
   studentTerminalReport studentTerminalReport[]
@@ -141,15 +139,13 @@ model subject {
   subjectName             String                 @unique
   createdAt               DateTime               @default(now())
   updatedAt               DateTime               @updatedAt
-  schoolId                String?
-  studentTerminalReportId String?
-  assignments             assignment[]
+  // assignments             assignment[]
   students                student[]
-  school                  school?                @relation(fields: [schoolId], references: [id])
-  studentTerminalReport   studentTerminalReport? @relation(fields: [studentTerminalReportId], references: [id])
   materials               teachingMaterials[]
   timetable               timetable[]
   tutors                  tutor[]                @relation("subjectTotutor")
+
+  classes classes[]
 }
 
 model classes {
@@ -159,6 +155,7 @@ model classes {
   createdAt             DateTime                @default(now())
   updatedAt             DateTime                @updatedAt
   schoolId              String
+  subjects             subject[]
   attendance            attendance[]
   school                school                  @relation(fields: [schoolId], references: [id])
   students              student[]
@@ -186,32 +183,32 @@ model attendance {
   tutor                   tutor                  @relation(fields: [tutorId], references: [id])
 }
 
-model assignment {
-  id              String            @id @default(uuid())
-  subjectId       String
-  tutorId         String
-  title           String
-  description     String
-  dueDate         DateTime
-  isDone          Boolean           @default(false)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  subject         subject           @relation(fields: [subjectId], references: [id])
-  tutor           tutor             @relation(fields: [tutorId], references: [id])
-  solveAssignment solveAssignment[]
-}
+// model assignment {
+//   id              String            @id @default(uuid())
+//   subjectId       String
+//   tutorId         String
+//   title           String
+//   description     String
+//   dueDate         DateTime
+//   isDone          Boolean           @default(false)
+//   createdAt       DateTime          @default(now())
+//   updatedAt       DateTime          @updatedAt
+//   subject         subject           @relation(fields: [subjectId], references: [id])
+//   tutor           tutor             @relation(fields: [tutorId], references: [id])
+//   solveAssignment solveAssignment[]
+// }
 
-model solveAssignment {
-  id           String     @id @default(uuid())
-  studentId    String
-  assignmentId String
-  score        Int
-  isDone       Boolean    @default(false)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  assignment   assignment @relation(fields: [assignmentId], references: [id])
-  student      student    @relation(fields: [studentId], references: [studentId])
-}
+// model solveAssignment {
+//   id           String     @id @default(uuid())
+//   studentId    String
+//   assignmentId String
+//   score        Int
+//   isDone       Boolean    @default(false)
+//   createdAt    DateTime   @default(now())
+//   updatedAt    DateTime   @updatedAt
+//   assignment   assignment @relation(fields: [assignmentId], references: [id])
+//   student      student    @relation(fields: [studentId], references: [studentId])
+// }
 
 model guardian {
   id             String                  @id @default(uuid())
@@ -271,7 +268,6 @@ model studentTerminalReport {
   class            classes      @relation(fields: [classId], references: [id])
   guardian         guardian?    @relation(fields: [guardianId], references: [id])
   student          student      @relation(fields: [studentId], references: [studentId])
-  subjectReport    subject[]
 }
 
 model healthRecord {
@@ -364,12 +360,12 @@ enum role {
   parent
 }
 
-enum adminRole {
-  Headmaster
-  AssistantHeadmaster
-  IT_coordinator
-  Academics
-}
+// enum adminRole {
+//   Headmaster
+//   AssistantHeadmaster
+//   IT_coordinator
+//   Academics
+// }
 
 enum schoolTypes {
   seniorHigh

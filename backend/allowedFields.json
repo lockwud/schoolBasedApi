@@ -25,10 +25,6 @@
       "token",
       "otpAttempts",
       "verified",
-      "otpExpiresAt",
-      "passwordResetToken",
-      "hashedResetLink",
-      "resetLinkExpiresAt",
       "role",
       "createdAt",
       "updatedAt"
@@ -38,11 +34,13 @@
     "modelName": "school",
     "fields": [
       "id",
-      "name",
-      "schoolType",
-      "feeRequired",
+      "schoolName",
+      "categrory",
+      "type",
+      "feesRequired",
       "createdAt",
       "updatedAt",
+      "maxtotalAdmins",
       "superAdminId"
     ]
   },
@@ -55,17 +53,15 @@
       "password",
       "phone",
       "role",
-      "schoolType",
       "status",
       "otp",
       "token",
       "otpAttempts",
       "verified",
-      "maxUsedCode",
-      "totalCodeUsed",
       "createdAt",
       "updatedAt",
-      "schoolId"
+      "schoolCode",
+      "tutorRegistrationCode"
     ]
   },
   {
@@ -78,15 +74,18 @@
       "gender",
       "email",
       "password",
-      "contact",
-      "otp",
-      "otpAttempts",
-      "verified",
-      "otpExpiresAt",
-      "token",
+      "pictureUrl",
+      "pictureKey",
+      "phone",
       "role",
       "specialization",
       "qualification",
+      "registrationCode",
+      "schoolId",
+      "otp",
+      "token",
+      "otpAttempts",
+      "verified",
       "createdAt",
       "updatedAt"
     ]
@@ -104,18 +103,12 @@
       "photoKey",
       "studentId",
       "password",
-      "otp",
-      "token",
-      "otpAttempts",
       "contact",
-      "guardianContact",
-      "level",
-      "scholarshipStatus",
+      "parentContact",
       "createdAt",
       "updatedAt",
       "classId",
-      "adminId",
-      "schoolId"
+      "adminId"
     ]
   },
   {
@@ -124,9 +117,7 @@
       "id",
       "subjectName",
       "createdAt",
-      "updatedAt",
-      "schoolId",
-      "studentTerminalReportId"
+      "updatedAt"
     ]
   },
   {
@@ -157,30 +148,8 @@
     ]
   },
   {
-    "modelName": "assignment",
-    "fields": [
-      "id",
-      "subjectId",
-      "tutorId",
-      "title",
-      "description",
-      "dueDate",
-      "isDone",
-      "createdAt",
-      "updatedAt"
-    ]
-  },
-  {
-    "modelName": "solveAssignment",
-    "fields": [
-      "id",
-      "studentId",
-      "assignmentId",
-      "score",
-      "isDone",
-      "createdAt",
-      "updatedAt"
-    ]
+    "modelName": "UnnamedModel_10",
+    "fields": []
   },
   {
     "modelName": "guardian",
@@ -248,20 +217,6 @@
       "emergencyContact",
       "createdAt",
       "updatedAt"
-    ]
-  },
-  {
-    "modelName": "transport",
-    "fields": [
-      "id",
-      "driverName",
-      "vehicleNo",
-      "route",
-      "capacity",
-      "availableSeats",
-      "createdAt",
-      "updatedAt",
-      "schoolId"
     ]
   },
   {
@@ -335,6 +290,68 @@
     ]
   },
   {
+    "modelName": "role",
+    "fields": [
+      "superAdmin",
+      "admin",
+      "student",
+      "tutor",
+      "guardian",
+      "parent"
+    ]
+  },
+  {
+    "modelName": "UnnamedModel_23",
+    "fields": []
+  },
+  {
+    "modelName": "schoolTypes",
+    "fields": [
+      "seniorHigh",
+      "basic_jhs"
+    ]
+  },
+  {
+    "modelName": "schoolCategory",
+    "fields": [
+      "private",
+      "government"
+    ]
+  },
+  {
+    "modelName": "qualification",
+    "fields": [
+      "SHS",
+      "BED",
+      "BSC",
+      "MFIL",
+      "MED",
+      "PHD",
+      "DIP"
+    ]
+  },
+  {
+    "modelName": "specialization",
+    "fields": [
+      "MATHEMATICS",
+      "ENGLISH",
+      "SCIENCE",
+      "IT",
+      "SOCIAL",
+      "ECONOMICS",
+      "AGRICULTURE",
+      "ELECTRICALS"
+    ]
+  },
+  {
+    "modelName": "parent",
+    "fields": [
+      "mother",
+      "father",
+      "guardian"
+    ]
+  },
+  {
     "modelName": "gender",
     "fields": [
       "male",
@@ -384,25 +401,6 @@
       "cash",
       "card",
       "mobileMoney"
-    ]
-  },
-  {
-    "modelName": "role",
-    "fields": [
-      "superAdmin",
-      "admin",
-      "student",
-      "tutor",
-      "guardian",
-      "parent"
-    ]
-  },
-  {
-    "modelName": "parent",
-    "fields": [
-      "mother",
-      "father",
-      "guardian"
     ]
   }
 ]
