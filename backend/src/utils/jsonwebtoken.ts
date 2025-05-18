@@ -67,17 +67,21 @@ export const authenticateJWT = (
 
 
 // Function to sign a JWT token with the student payload
+
 export const signToken = (payload: UserPayload): string => {
-  if (!process.env.JWT_SECRET || !process.env.JWT_EXPIRES_IN) {
+  const secret = process.env.JWT_SECRET;
+  const expiresIn = process.env.JWT_EXPIRES_IN;
+
+  if (!secret || !expiresIn) {
     throw new HttpException(
       HttpStatus.INTERNAL_SERVER_ERROR,
       "JWT configuration is missing"
     );
-  }            
-  return jwt.sign(payload, process.env.JWT_SECRET as jwt.Secret, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
+  }
+
+  return jwt.sign(payload, secret as jwt.Secret, {
+    expiresIn: expiresIn as string | number,
   });
-  
 };
 
 
