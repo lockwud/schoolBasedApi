@@ -31,6 +31,6 @@ export const analyticsController = {
       totalPopulation,
     };
 
-    res.status(200).json(analyticsData);
+    res.status(HttpStatus.OK).json(analyticsData);
   }),
 };

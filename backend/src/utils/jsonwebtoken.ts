@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import jwt  from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 import HttpException from "./http-error";
 import { HttpStatus } from "./http-status";
 
@@ -7,19 +7,19 @@ import { HttpStatus } from "./http-status";
 // Define the payload to handle both students and tutors
 export interface UserPayload {
   id: string;
-  role: 'superAdmin'|'student' | 'tutor' | 'admin' | 'guardian'| 'parent';
+  role: "superAdmin" | "student" | "tutor" | "admin" | "guardian"| "parent" ;
   
 }
 
 declare global {
   namespace Express {
     interface Request {
-      student?: UserPayload; // student payload with role
-      tutor?: UserPayload;   // tutor payload with role
-      admin?:UserPayload;
-      guardian?: UserPayload;
-      parent?: UserPayload;
-      superAdmin?: UserPayload;
+      student: UserPayload; // student payload with role
+      tutor: UserPayload;   // tutor payload with role
+      admin:UserPayload;
+      guardian: UserPayload;
+      parent: UserPayload;
+      superAdmin: UserPayload;
     }
   }
 }
@@ -69,8 +69,8 @@ export const authenticateJWT = (
 // Function to sign a JWT token with the student payload
 
 export const signToken = (payload: UserPayload): string => {
-  const secret = process.env.JWT_SECRET;
-  const expiresIn = process.env.JWT_EXPIRES_IN;
+  const secret = process.env.JWT_SECRET || "defaultSecret"; // Default secret
+  const expiresIn = process.env.JWT_EXPIRES_IN || "1h";     // Default expiration time
 
   if (!secret || !expiresIn) {
     throw new HttpException(
@@ -79,9 +79,9 @@ export const signToken = (payload: UserPayload): string => {
     );
   }
 
-  return jwt.sign(payload, secret as jwt.Secret, {
-    expiresIn: expiresIn as string | number,
-  });
+  const options: SignOptions = { expiresIn: expiresIn as SignOptions['expiresIn'] };
+
+  return jwt.sign(payload, secret, options);
 };
 
 
@@ -90,15 +90,18 @@ export const signToken = (payload: UserPayload): string => {
 
 // Function to create a short-lived invalid token
 export const setInvalidToken = (): string => {
-  if (!process.env.JWT_SECRET) {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
     throw new HttpException(
       HttpStatus.INTERNAL_SERVER_ERROR,
       "JWT secret is missing"
     );
   }
-  return jwt.sign({ logout: "logout" }, process.env.JWT_SECRET, {
-    expiresIn: "1hr", // Short-lived token
-  });
+
+  const payload = { logout: "logout" };
+  const options: SignOptions = { expiresIn: "1h" };
+
+  return jwt.sign(payload, secret, options);
 };
 
 
