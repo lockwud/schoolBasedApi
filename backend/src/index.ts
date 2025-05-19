@@ -4,6 +4,8 @@ import morgan from "morgan";
 import cors from "cors";
 import mainRouter from "./routes";
 import { ErrorHandler } from "./middleware/errorHandler";
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "./swagger.json";
 
 dotenv.config();
 
@@ -21,6 +23,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
 });
 
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/api", mainRouter);
 
 app.use(ErrorHandler);
