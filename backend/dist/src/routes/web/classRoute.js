@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 const validate_payload_1 = require("./../../middleware/validate-payload");
 const express_1 = require("express");
+const rateLimit = require("express-rate-limit");
 const classes = __importStar(require("../../controllers/classController"));
 const jsonwebtoken_1 = require("../../utils/jsonwebtoken");
 const classRoute = (0, express_1.Router)();
@@ -49,5 +50,10 @@ classes.getClasses);
 classRoute.get("/:id", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin", "tutors"]), classes.getClassById);
 classRoute.get("/name", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin", "tutors"]), classes.getClassByName);
 classRoute.put("/update/:id", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), classes.updateClassDetails);
-classRoute.delete("/delete/:id", jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), classes.deleteClass);
+const deleteClassLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 10, // limit each IP to 10 requests per windowMs
+    message: "Too many delete requests from this IP, please try again after a minute."
+});
+classRoute.delete("/delete/:id", deleteClassLimiter, jsonwebtoken_1.authenticateJWT, (0, jsonwebtoken_1.authorizeRole)(["admin"]), classes.deleteClass);
 exports.default = classRoute;
