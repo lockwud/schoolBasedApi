@@ -34,7 +34,14 @@ tutorRoute.get("/",
 );
 
 
+const getTutorByIdRateLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 10, // Limit each IP to 10 requests per `window` (here, per minute)
+    message: "Too many requests to fetch tutor details from this IP, please try again after a minute."
+});
+
 tutorRoute.get("/:id", 
+    getTutorByIdRateLimiter,
     authenticateJWT,
     authorizeRole(["admin", "tutor"]),
     tutor.getTtutorById
