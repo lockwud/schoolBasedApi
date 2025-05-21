@@ -45,7 +45,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateStudentIndex = exports.generateReferallCode = void 0;
+exports.generateStudentIndex = exports.createClass = exports.generateReferallCode = void 0;
 const crypto = __importStar(require("crypto"));
 const prisma_1 = __importDefault(require("./prisma"));
 const generateReferallCode = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -53,6 +53,18 @@ const generateReferallCode = () => __awaiter(void 0, void 0, void 0, function* (
     return code;
 });
 exports.generateReferallCode = generateReferallCode;
+const createClass = (schoolId) => __awaiter(void 0, void 0, void 0, function* () {
+    yield prisma_1.default.classes.create({
+        data: {
+            className: "Class A",
+            capacity: 30,
+            school: {
+                connect: { id: schoolId }, // Provide the school ID to connect the relation
+            },
+        },
+    });
+});
+exports.createClass = createClass;
 const generateStudentIndex = (classId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Predefined starting indexes for each class
@@ -71,7 +83,7 @@ const generateStudentIndex = (classId) => __awaiter(void 0, void 0, void 0, func
         const classInfo = yield prisma_1.default.classes.findUnique({
             where: { id: classId },
             include: {
-                student: {
+                students: {
                     orderBy: {
                         studentId: 'desc', // Get the latest student in this class
                     },
@@ -82,14 +94,14 @@ const generateStudentIndex = (classId) => __awaiter(void 0, void 0, void 0, func
         if (!classInfo) {
             throw new Error(`Class with id ${classId} not found`);
         }
-        const { className, student } = classInfo;
+        const { className, students } = classInfo;
         // Check if a starting index is defined for the given class
         if (!classStartingIndexes[className]) {
             throw new Error(`No starting index defined for class ${className}`);
         }
         // Determine the next index
-        let nextIndex = student.length > 0
-            ? BigInt(student[0].studentId.toString()) + BigInt(1) // Continue from the last student index
+        let nextIndex = students.length > 0
+            ? BigInt(students[0].studentId.toString()) + BigInt(1) // Continue from the last student index
             : BigInt(classStartingIndexes[className]); // Start from the base class's starting index
         // Check for index availability and ensure uniqueness
         while (true) {

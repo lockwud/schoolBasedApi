@@ -1,0 +1,24 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const admin_route_1 = __importDefault(require("./admin.route"));
+const class_route_1 = __importDefault(require("./class.route"));
+const tutor_route_1 = __importDefault(require("./tutor.route"));
+const student_route_1 = __importDefault(require("./student.route"));
+const analytics_route_1 = __importDefault(require("./analytics.route"));
+const subject_route_1 = __importDefault(require("./subject.route"));
+const attendance_route_1 = __importDefault(require("./attendance.route"));
+const superAdmin_route_1 = __importDefault(require("./superAdmin.route"));
+const webRouter = (0, express_1.Router)();
+webRouter.use("/admins", admin_route_1.default);
+webRouter.use("/classes", class_route_1.default);
+webRouter.use("/tutors", tutor_route_1.default);
+webRouter.use("/students", student_route_1.default);
+webRouter.use("/analytics", analytics_route_1.default);
+webRouter.use("/subjects", subject_route_1.default);
+webRouter.use("/attendances", attendance_route_1.default);
+webRouter.use('/superAdmin', superAdmin_route_1.default);
+exports.default = webRouter;

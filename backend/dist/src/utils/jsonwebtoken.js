@@ -22,6 +22,15 @@ const authenticateJWT = (req, res, next) => {
             else if (decoded && decoded.role === "tutor") {
                 req.tutor = decoded;
             }
+            else if (decoded && decoded.role === "guardian") {
+                req.guardian = decoded;
+            }
+            else if (decoded && decoded.role === "parent") {
+                req.parent = decoded;
+            }
+            else if (decoded && decoded.role === "superAdmin") {
+                req.superAdmin = decoded;
+            }
             else if (decoded && decoded.role === "admin") {
                 req.admin = decoded;
             }
@@ -35,22 +44,24 @@ const authenticateJWT = (req, res, next) => {
 exports.authenticateJWT = authenticateJWT;
 // Function to sign a JWT token with the student payload
 const signToken = (payload) => {
-    if (!process.env.JWT_SECRET || !process.env.JWT_EXPIRES_IN) {
+    const secret = process.env.JWT_SECRET;
+    const expiresIn = process.env.JWT_EXPIRES_IN;
+    if (!secret || !expiresIn) {
         throw new http_error_1.default(http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, "JWT configuration is missing");
     }
-    return jsonwebtoken_1.default.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRES_IN,
-    });
+    const options = { expiresIn: expiresIn };
+    return jsonwebtoken_1.default.sign(payload, secret, options);
 };
 exports.signToken = signToken;
 // Function to create a short-lived invalid token
 const setInvalidToken = () => {
-    if (!process.env.JWT_SECRET) {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
         throw new http_error_1.default(http_status_1.HttpStatus.INTERNAL_SERVER_ERROR, "JWT secret is missing");
     }
-    return jsonwebtoken_1.default.sign({ logout: "logout" }, process.env.JWT_SECRET, {
-        expiresIn: "1hr", // Short-lived token
-    });
+    const payload = { logout: "logout" };
+    const options = { expiresIn: "1h" };
+    return jsonwebtoken_1.default.sign(payload, secret, options);
 };
 exports.setInvalidToken = setInvalidToken;
 const authorizeRole = (allowedRoles) => {

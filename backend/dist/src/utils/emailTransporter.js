@@ -16,9 +16,9 @@ exports.sendPasswordResetLink = exports.sendOtpEmail = exports.generateOtp = voi
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const http_error_1 = __importDefault(require("./http-error"));
 const http_status_1 = require("./http-status");
-const generateOtp = () => {
+const generateOtp = () => __awaiter(void 0, void 0, void 0, function* () {
     return Math.floor(100000 + Math.random() * 900000).toString();
-};
+});
 exports.generateOtp = generateOtp;
 const sendOtpEmail = (email, otp) => __awaiter(void 0, void 0, void 0, function* () {
     const transporter = nodemailer_1.default.createTransport({
@@ -44,7 +44,7 @@ const sendOtpEmail = (email, otp) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.sendOtpEmail = sendOtpEmail;
-const sendPasswordResetLink = (email, link, hashedResetLink) => __awaiter(void 0, void 0, void 0, function* () {
+const sendPasswordResetLink = (email, link, resetToken) => __awaiter(void 0, void 0, void 0, function* () {
     const transporter = nodemailer_1.default.createTransport({
         service: "gmail",
         auth: {
@@ -56,7 +56,7 @@ const sendPasswordResetLink = (email, link, hashedResetLink) => __awaiter(void 0
         from: process.env.EMAIL_USER,
         to: email,
         subject: "Forgot password",
-        text: `Click on this link to reset your password ${link + hashedResetLink}`,
+        text: `Click on this link to reset your password ${link + resetToken}`,
     };
     try {
         yield transporter.sendMail(mailOptions);

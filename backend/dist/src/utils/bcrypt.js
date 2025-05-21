@@ -13,12 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.compare = exports.hash = void 0;
-const bcrypt_1 = __importDefault(require("bcrypt"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const hash = (password) => __awaiter(void 0, void 0, void 0, function* () {
     const saltRounds = 10;
     try {
-        const salt = yield bcrypt_1.default.genSalt(saltRounds);
-        const hashpass = yield bcrypt_1.default.hash(password, salt);
+        const salt = yield bcryptjs_1.default.genSalt(saltRounds);
+        const hashpass = yield bcryptjs_1.default.hash(password, salt);
         return hashpass;
     }
     catch (error) {
@@ -29,7 +29,7 @@ const hash = (password) => __awaiter(void 0, void 0, void 0, function* () {
 exports.hash = hash;
 const compare = (password, sysPassword) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const matchPassword = yield bcrypt_1.default.compare(password, sysPassword);
+        const matchPassword = yield bcryptjs_1.default.compare(password, sysPassword);
         return matchPassword;
     }
     catch (error) {

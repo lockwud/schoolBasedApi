@@ -16,7 +16,7 @@ exports.validatePayload = void 0;
 const allowedFields_json_1 = __importDefault(require("../../allowedFields.json"));
 const http_status_1 = require("../utils/http-status");
 const validatePayload = (model) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const modelFields = yield allowedFields_json_1.default.find((field) => field.modelName === model);
+    const modelFields = allowedFields_json_1.default.find((field) => field.modelName === model);
     const payload = req.body;
     const dataFields = Object.keys(payload);
     const unwantedFields = dataFields.filter((field) => !(modelFields === null || modelFields === void 0 ? void 0 : modelFields.fields.includes(field)));
