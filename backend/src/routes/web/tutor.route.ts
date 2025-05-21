@@ -54,7 +54,16 @@ tutorRoute.put("/update/:id",
 );
 
 
+import rateLimit from "express-rate-limit";
+
+const deleteTutorRateLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 10, // Limit each IP to 10 requests per `window` (here, per minute)
+    message: "Too many delete requests from this IP, please try again after a minute."
+});
+
 tutorRoute.delete("/delete/:id",
+    deleteTutorRateLimiter,
     authenticateJWT,
     authorizeRole(["admin", "tutor"]),
     tutor.deleteTutor
