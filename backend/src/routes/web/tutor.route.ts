@@ -47,7 +47,14 @@ tutorRoute.get("/email",
     tutor.getTutorByEmail
 );
 
+const updateTutorRateLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 10, // Limit each IP to 10 requests per `window` (here, per minute)
+    message: "Too many update requests from this IP, please try again after a minute."
+});
+
 tutorRoute.put("/update/:id",
+    updateTutorRateLimiter,
     authenticateJWT,
     authorizeRole(["admin", "tutor"]),
     tutor.updateTutorDetails
