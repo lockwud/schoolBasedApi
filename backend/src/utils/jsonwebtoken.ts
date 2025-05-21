@@ -69,8 +69,8 @@ export const authenticateJWT = (
 // Function to sign a JWT token with the student payload
 
 export const signToken = (payload: UserPayload): string => {
-  const secret = process.env.JWT_SECRET || "defaultSecret"; // Default secret
-  const expiresIn = process.env.JWT_EXPIRES_IN || "1h";     // Default expiration time
+  const secret = process.env.JWT_SECRET;
+  const expiresIn = process.env.JWT_EXPIRES_IN;     
 
   if (!secret || !expiresIn) {
     throw new HttpException(
