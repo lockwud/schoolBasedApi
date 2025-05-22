@@ -42,7 +42,13 @@ classRoute.get("/name",
     classes.getClassByName
 );
 
+const updateClassLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+});
+
 classRoute.put("/update/:id",
+    updateClassLimiter,
     authenticateJWT,
     authorizeRole(["admin"]),
     classes.updateClassDetails
