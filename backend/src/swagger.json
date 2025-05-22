@@ -1,7 +1,7 @@
 {
     "openapi": "3.1.0",
     "info": {
-        "title": "SMS(School Management System API",
+        "title": "SMS(School Management System API)",
         "version": "1.0.0",
         "description": "API documentation for SMS (School Management System). This API provides endpoints for managing users, schools, and other resources related to the school management system."
     },
@@ -18,7 +18,7 @@
 
         },
         {
-            "url": "https://api.example.com",
+            "url": "https://schoolbasedapi.onrender.com/api/web",
             "description": "Production server"
 
         }
