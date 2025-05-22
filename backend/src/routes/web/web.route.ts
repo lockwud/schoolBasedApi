@@ -16,7 +16,7 @@ webRouter.use("/students", studentRoute)
 webRouter.use("/analytics", analyticsRoute)
 webRouter.use("/subjects", subjectRoute)
 webRouter.use("/attendances", attendanceRoute)
-webRouter.use('/superAdmin',superAdminRoute)
+webRouter.use('/superAdmins',superAdminRoute)
 
 
 export default webRouter;
