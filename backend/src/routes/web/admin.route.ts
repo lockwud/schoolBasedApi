@@ -14,7 +14,14 @@ adminRoute.post("/login",
     admin.login 
 );
 
+const otpVerificationRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // Limit each IP to 10 requests per windowMs
+    message: "Too many OTP verification attempts from this IP, please try again later."
+});
+
 adminRoute.post("/verifyOtp", 
+    otpVerificationRateLimiter,
     admin.otpVerification
 );
 
