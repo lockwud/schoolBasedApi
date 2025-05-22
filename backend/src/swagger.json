@@ -84,7 +84,7 @@
                 }
             }
         },
-        "/superAdmins": {
+        "/superAdmins/signUp": {
             "post": {
                 "summary": "Create Super Admin",
                 "description": "Registers a new super admin.",
