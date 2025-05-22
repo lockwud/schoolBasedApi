@@ -50,7 +50,16 @@ adminRoute.put("/update/:id",
     admin.updateAdminRecords
 );
 
+import rateLimit from "express-rate-limit";
+
+const deleteAdminRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // Limit each IP to 10 delete requests per windowMs
+    message: "Too many delete requests from this IP, please try again later."
+});
+
 adminRoute.delete("/delete/:id",
+    deleteAdminRateLimiter,
     authenticateJWT,
     authorizeRole(["admin"]),
     admin.deleteAdmin
