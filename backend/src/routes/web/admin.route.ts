@@ -38,7 +38,14 @@ adminRoute.get("/:id",
     admin.getAdminById
 );
 
+const emailRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 50, // Limit each IP to 50 requests per windowMs
+    message: "Too many requests to this endpoint from this IP, please try again later."
+});
+
 adminRoute.get("/email",
+    emailRateLimiter,
     authenticateJWT,
     authorizeRole(["admin"]),
     admin.getAdminByEmail
