@@ -2,7 +2,26 @@ import { validatePayload } from '../../middleware/validate-payload';
 import { Router } from "express";
 import * as tutor from "../../controllers/tutor.controller"
 import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
+import rateLimit from "express-rate-limit";
+
+
 const tutorRoute = Router();
+const getTutorByIdRateLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 10, // Limit each IP to 10 requests per `window` (here, per minute)
+    message: "Too many requests to fetch tutor details from this IP, please try again after a minute."
+});
+const getTutorByEmailRateLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 10, // Limit each IP to 10 requests per `window` (here, per minute)
+    message: "Too many requests to fetch tutor by email from this IP, please try again after a minute."
+});
+const deleteTutorRateLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 10, // Limit each IP to 10 requests per `window` (here, per minute)
+    message: "Too many delete requests from this IP, please try again after a minute."
+});
+
 
 // All enpoint for admin tutor relation
 tutorRoute.post("/admin/signup", 
@@ -34,11 +53,7 @@ tutorRoute.get("/",
 );
 
 
-const getTutorByIdRateLimiter = rateLimit({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    max: 10, // Limit each IP to 10 requests per `window` (here, per minute)
-    message: "Too many requests to fetch tutor details from this IP, please try again after a minute."
-});
+
 
 tutorRoute.get("/:id", 
     getTutorByIdRateLimiter,
@@ -48,11 +63,6 @@ tutorRoute.get("/:id",
 );
 
 
-const getTutorByEmailRateLimiter = rateLimit({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    max: 10, // Limit each IP to 10 requests per `window` (here, per minute)
-    message: "Too many requests to fetch tutor by email from this IP, please try again after a minute."
-});
 
 tutorRoute.get("/email",
     getTutorByEmailRateLimiter,
@@ -75,13 +85,6 @@ tutorRoute.put("/update/:id",
 );
 
 
-import rateLimit from "express-rate-limit";
-
-const deleteTutorRateLimiter = rateLimit({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    max: 10, // Limit each IP to 10 requests per `window` (here, per minute)
-    message: "Too many delete requests from this IP, please try again after a minute."
-});
 
 tutorRoute.delete("/delete/:id",
     deleteTutorRateLimiter,
