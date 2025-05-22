@@ -44,7 +44,14 @@ adminRoute.get("/email",
     admin.getAdminByEmail
 );
 
+const updateAdminRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 20, // Limit each IP to 20 update requests per windowMs
+    message: "Too many update requests from this IP, please try again later."
+});
+
 adminRoute.put("/update/:id",
+    updateAdminRateLimiter,
     authenticateJWT,
     authorizeRole(["admin"]),
     admin.updateAdminRecords
