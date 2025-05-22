@@ -42,7 +42,13 @@ classRoute.put("/update/:id",
     classes.updateClassDetails
 );
 
+const deleteClassLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+});
+
 classRoute.delete("/delete/:id",
+    deleteClassLimiter,
     authenticateJWT,
     authorizeRole(["admin"]),
     classes.deleteClass
