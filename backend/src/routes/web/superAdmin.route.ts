@@ -19,8 +19,8 @@ const signInRateLimiter = rateLimit({
     message: "Too many sign-in attempts, please try again later.",
 });
 
-superAdminRoute.post("/signin", signInRateLimiter, validatePayload('superAdmin'), superAdmin.signIn);
-superAdminRoute.post("/signUp",superAdmin.signUpSuperAdmin);
+superAdminRoute.post("/signin", signInRateLimiter, superAdmin.signIn);
+superAdminRoute.post("/signUp",validatePayload('superAdmin'),superAdmin.signUpSuperAdmin);
 superAdminRoute.post("/verifyOtp", verifyOtpRateLimiter, superAdmin.verifyOtp); 
 
 export default superAdminRoute;
