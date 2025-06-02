@@ -1,6 +1,6 @@
 import { classes } from "@prisma/client";
 import { HttpStatus } from "../utils/http-status";
-import prisma from "../utils/prisma";
+import prisma from "../utils/superClient";
 import { classData, classSchema } from "../validators/classValidator";
 import { throwError } from "../middleware/errorHandler";
 

@@ -1,4 +1,4 @@
-import prisma from "../utils/prisma";
+import prisma from "../utils/superClient";
 
 const DEFAULT_TOP_STUDENT_LIMIT = 10;
 

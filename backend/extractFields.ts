@@ -1,24 +1,11 @@
 // scripts/extractFields.ts
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { parsePrismaSchema } from "@loancrate/prisma-schema-parser";
-
-
-const schemaPath = "./prisma/schema.prisma";
-
-const schema = readFileSync(schemaPath, "utf-8");
-const parsedSchema = parsePrismaSchema(schema);
+import path from "path";
 
 interface Location {
-  start: {
-    offset: number;
-    line: number;
-    column: number;
-  };
-  end: {
-    offset: number;
-    line: number;
-    column: number;
-  };
+  start: { offset: number; line: number; column: number };
+  end: { offset: number; line: number; column: number };
 }
 
 interface Name {
@@ -67,66 +54,25 @@ interface ExtractedModel {
   modelName: string;
   fields: string[];
 }
-// const extractModels = (data: Declarations): ExtractedModel[] => {
-//   writeFileSync("./generatedSchema.json", JSON.stringify(data, null, 2));
 
-//   return data.declarations.map((model) => {
-//     if (model.name) {
-//       const modelName = model.name.value;
-//       const fields = model.members
-//         .filter((member) => {
-//           if (member.type && member.type.kind && member.type.kind === "list") {
-//             return false;
-//           }
-//           if (
-//             member.attributes &&
-//             member.attributes.some((attr) =>
-//               attr.path.value.includes("relation")
-//             )
-//           ) {
-//             return false;
-//           }
-//           // if (member.attributes && member.attributes.length > 0) return false;
-//           return true;
-//         })
-//         .map((member) => member.name.value);
-//       return {
-//         modelName,
-//         fields,
-//       };
-//     } else {
-//       return {
-//         modelName: "",
-//         fields: [],
-//       };
-//     }
-//   });
-// };
-
+/**
+ * Extract fields from schema declaration
+ */
 const extractModels = (data: Declarations): ExtractedModel[] => {
-  writeFileSync("./generatedSchema.json", JSON.stringify(data, null, 2));
-
-  if (!data.declarations || !Array.isArray(data.declarations)) {
-    return [];
-  }
+  if (!data.declarations || !Array.isArray(data.declarations)) return [];
 
   return data.declarations.map((model, modelIndex) => {
     const modelName = model?.name?.value ?? `UnnamedModel_${modelIndex}`;
-
     const fields = (model.members || [])
-      .filter((member, memberIndex) => {
-        if (!member || !member.name || !member.name.value) {
-          return false;
-        }
-
-        if (member.type?.kind === "list") {
-          return false;
-        }
+      .filter((member) => {
+        if (!member?.name?.value) return false;
+        if (member.type?.kind === "list") return false;
 
         if (
           member.attributes &&
           member.attributes.some(
-            (attr) => Array.isArray(attr.path?.value) &&
+            (attr) =>
+              Array.isArray(attr.path?.value) &&
               attr.path.value.includes("relation")
           )
         ) {
@@ -137,15 +83,30 @@ const extractModels = (data: Declarations): ExtractedModel[] => {
       })
       .map((member) => member.name?.value || "unknown");
 
-    return {
-      modelName,
-      fields,
-    };
+    return { modelName, fields };
   });
 };
 
+/**
+ * Process a single schema file
+ */
+const processSchema = (schemaPath: string, outputName: string) => {
+  const schema = readFileSync(schemaPath, "utf-8");
+  const parsedSchema = parsePrismaSchema(schema) as Declarations;
 
-const allowedFields = extractModels(parsedSchema as Declarations);
+  const models = extractModels(parsedSchema);
 
-writeFileSync("./generatedSchema.json", JSON.stringify(parsedSchema, null, 2));
-writeFileSync("./allowedFields.json", JSON.stringify(allowedFields, null, 2));
+  const outputDir = path.join(__dirname, "../allowedFields");
+  if (!existsSync(outputDir)) {
+    mkdirSync(outputDir);
+  }
+
+  writeFileSync(path.join(outputDir, `${outputName}.json`), JSON.stringify(models, null, 2));
+  console.log(`✅ Extracted allowed fields for ${outputName} schema.`);
+};
+
+/**
+ * MAIN
+ */
+processSchema("./prisma/super/schema.prisma", "super");
+processSchema("./prisma/tenants/schema.prisma", "tenant");

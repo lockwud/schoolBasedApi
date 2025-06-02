@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/tenant"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("TENANT_DATABASE_URL")
+}
+
+model admin {
+  id        String   @id @default(uuid())
+  fullName  String
+  email     String   @unique
+  password  String
+  phone     String
+  role      role     @default(admin)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum role {
+  admin
+  tutor
+  accountant
+}
+
+model tutor {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String?
+  subject   String?
+  picture   String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model student {
+  id          String   @id @default(uuid())
+  firstName   String
+  lastName    String
+  email       String?  @unique
+  password    String?
+  class       String
+  level       String
+  gender      String
+  dateOfBirth DateTime
+  photoUrl    String?
+  medicalInfo Json?
+  guardianId  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  guardian    Guardian?        @relation(fields: [guardianId], references: [id])
+  attendances Attendance[]
+  reports     TerminalReport[]
+  assessments Assessment[]
+  payments    Payment[]
+
+  Transcript Transcript[]
+}
+
+model Guardian {
+  id        String    @id @default(uuid())
+  name      String
+  email     String?   @unique
+  phone     String
+  address   String?
+  students  student[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Assessment {
+  id           String   @id @default(uuid())
+  studentId    String
+  term         String
+  academicYear String
+  subject      String
+  caScore      Float?
+  examScore    Float?
+  createdAt    DateTime @default(now())
+
+  student student @relation(fields: [studentId], references: [id])
+}
+
+model TerminalReport {
+  id           String   @id @default(uuid())
+  studentId    String
+  term         String
+  academicYear String
+  remarks      String?
+  performance  Json // { subject: { ca: 20, exam: 50 } }
+  createdAt    DateTime @default(now())
+
+  student student @relation(fields: [studentId], references: [id])
+}
+
+model Transcript {
+  id        String   @id @default(uuid())
+  studentId String
+  details   Json // list of terms and grades
+  createdAt DateTime @default(now())
+
+  student student @relation(fields: [studentId], references: [id])
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Timetable {
+  id        String   @id @default(uuid())
+  class     String
+  day       String
+  subject   String
+  startTime DateTime
+  endTime   DateTime
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  id        String        @id @default(uuid())
+  studentId String
+  payee     String
+  contact   String?
+  amount    Float
+  method    paymentMethod
+  status    PaymentStatus
+  reference String        @unique
+  paidAt    DateTime
+  createdAt DateTime      @default(now())
+  student   student       @relation(fields: [studentId], references: [id])
+}
+
+enum paymentMethod {
+  cash
+  momo
+}
+
+enum PaymentStatus {
+  PAID
+  FAILED
+  PENDING
+}
+
+model Attendance {
+  id        String           @id @default(uuid())
+  studentId String
+  date      DateTime
+  status    AttendanceStatus
+  createdAt DateTime         @default(now())
+
+  student student @relation(fields: [studentId], references: [id])
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+// ------------------------
+// SETTINGS & MIGRATION
+// ------------------------
+
+model SchoolSetting {
+  id               String   @id @default(uuid())
+  schoolName       String
+  logoUrl          String?
+  academicCalendar Json?
+  gradingPolicy    Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model MigrationLog {
+  id         String   @id @default(uuid())
+  filename   String
+  status     String
+  executedAt DateTime @default(now())
+  result     String?
+}

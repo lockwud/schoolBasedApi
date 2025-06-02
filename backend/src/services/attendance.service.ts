@@ -1,6 +1,6 @@
 import { throwError } from "../middleware/errorHandler";
 import { HttpStatus } from "../utils/http-status";
-import prisma from "../utils/prisma";
+import prisma from "../utils/superClient";
 import { attendanceSchema, attendanceDto } from "../validators/attendanceValidator";
 import { startOfDay } from 'date-fns';
 

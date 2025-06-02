@@ -1,5 +1,5 @@
 import { HttpStatus } from "../utils/http-status";
-import prisma from "../utils/prisma";
+import prisma from "../utils/superClient";
 import {hash, compare} from "../utils/bcrypt"
 import { adminData, adminSchema } from "../validators/adminValidator";
 import { generateOtp, sendOtpEmail} from "../utils/emailTransporter"

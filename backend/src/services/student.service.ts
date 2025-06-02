@@ -1,6 +1,6 @@
 import HttpException from "../utils/http-error";
 import { HttpStatus } from "../utils/http-status";
-import prisma from "../utils/prisma";
+import prisma from "../utils/superClient";
 import {hash, compare} from "../utils/bcrypt"
 import { signToken, UserPayload } from "../utils/jsonwebtoken";
 import { studentData, studentSchema } from "../validators/studentValidator";

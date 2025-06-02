@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/super"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum role {
+  super
+}
+
+enum schooltype {
+  private
+  government
+}
+
+enum status {
+  active
+  inactive
+  suspended
+}
+
+enum paymentStatus {
+  demo
+  paid
+  unpaid
+}
+
+model superAdmin {
+  id        String   @id @default(uuid())
+  fullname  String
+  email     String   @unique
+  password  String
+  phone     String   @unique
+  status    status   @default(inactive)
+  otp       String?
+  token     String?
+  verified  Boolean  @default(false)
+  role      role     @default(super)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  school    school[]
+}
+
+model school {
+  id               String        @id @default(uuid())
+  schoolName       String
+  type             schooltype
+  feesRequired     Boolean       @default(false)
+  code             String        @unique
+  admins           String[]
+  maxtotalAdmins   Int           @default(3)
+  databaseName     String        @unique
+  databaseUrl      String
+  contact          String?
+  email            String?
+  logoUrl          String?
+  logoKey          String?
+  address          String?
+  subscription     Boolean       @default(false)
+  paymentStatus    paymentStatus @default(demo)
+  subscriptionDate DateTime
+  EndOfLife        DateTime
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  superAdminId     String
+  superAdmin       superAdmin    @relation(fields: [superAdminId], references: [id])
+}

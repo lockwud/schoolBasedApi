@@ -1,5 +1,5 @@
 import { HttpStatus } from "../utils/http-status";
-import prisma from "../utils/prisma";
+import prisma from "../utils/superClient";
 import {compare} from "../utils/bcrypt"
 import { signToken } from "../utils/jsonwebtoken";
 import { tutorData, tutorSchema } from "../validators/tutorValidator";

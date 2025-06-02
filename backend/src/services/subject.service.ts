@@ -1,6 +1,6 @@
 import { HttpStatus } from "../utils/http-status";
 import { subjectSchema, subjectData } from "../validators/subjectValidator";
-import prisma from "../utils/prisma";
+import prisma from "../utils/superClient";
 import { throwError } from '../middleware/errorHandler';
 
 export const addSubject = async(data: subjectData)=>{

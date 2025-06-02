@@ -4,17 +4,32 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "copy-files": "cp ./allowedFields.json dist/",
-    "build": "tsc && pnpm copy-files",
-    "start": "node ./dist/src/index.js",
-    "dev": "nodemon",
-    "migrate": "npx prisma migrate dev --name init && pnpm extra:fields",
-    "generate": "npx prisma generate",
-    "extra:fields": "ts-node extractFields.ts",
-    "migrate:dev": "npx prisma migrate deploy",
-    "reset": "npx prisma migrate reset"
-  },
+  "test": "echo \"Error: no test specified\" && exit 1",
+
+  "copy-files": "cp -r ./allowedFields dist/",
+  "build": "tsc && pnpm copy-files",
+  "start": "node ./dist/src/index.js",
+  "dev": "nodemon",
+
+  "generate:super": "npx prisma generate --schema=prisma/super/schema.prisma",
+  "generate:tenant": "npx prisma generate --schema=prisma/tenants/schema.prisma",
+  "generate": "pnpm generate:super && pnpm generate:tenant",
+
+  "migrate:super": "npx prisma migrate dev --schema=prisma/super/schema.prisma --name init",
+  "migrate:tenant": "npx prisma migrate dev --schema=prisma/tenants/schema.prisma --name init",
+  "migrate": "pnpm migrate:super && pnpm migrate:tenant && pnpm extract:fields",
+
+  "deploy:super": "npx prisma migrate deploy --schema=prisma/super/schema.prisma",
+  "deploy:tenant": "npx prisma migrate deploy --schema=prisma/tenants/schema.prisma",
+  "deploy": "pnpm deploy:super && pnpm deploy:tenant",
+
+  "reset:super": "npx prisma migrate reset --schema=prisma/super/schema.prisma",
+  "reset:tenant": "npx prisma migrate reset --schema=prisma/tenants/schema.prisma",
+  "reset": "pnpm reset:super && pnpm reset:tenant",
+
+  "extract:fields": "ts-node scripts/extractFields.ts"
+},
+
   "keywords": [],
   "author": "",
   "license": "ISC",
