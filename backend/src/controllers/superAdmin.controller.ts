@@ -42,3 +42,22 @@ export const verifyOtp = catchAsync(async(
 });
 
 
+export const registerSchool = catchAsync(async(
+    req: Request,
+    res: Response,
+    next: NextFunction
+)=>{
+    const data = req.body
+    const school = await superAdminService.onboardSchool(data)
+    res.status(HttpStatus.CREATED).json({message:"Onboarding successful", school})
+})
+
+
+export const getAllSchools = catchAsync(async(
+    req: Request,
+    res: Response,
+    next: NextFunction
+)=>{
+    const AllSchools = await superAdminService.fetchSchools()
+    res.status(HttpStatus.OK).json({AllSchools})
+})

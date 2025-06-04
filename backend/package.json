@@ -27,7 +27,7 @@
   "reset:tenant": "npx prisma migrate reset --schema=prisma/tenants/schema.prisma",
   "reset": "pnpm reset:super && pnpm reset:tenant",
 
-  "extract:fields": "ts-node scripts/extractFields.ts"
+  "extract:fields": "ts-node ./extractFields.ts"
 },
 
   "keywords": [],

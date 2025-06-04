@@ -7,7 +7,7 @@ import { HttpStatus } from "./http-status";
 // Define the payload to handle both students and tutors
 export interface UserPayload {
   id: string;
-  role: "superAdmin" | "student" | "tutor" | "admin" | "guardian"| "parent" ;
+  role: "super" | "student" | "tutor" | "admin" | "guardian"| "parent" ;
   
 }
 
@@ -51,7 +51,7 @@ export const authenticateJWT = (
       } else if (decoded && (decoded as UserPayload).role === "parent") {
         req.parent = decoded as UserPayload;
       }
-      else if (decoded && (decoded as UserPayload).role === "superAdmin") {
+      else if (decoded && (decoded as UserPayload).role === "super") {
         req.superAdmin = decoded as UserPayload;
       
       }else if (decoded && (decoded as UserPayload).role === "admin"){

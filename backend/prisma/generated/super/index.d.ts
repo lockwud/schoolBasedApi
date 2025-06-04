@@ -1010,6 +1010,37 @@ export namespace Prisma {
 
 
   /**
+   * Count Type SchoolCountOutputType
+   */
+
+  export type SchoolCountOutputType = {
+    superAdmin: number
+  }
+
+  export type SchoolCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    superAdmin?: boolean | SchoolCountOutputTypeCountSuperAdminArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * SchoolCountOutputType without action
+   */
+  export type SchoolCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SchoolCountOutputType
+     */
+    select?: SchoolCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * SchoolCountOutputType without action
+   */
+  export type SchoolCountOutputTypeCountSuperAdminArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: superAdminWhereInput
+  }
+
+
+  /**
    * Models
    */
 
@@ -2051,18 +2082,8 @@ export namespace Prisma {
 
   export type AggregateSchool = {
     _count: SchoolCountAggregateOutputType | null
-    _avg: SchoolAvgAggregateOutputType | null
-    _sum: SchoolSumAggregateOutputType | null
     _min: SchoolMinAggregateOutputType | null
     _max: SchoolMaxAggregateOutputType | null
-  }
-
-  export type SchoolAvgAggregateOutputType = {
-    maxtotalAdmins: number | null
-  }
-
-  export type SchoolSumAggregateOutputType = {
-    maxtotalAdmins: number | null
   }
 
   export type SchoolMinAggregateOutputType = {
@@ -2070,8 +2091,6 @@ export namespace Prisma {
     schoolName: string | null
     type: $Enums.schooltype | null
     feesRequired: boolean | null
-    code: string | null
-    maxtotalAdmins: number | null
     databaseName: string | null
     databaseUrl: string | null
     contact: string | null
@@ -2082,10 +2101,9 @@ export namespace Prisma {
     subscription: boolean | null
     paymentStatus: $Enums.paymentStatus | null
     subscriptionDate: Date | null
-    EndOfLife: Date | null
+    endOfLife: Date | null
     createdAt: Date | null
     updatedAt: Date | null
-    superAdminId: string | null
   }
 
   export type SchoolMaxAggregateOutputType = {
@@ -2093,8 +2111,6 @@ export namespace Prisma {
     schoolName: string | null
     type: $Enums.schooltype | null
     feesRequired: boolean | null
-    code: string | null
-    maxtotalAdmins: number | null
     databaseName: string | null
     databaseUrl: string | null
     contact: string | null
@@ -2105,10 +2121,9 @@ export namespace Prisma {
     subscription: boolean | null
     paymentStatus: $Enums.paymentStatus | null
     subscriptionDate: Date | null
-    EndOfLife: Date | null
+    endOfLife: Date | null
     createdAt: Date | null
     updatedAt: Date | null
-    superAdminId: string | null
   }
 
   export type SchoolCountAggregateOutputType = {
@@ -2116,9 +2131,7 @@ export namespace Prisma {
     schoolName: number
     type: number
     feesRequired: number
-    code: number
     admins: number
-    maxtotalAdmins: number
     databaseName: number
     databaseUrl: number
     contact: number
@@ -2129,29 +2142,18 @@ export namespace Prisma {
     subscription: number
     paymentStatus: number
     subscriptionDate: number
-    EndOfLife: number
+    endOfLife: number
     createdAt: number
     updatedAt: number
-    superAdminId: number
     _all: number
   }
 
-
-  export type SchoolAvgAggregateInputType = {
-    maxtotalAdmins?: true
-  }
-
-  export type SchoolSumAggregateInputType = {
-    maxtotalAdmins?: true
-  }
 
   export type SchoolMinAggregateInputType = {
     id?: true
     schoolName?: true
     type?: true
     feesRequired?: true
-    code?: true
-    maxtotalAdmins?: true
     databaseName?: true
     databaseUrl?: true
     contact?: true
@@ -2162,10 +2164,9 @@ export namespace Prisma {
     subscription?: true
     paymentStatus?: true
     subscriptionDate?: true
-    EndOfLife?: true
+    endOfLife?: true
     createdAt?: true
     updatedAt?: true
-    superAdminId?: true
   }
 
   export type SchoolMaxAggregateInputType = {
@@ -2173,8 +2174,6 @@ export namespace Prisma {
     schoolName?: true
     type?: true
     feesRequired?: true
-    code?: true
-    maxtotalAdmins?: true
     databaseName?: true
     databaseUrl?: true
     contact?: true
@@ -2185,10 +2184,9 @@ export namespace Prisma {
     subscription?: true
     paymentStatus?: true
     subscriptionDate?: true
-    EndOfLife?: true
+    endOfLife?: true
     createdAt?: true
     updatedAt?: true
-    superAdminId?: true
   }
 
   export type SchoolCountAggregateInputType = {
@@ -2196,9 +2194,7 @@ export namespace Prisma {
     schoolName?: true
     type?: true
     feesRequired?: true
-    code?: true
     admins?: true
-    maxtotalAdmins?: true
     databaseName?: true
     databaseUrl?: true
     contact?: true
@@ -2209,10 +2205,9 @@ export namespace Prisma {
     subscription?: true
     paymentStatus?: true
     subscriptionDate?: true
-    EndOfLife?: true
+    endOfLife?: true
     createdAt?: true
     updatedAt?: true
-    superAdminId?: true
     _all?: true
   }
 
@@ -2254,18 +2249,6 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Select which fields to average
-    **/
-    _avg?: SchoolAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: SchoolSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
      * Select which fields to find the minimum value
     **/
     _min?: SchoolMinAggregateInputType
@@ -2296,8 +2279,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: SchoolCountAggregateInputType | true
-    _avg?: SchoolAvgAggregateInputType
-    _sum?: SchoolSumAggregateInputType
     _min?: SchoolMinAggregateInputType
     _max?: SchoolMaxAggregateInputType
   }
@@ -2307,9 +2288,7 @@ export namespace Prisma {
     schoolName: string
     type: $Enums.schooltype
     feesRequired: boolean
-    code: string
     admins: string[]
-    maxtotalAdmins: number
     databaseName: string
     databaseUrl: string
     contact: string | null
@@ -2320,13 +2299,10 @@ export namespace Prisma {
     subscription: boolean
     paymentStatus: $Enums.paymentStatus
     subscriptionDate: Date
-    EndOfLife: Date
+    endOfLife: Date
     createdAt: Date
     updatedAt: Date
-    superAdminId: string
     _count: SchoolCountAggregateOutputType | null
-    _avg: SchoolAvgAggregateOutputType | null
-    _sum: SchoolSumAggregateOutputType | null
     _min: SchoolMinAggregateOutputType | null
     _max: SchoolMaxAggregateOutputType | null
   }
@@ -2350,9 +2326,7 @@ export namespace Prisma {
     schoolName?: boolean
     type?: boolean
     feesRequired?: boolean
-    code?: boolean
     admins?: boolean
-    maxtotalAdmins?: boolean
     databaseName?: boolean
     databaseUrl?: boolean
     contact?: boolean
@@ -2363,11 +2337,11 @@ export namespace Prisma {
     subscription?: boolean
     paymentStatus?: boolean
     subscriptionDate?: boolean
-    EndOfLife?: boolean
+    endOfLife?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    superAdminId?: boolean
-    superAdmin?: boolean | superAdminDefaultArgs<ExtArgs>
+    superAdmin?: boolean | school$superAdminArgs<ExtArgs>
+    _count?: boolean | SchoolCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["school"]>
 
   export type schoolSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2375,9 +2349,7 @@ export namespace Prisma {
     schoolName?: boolean
     type?: boolean
     feesRequired?: boolean
-    code?: boolean
     admins?: boolean
-    maxtotalAdmins?: boolean
     databaseName?: boolean
     databaseUrl?: boolean
     contact?: boolean
@@ -2388,11 +2360,9 @@ export namespace Prisma {
     subscription?: boolean
     paymentStatus?: boolean
     subscriptionDate?: boolean
-    EndOfLife?: boolean
+    endOfLife?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    superAdminId?: boolean
-    superAdmin?: boolean | superAdminDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["school"]>
 
   export type schoolSelectScalar = {
@@ -2400,9 +2370,7 @@ export namespace Prisma {
     schoolName?: boolean
     type?: boolean
     feesRequired?: boolean
-    code?: boolean
     admins?: boolean
-    maxtotalAdmins?: boolean
     databaseName?: boolean
     databaseUrl?: boolean
     contact?: boolean
@@ -2413,32 +2381,28 @@ export namespace Prisma {
     subscription?: boolean
     paymentStatus?: boolean
     subscriptionDate?: boolean
-    EndOfLife?: boolean
+    endOfLife?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    superAdminId?: boolean
   }
 
   export type schoolInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    superAdmin?: boolean | superAdminDefaultArgs<ExtArgs>
+    superAdmin?: boolean | school$superAdminArgs<ExtArgs>
+    _count?: boolean | SchoolCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type schoolIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    superAdmin?: boolean | superAdminDefaultArgs<ExtArgs>
-  }
+  export type schoolIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $schoolPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "school"
     objects: {
-      superAdmin: Prisma.$superAdminPayload<ExtArgs>
+      superAdmin: Prisma.$superAdminPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       schoolName: string
       type: $Enums.schooltype
       feesRequired: boolean
-      code: string
       admins: string[]
-      maxtotalAdmins: number
       databaseName: string
       databaseUrl: string
       contact: string | null
@@ -2449,10 +2413,9 @@ export namespace Prisma {
       subscription: boolean
       paymentStatus: $Enums.paymentStatus
       subscriptionDate: Date
-      EndOfLife: Date
+      endOfLife: Date
       createdAt: Date
       updatedAt: Date
-      superAdminId: string
     }, ExtArgs["result"]["school"]>
     composites: {}
   }
@@ -2817,7 +2780,7 @@ export namespace Prisma {
    */
   export interface Prisma__schoolClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    superAdmin<T extends superAdminDefaultArgs<ExtArgs> = {}>(args?: Subset<T, superAdminDefaultArgs<ExtArgs>>): Prisma__superAdminClient<$Result.GetResult<Prisma.$superAdminPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    superAdmin<T extends school$superAdminArgs<ExtArgs> = {}>(args?: Subset<T, school$superAdminArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$superAdminPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2851,9 +2814,7 @@ export namespace Prisma {
     readonly schoolName: FieldRef<"school", 'String'>
     readonly type: FieldRef<"school", 'schooltype'>
     readonly feesRequired: FieldRef<"school", 'Boolean'>
-    readonly code: FieldRef<"school", 'String'>
     readonly admins: FieldRef<"school", 'String[]'>
-    readonly maxtotalAdmins: FieldRef<"school", 'Int'>
     readonly databaseName: FieldRef<"school", 'String'>
     readonly databaseUrl: FieldRef<"school", 'String'>
     readonly contact: FieldRef<"school", 'String'>
@@ -2864,10 +2825,9 @@ export namespace Prisma {
     readonly subscription: FieldRef<"school", 'Boolean'>
     readonly paymentStatus: FieldRef<"school", 'paymentStatus'>
     readonly subscriptionDate: FieldRef<"school", 'DateTime'>
-    readonly EndOfLife: FieldRef<"school", 'DateTime'>
+    readonly endOfLife: FieldRef<"school", 'DateTime'>
     readonly createdAt: FieldRef<"school", 'DateTime'>
     readonly updatedAt: FieldRef<"school", 'DateTime'>
-    readonly superAdminId: FieldRef<"school", 'String'>
   }
     
 
@@ -3089,10 +3049,6 @@ export namespace Prisma {
      */
     data: schoolCreateManyInput | schoolCreateManyInput[]
     skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: schoolIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -3186,6 +3142,26 @@ export namespace Prisma {
   }
 
   /**
+   * school.superAdmin
+   */
+  export type school$superAdminArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the superAdmin
+     */
+    select?: superAdminSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: superAdminInclude<ExtArgs> | null
+    where?: superAdminWhereInput
+    orderBy?: superAdminOrderByWithRelationInput | superAdminOrderByWithRelationInput[]
+    cursor?: superAdminWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SuperAdminScalarFieldEnum | SuperAdminScalarFieldEnum[]
+  }
+
+  /**
    * school without action
    */
   export type schoolDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3237,9 +3213,7 @@ export namespace Prisma {
     schoolName: 'schoolName',
     type: 'type',
     feesRequired: 'feesRequired',
-    code: 'code',
     admins: 'admins',
-    maxtotalAdmins: 'maxtotalAdmins',
     databaseName: 'databaseName',
     databaseUrl: 'databaseUrl',
     contact: 'contact',
@@ -3250,10 +3224,9 @@ export namespace Prisma {
     subscription: 'subscription',
     paymentStatus: 'paymentStatus',
     subscriptionDate: 'subscriptionDate',
-    EndOfLife: 'EndOfLife',
+    endOfLife: 'endOfLife',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-    superAdminId: 'superAdminId'
+    updatedAt: 'updatedAt'
   };
 
   export type SchoolScalarFieldEnum = (typeof SchoolScalarFieldEnum)[keyof typeof SchoolScalarFieldEnum]
@@ -3366,20 +3339,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-  /**
    * Reference to a field of type 'paymentStatus'
    */
   export type EnumpaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'paymentStatus'>
@@ -3394,16 +3353,16 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Float'
+   * Reference to a field of type 'Int'
    */
-  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
     
 
 
   /**
-   * Reference to a field of type 'Float[]'
+   * Reference to a field of type 'Int[]'
    */
-  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
   /**
    * Deep Input Types
@@ -3508,9 +3467,7 @@ export namespace Prisma {
     schoolName?: StringFilter<"school"> | string
     type?: EnumschooltypeFilter<"school"> | $Enums.schooltype
     feesRequired?: BoolFilter<"school"> | boolean
-    code?: StringFilter<"school"> | string
     admins?: StringNullableListFilter<"school">
-    maxtotalAdmins?: IntFilter<"school"> | number
     databaseName?: StringFilter<"school"> | string
     databaseUrl?: StringFilter<"school"> | string
     contact?: StringNullableFilter<"school"> | string | null
@@ -3521,11 +3478,10 @@ export namespace Prisma {
     subscription?: BoolFilter<"school"> | boolean
     paymentStatus?: EnumpaymentStatusFilter<"school"> | $Enums.paymentStatus
     subscriptionDate?: DateTimeFilter<"school"> | Date | string
-    EndOfLife?: DateTimeFilter<"school"> | Date | string
+    endOfLife?: DateTimeFilter<"school"> | Date | string
     createdAt?: DateTimeFilter<"school"> | Date | string
     updatedAt?: DateTimeFilter<"school"> | Date | string
-    superAdminId?: StringFilter<"school"> | string
-    superAdmin?: XOR<SuperAdminRelationFilter, superAdminWhereInput>
+    superAdmin?: SuperAdminListRelationFilter
   }
 
   export type schoolOrderByWithRelationInput = {
@@ -3533,9 +3489,7 @@ export namespace Prisma {
     schoolName?: SortOrder
     type?: SortOrder
     feesRequired?: SortOrder
-    code?: SortOrder
     admins?: SortOrder
-    maxtotalAdmins?: SortOrder
     databaseName?: SortOrder
     databaseUrl?: SortOrder
     contact?: SortOrderInput | SortOrder
@@ -3546,16 +3500,14 @@ export namespace Prisma {
     subscription?: SortOrder
     paymentStatus?: SortOrder
     subscriptionDate?: SortOrder
-    EndOfLife?: SortOrder
+    endOfLife?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    superAdminId?: SortOrder
-    superAdmin?: superAdminOrderByWithRelationInput
+    superAdmin?: superAdminOrderByRelationAggregateInput
   }
 
   export type schoolWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    code?: string
     databaseName?: string
     AND?: schoolWhereInput | schoolWhereInput[]
     OR?: schoolWhereInput[]
@@ -3564,7 +3516,6 @@ export namespace Prisma {
     type?: EnumschooltypeFilter<"school"> | $Enums.schooltype
     feesRequired?: BoolFilter<"school"> | boolean
     admins?: StringNullableListFilter<"school">
-    maxtotalAdmins?: IntFilter<"school"> | number
     databaseUrl?: StringFilter<"school"> | string
     contact?: StringNullableFilter<"school"> | string | null
     email?: StringNullableFilter<"school"> | string | null
@@ -3574,21 +3525,18 @@ export namespace Prisma {
     subscription?: BoolFilter<"school"> | boolean
     paymentStatus?: EnumpaymentStatusFilter<"school"> | $Enums.paymentStatus
     subscriptionDate?: DateTimeFilter<"school"> | Date | string
-    EndOfLife?: DateTimeFilter<"school"> | Date | string
+    endOfLife?: DateTimeFilter<"school"> | Date | string
     createdAt?: DateTimeFilter<"school"> | Date | string
     updatedAt?: DateTimeFilter<"school"> | Date | string
-    superAdminId?: StringFilter<"school"> | string
-    superAdmin?: XOR<SuperAdminRelationFilter, superAdminWhereInput>
-  }, "id" | "code" | "databaseName">
+    superAdmin?: SuperAdminListRelationFilter
+  }, "id" | "databaseName">
 
   export type schoolOrderByWithAggregationInput = {
     id?: SortOrder
     schoolName?: SortOrder
     type?: SortOrder
     feesRequired?: SortOrder
-    code?: SortOrder
     admins?: SortOrder
-    maxtotalAdmins?: SortOrder
     databaseName?: SortOrder
     databaseUrl?: SortOrder
     contact?: SortOrderInput | SortOrder
@@ -3599,15 +3547,12 @@ export namespace Prisma {
     subscription?: SortOrder
     paymentStatus?: SortOrder
     subscriptionDate?: SortOrder
-    EndOfLife?: SortOrder
+    endOfLife?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    superAdminId?: SortOrder
     _count?: schoolCountOrderByAggregateInput
-    _avg?: schoolAvgOrderByAggregateInput
     _max?: schoolMaxOrderByAggregateInput
     _min?: schoolMinOrderByAggregateInput
-    _sum?: schoolSumOrderByAggregateInput
   }
 
   export type schoolScalarWhereWithAggregatesInput = {
@@ -3618,9 +3563,7 @@ export namespace Prisma {
     schoolName?: StringWithAggregatesFilter<"school"> | string
     type?: EnumschooltypeWithAggregatesFilter<"school"> | $Enums.schooltype
     feesRequired?: BoolWithAggregatesFilter<"school"> | boolean
-    code?: StringWithAggregatesFilter<"school"> | string
     admins?: StringNullableListFilter<"school">
-    maxtotalAdmins?: IntWithAggregatesFilter<"school"> | number
     databaseName?: StringWithAggregatesFilter<"school"> | string
     databaseUrl?: StringWithAggregatesFilter<"school"> | string
     contact?: StringNullableWithAggregatesFilter<"school"> | string | null
@@ -3631,10 +3574,9 @@ export namespace Prisma {
     subscription?: BoolWithAggregatesFilter<"school"> | boolean
     paymentStatus?: EnumpaymentStatusWithAggregatesFilter<"school"> | $Enums.paymentStatus
     subscriptionDate?: DateTimeWithAggregatesFilter<"school"> | Date | string
-    EndOfLife?: DateTimeWithAggregatesFilter<"school"> | Date | string
+    endOfLife?: DateTimeWithAggregatesFilter<"school"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"school"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"school"> | Date | string
-    superAdminId?: StringWithAggregatesFilter<"school"> | string
   }
 
   export type superAdminCreateInput = {
@@ -3751,9 +3693,7 @@ export namespace Prisma {
     schoolName: string
     type: $Enums.schooltype
     feesRequired?: boolean
-    code: string
     admins?: schoolCreateadminsInput | string[]
-    maxtotalAdmins?: number
     databaseName: string
     databaseUrl: string
     contact?: string | null
@@ -3764,10 +3704,10 @@ export namespace Prisma {
     subscription?: boolean
     paymentStatus?: $Enums.paymentStatus
     subscriptionDate: Date | string
-    EndOfLife: Date | string
+    endOfLife: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
-    superAdmin: superAdminCreateNestedOneWithoutSchoolInput
+    superAdmin?: superAdminCreateNestedManyWithoutSchoolInput
   }
 
   export type schoolUncheckedCreateInput = {
@@ -3775,9 +3715,7 @@ export namespace Prisma {
     schoolName: string
     type: $Enums.schooltype
     feesRequired?: boolean
-    code: string
     admins?: schoolCreateadminsInput | string[]
-    maxtotalAdmins?: number
     databaseName: string
     databaseUrl: string
     contact?: string | null
@@ -3788,10 +3726,10 @@ export namespace Prisma {
     subscription?: boolean
     paymentStatus?: $Enums.paymentStatus
     subscriptionDate: Date | string
-    EndOfLife: Date | string
+    endOfLife: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
-    superAdminId: string
+    superAdmin?: superAdminUncheckedCreateNestedManyWithoutSchoolInput
   }
 
   export type schoolUpdateInput = {
@@ -3799,9 +3737,7 @@ export namespace Prisma {
     schoolName?: StringFieldUpdateOperationsInput | string
     type?: EnumschooltypeFieldUpdateOperationsInput | $Enums.schooltype
     feesRequired?: BoolFieldUpdateOperationsInput | boolean
-    code?: StringFieldUpdateOperationsInput | string
     admins?: schoolUpdateadminsInput | string[]
-    maxtotalAdmins?: IntFieldUpdateOperationsInput | number
     databaseName?: StringFieldUpdateOperationsInput | string
     databaseUrl?: StringFieldUpdateOperationsInput | string
     contact?: NullableStringFieldUpdateOperationsInput | string | null
@@ -3812,10 +3748,10 @@ export namespace Prisma {
     subscription?: BoolFieldUpdateOperationsInput | boolean
     paymentStatus?: EnumpaymentStatusFieldUpdateOperationsInput | $Enums.paymentStatus
     subscriptionDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    EndOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
+    endOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    superAdmin?: superAdminUpdateOneRequiredWithoutSchoolNestedInput
+    superAdmin?: superAdminUpdateManyWithoutSchoolNestedInput
   }
 
   export type schoolUncheckedUpdateInput = {
@@ -3823,9 +3759,7 @@ export namespace Prisma {
     schoolName?: StringFieldUpdateOperationsInput | string
     type?: EnumschooltypeFieldUpdateOperationsInput | $Enums.schooltype
     feesRequired?: BoolFieldUpdateOperationsInput | boolean
-    code?: StringFieldUpdateOperationsInput | string
     admins?: schoolUpdateadminsInput | string[]
-    maxtotalAdmins?: IntFieldUpdateOperationsInput | number
     databaseName?: StringFieldUpdateOperationsInput | string
     databaseUrl?: StringFieldUpdateOperationsInput | string
     contact?: NullableStringFieldUpdateOperationsInput | string | null
@@ -3836,10 +3770,10 @@ export namespace Prisma {
     subscription?: BoolFieldUpdateOperationsInput | boolean
     paymentStatus?: EnumpaymentStatusFieldUpdateOperationsInput | $Enums.paymentStatus
     subscriptionDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    EndOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
+    endOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    superAdminId?: StringFieldUpdateOperationsInput | string
+    superAdmin?: superAdminUncheckedUpdateManyWithoutSchoolNestedInput
   }
 
   export type schoolCreateManyInput = {
@@ -3847,9 +3781,7 @@ export namespace Prisma {
     schoolName: string
     type: $Enums.schooltype
     feesRequired?: boolean
-    code: string
     admins?: schoolCreateadminsInput | string[]
-    maxtotalAdmins?: number
     databaseName: string
     databaseUrl: string
     contact?: string | null
@@ -3860,10 +3792,9 @@ export namespace Prisma {
     subscription?: boolean
     paymentStatus?: $Enums.paymentStatus
     subscriptionDate: Date | string
-    EndOfLife: Date | string
+    endOfLife: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
-    superAdminId: string
   }
 
   export type schoolUpdateManyMutationInput = {
@@ -3871,9 +3802,7 @@ export namespace Prisma {
     schoolName?: StringFieldUpdateOperationsInput | string
     type?: EnumschooltypeFieldUpdateOperationsInput | $Enums.schooltype
     feesRequired?: BoolFieldUpdateOperationsInput | boolean
-    code?: StringFieldUpdateOperationsInput | string
     admins?: schoolUpdateadminsInput | string[]
-    maxtotalAdmins?: IntFieldUpdateOperationsInput | number
     databaseName?: StringFieldUpdateOperationsInput | string
     databaseUrl?: StringFieldUpdateOperationsInput | string
     contact?: NullableStringFieldUpdateOperationsInput | string | null
@@ -3884,7 +3813,7 @@ export namespace Prisma {
     subscription?: BoolFieldUpdateOperationsInput | boolean
     paymentStatus?: EnumpaymentStatusFieldUpdateOperationsInput | $Enums.paymentStatus
     subscriptionDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    EndOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
+    endOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -3894,9 +3823,7 @@ export namespace Prisma {
     schoolName?: StringFieldUpdateOperationsInput | string
     type?: EnumschooltypeFieldUpdateOperationsInput | $Enums.schooltype
     feesRequired?: BoolFieldUpdateOperationsInput | boolean
-    code?: StringFieldUpdateOperationsInput | string
     admins?: schoolUpdateadminsInput | string[]
-    maxtotalAdmins?: IntFieldUpdateOperationsInput | number
     databaseName?: StringFieldUpdateOperationsInput | string
     databaseUrl?: StringFieldUpdateOperationsInput | string
     contact?: NullableStringFieldUpdateOperationsInput | string | null
@@ -3907,10 +3834,9 @@ export namespace Prisma {
     subscription?: BoolFieldUpdateOperationsInput | boolean
     paymentStatus?: EnumpaymentStatusFieldUpdateOperationsInput | $Enums.paymentStatus
     subscriptionDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    EndOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
+    endOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    superAdminId?: StringFieldUpdateOperationsInput | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -4126,17 +4052,6 @@ export namespace Prisma {
     isEmpty?: boolean
   }
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
   export type EnumpaymentStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.paymentStatus | EnumpaymentStatusFieldRefInput<$PrismaModel>
     in?: $Enums.paymentStatus[] | ListEnumpaymentStatusFieldRefInput<$PrismaModel>
@@ -4144,9 +4059,14 @@ export namespace Prisma {
     not?: NestedEnumpaymentStatusFilter<$PrismaModel> | $Enums.paymentStatus
   }
 
-  export type SuperAdminRelationFilter = {
-    is?: superAdminWhereInput
-    isNot?: superAdminWhereInput
+  export type SuperAdminListRelationFilter = {
+    every?: superAdminWhereInput
+    some?: superAdminWhereInput
+    none?: superAdminWhereInput
+  }
+
+  export type superAdminOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type schoolCountOrderByAggregateInput = {
@@ -4154,9 +4074,7 @@ export namespace Prisma {
     schoolName?: SortOrder
     type?: SortOrder
     feesRequired?: SortOrder
-    code?: SortOrder
     admins?: SortOrder
-    maxtotalAdmins?: SortOrder
     databaseName?: SortOrder
     databaseUrl?: SortOrder
     contact?: SortOrder
@@ -4167,14 +4085,9 @@ export namespace Prisma {
     subscription?: SortOrder
     paymentStatus?: SortOrder
     subscriptionDate?: SortOrder
-    EndOfLife?: SortOrder
+    endOfLife?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    superAdminId?: SortOrder
-  }
-
-  export type schoolAvgOrderByAggregateInput = {
-    maxtotalAdmins?: SortOrder
   }
 
   export type schoolMaxOrderByAggregateInput = {
@@ -4182,8 +4095,6 @@ export namespace Prisma {
     schoolName?: SortOrder
     type?: SortOrder
     feesRequired?: SortOrder
-    code?: SortOrder
-    maxtotalAdmins?: SortOrder
     databaseName?: SortOrder
     databaseUrl?: SortOrder
     contact?: SortOrder
@@ -4194,10 +4105,9 @@ export namespace Prisma {
     subscription?: SortOrder
     paymentStatus?: SortOrder
     subscriptionDate?: SortOrder
-    EndOfLife?: SortOrder
+    endOfLife?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    superAdminId?: SortOrder
   }
 
   export type schoolMinOrderByAggregateInput = {
@@ -4205,8 +4115,6 @@ export namespace Prisma {
     schoolName?: SortOrder
     type?: SortOrder
     feesRequired?: SortOrder
-    code?: SortOrder
-    maxtotalAdmins?: SortOrder
     databaseName?: SortOrder
     databaseUrl?: SortOrder
     contact?: SortOrder
@@ -4217,14 +4125,9 @@ export namespace Prisma {
     subscription?: SortOrder
     paymentStatus?: SortOrder
     subscriptionDate?: SortOrder
-    EndOfLife?: SortOrder
+    endOfLife?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    superAdminId?: SortOrder
-  }
-
-  export type schoolSumOrderByAggregateInput = {
-    maxtotalAdmins?: SortOrder
   }
 
   export type EnumschooltypeWithAggregatesFilter<$PrismaModel = never> = {
@@ -4235,22 +4138,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumschooltypeFilter<$PrismaModel>
     _max?: NestedEnumschooltypeFilter<$PrismaModel>
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type EnumpaymentStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -4266,14 +4153,12 @@ export namespace Prisma {
   export type schoolCreateNestedManyWithoutSuperAdminInput = {
     create?: XOR<schoolCreateWithoutSuperAdminInput, schoolUncheckedCreateWithoutSuperAdminInput> | schoolCreateWithoutSuperAdminInput[] | schoolUncheckedCreateWithoutSuperAdminInput[]
     connectOrCreate?: schoolCreateOrConnectWithoutSuperAdminInput | schoolCreateOrConnectWithoutSuperAdminInput[]
-    createMany?: schoolCreateManySuperAdminInputEnvelope
     connect?: schoolWhereUniqueInput | schoolWhereUniqueInput[]
   }
 
   export type schoolUncheckedCreateNestedManyWithoutSuperAdminInput = {
     create?: XOR<schoolCreateWithoutSuperAdminInput, schoolUncheckedCreateWithoutSuperAdminInput> | schoolCreateWithoutSuperAdminInput[] | schoolUncheckedCreateWithoutSuperAdminInput[]
     connectOrCreate?: schoolCreateOrConnectWithoutSuperAdminInput | schoolCreateOrConnectWithoutSuperAdminInput[]
-    createMany?: schoolCreateManySuperAdminInputEnvelope
     connect?: schoolWhereUniqueInput | schoolWhereUniqueInput[]
   }
 
@@ -4305,7 +4190,6 @@ export namespace Prisma {
     create?: XOR<schoolCreateWithoutSuperAdminInput, schoolUncheckedCreateWithoutSuperAdminInput> | schoolCreateWithoutSuperAdminInput[] | schoolUncheckedCreateWithoutSuperAdminInput[]
     connectOrCreate?: schoolCreateOrConnectWithoutSuperAdminInput | schoolCreateOrConnectWithoutSuperAdminInput[]
     upsert?: schoolUpsertWithWhereUniqueWithoutSuperAdminInput | schoolUpsertWithWhereUniqueWithoutSuperAdminInput[]
-    createMany?: schoolCreateManySuperAdminInputEnvelope
     set?: schoolWhereUniqueInput | schoolWhereUniqueInput[]
     disconnect?: schoolWhereUniqueInput | schoolWhereUniqueInput[]
     delete?: schoolWhereUniqueInput | schoolWhereUniqueInput[]
@@ -4319,7 +4203,6 @@ export namespace Prisma {
     create?: XOR<schoolCreateWithoutSuperAdminInput, schoolUncheckedCreateWithoutSuperAdminInput> | schoolCreateWithoutSuperAdminInput[] | schoolUncheckedCreateWithoutSuperAdminInput[]
     connectOrCreate?: schoolCreateOrConnectWithoutSuperAdminInput | schoolCreateOrConnectWithoutSuperAdminInput[]
     upsert?: schoolUpsertWithWhereUniqueWithoutSuperAdminInput | schoolUpsertWithWhereUniqueWithoutSuperAdminInput[]
-    createMany?: schoolCreateManySuperAdminInputEnvelope
     set?: schoolWhereUniqueInput | schoolWhereUniqueInput[]
     disconnect?: schoolWhereUniqueInput | schoolWhereUniqueInput[]
     delete?: schoolWhereUniqueInput | schoolWhereUniqueInput[]
@@ -4333,10 +4216,16 @@ export namespace Prisma {
     set: string[]
   }
 
-  export type superAdminCreateNestedOneWithoutSchoolInput = {
-    create?: XOR<superAdminCreateWithoutSchoolInput, superAdminUncheckedCreateWithoutSchoolInput>
-    connectOrCreate?: superAdminCreateOrConnectWithoutSchoolInput
-    connect?: superAdminWhereUniqueInput
+  export type superAdminCreateNestedManyWithoutSchoolInput = {
+    create?: XOR<superAdminCreateWithoutSchoolInput, superAdminUncheckedCreateWithoutSchoolInput> | superAdminCreateWithoutSchoolInput[] | superAdminUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: superAdminCreateOrConnectWithoutSchoolInput | superAdminCreateOrConnectWithoutSchoolInput[]
+    connect?: superAdminWhereUniqueInput | superAdminWhereUniqueInput[]
+  }
+
+  export type superAdminUncheckedCreateNestedManyWithoutSchoolInput = {
+    create?: XOR<superAdminCreateWithoutSchoolInput, superAdminUncheckedCreateWithoutSchoolInput> | superAdminCreateWithoutSchoolInput[] | superAdminUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: superAdminCreateOrConnectWithoutSchoolInput | superAdminCreateOrConnectWithoutSchoolInput[]
+    connect?: superAdminWhereUniqueInput | superAdminWhereUniqueInput[]
   }
 
   export type EnumschooltypeFieldUpdateOperationsInput = {
@@ -4348,24 +4237,34 @@ export namespace Prisma {
     push?: string | string[]
   }
 
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
   export type EnumpaymentStatusFieldUpdateOperationsInput = {
     set?: $Enums.paymentStatus
   }
 
-  export type superAdminUpdateOneRequiredWithoutSchoolNestedInput = {
-    create?: XOR<superAdminCreateWithoutSchoolInput, superAdminUncheckedCreateWithoutSchoolInput>
-    connectOrCreate?: superAdminCreateOrConnectWithoutSchoolInput
-    upsert?: superAdminUpsertWithoutSchoolInput
-    connect?: superAdminWhereUniqueInput
-    update?: XOR<XOR<superAdminUpdateToOneWithWhereWithoutSchoolInput, superAdminUpdateWithoutSchoolInput>, superAdminUncheckedUpdateWithoutSchoolInput>
+  export type superAdminUpdateManyWithoutSchoolNestedInput = {
+    create?: XOR<superAdminCreateWithoutSchoolInput, superAdminUncheckedCreateWithoutSchoolInput> | superAdminCreateWithoutSchoolInput[] | superAdminUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: superAdminCreateOrConnectWithoutSchoolInput | superAdminCreateOrConnectWithoutSchoolInput[]
+    upsert?: superAdminUpsertWithWhereUniqueWithoutSchoolInput | superAdminUpsertWithWhereUniqueWithoutSchoolInput[]
+    set?: superAdminWhereUniqueInput | superAdminWhereUniqueInput[]
+    disconnect?: superAdminWhereUniqueInput | superAdminWhereUniqueInput[]
+    delete?: superAdminWhereUniqueInput | superAdminWhereUniqueInput[]
+    connect?: superAdminWhereUniqueInput | superAdminWhereUniqueInput[]
+    update?: superAdminUpdateWithWhereUniqueWithoutSchoolInput | superAdminUpdateWithWhereUniqueWithoutSchoolInput[]
+    updateMany?: superAdminUpdateManyWithWhereWithoutSchoolInput | superAdminUpdateManyWithWhereWithoutSchoolInput[]
+    deleteMany?: superAdminScalarWhereInput | superAdminScalarWhereInput[]
+  }
+
+  export type superAdminUncheckedUpdateManyWithoutSchoolNestedInput = {
+    create?: XOR<superAdminCreateWithoutSchoolInput, superAdminUncheckedCreateWithoutSchoolInput> | superAdminCreateWithoutSchoolInput[] | superAdminUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: superAdminCreateOrConnectWithoutSchoolInput | superAdminCreateOrConnectWithoutSchoolInput[]
+    upsert?: superAdminUpsertWithWhereUniqueWithoutSchoolInput | superAdminUpsertWithWhereUniqueWithoutSchoolInput[]
+    set?: superAdminWhereUniqueInput | superAdminWhereUniqueInput[]
+    disconnect?: superAdminWhereUniqueInput | superAdminWhereUniqueInput[]
+    delete?: superAdminWhereUniqueInput | superAdminWhereUniqueInput[]
+    connect?: superAdminWhereUniqueInput | superAdminWhereUniqueInput[]
+    update?: superAdminUpdateWithWhereUniqueWithoutSchoolInput | superAdminUpdateWithWhereUniqueWithoutSchoolInput[]
+    updateMany?: superAdminUpdateManyWithWhereWithoutSchoolInput | superAdminUpdateManyWithWhereWithoutSchoolInput[]
+    deleteMany?: superAdminScalarWhereInput | superAdminScalarWhereInput[]
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -4548,33 +4447,6 @@ export namespace Prisma {
     _max?: NestedEnumschooltypeFilter<$PrismaModel>
   }
 
-  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type NestedFloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
-  }
-
   export type NestedEnumpaymentStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.paymentStatus | EnumpaymentStatusFieldRefInput<$PrismaModel>
     in?: $Enums.paymentStatus[] | ListEnumpaymentStatusFieldRefInput<$PrismaModel>
@@ -4590,9 +4462,7 @@ export namespace Prisma {
     schoolName: string
     type: $Enums.schooltype
     feesRequired?: boolean
-    code: string
     admins?: schoolCreateadminsInput | string[]
-    maxtotalAdmins?: number
     databaseName: string
     databaseUrl: string
     contact?: string | null
@@ -4603,7 +4473,7 @@ export namespace Prisma {
     subscription?: boolean
     paymentStatus?: $Enums.paymentStatus
     subscriptionDate: Date | string
-    EndOfLife: Date | string
+    endOfLife: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -4613,9 +4483,7 @@ export namespace Prisma {
     schoolName: string
     type: $Enums.schooltype
     feesRequired?: boolean
-    code: string
     admins?: schoolCreateadminsInput | string[]
-    maxtotalAdmins?: number
     databaseName: string
     databaseUrl: string
     contact?: string | null
@@ -4626,7 +4494,7 @@ export namespace Prisma {
     subscription?: boolean
     paymentStatus?: $Enums.paymentStatus
     subscriptionDate: Date | string
-    EndOfLife: Date | string
+    endOfLife: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -4634,11 +4502,6 @@ export namespace Prisma {
   export type schoolCreateOrConnectWithoutSuperAdminInput = {
     where: schoolWhereUniqueInput
     create: XOR<schoolCreateWithoutSuperAdminInput, schoolUncheckedCreateWithoutSuperAdminInput>
-  }
-
-  export type schoolCreateManySuperAdminInputEnvelope = {
-    data: schoolCreateManySuperAdminInput | schoolCreateManySuperAdminInput[]
-    skipDuplicates?: boolean
   }
 
   export type schoolUpsertWithWhereUniqueWithoutSuperAdminInput = {
@@ -4665,9 +4528,7 @@ export namespace Prisma {
     schoolName?: StringFilter<"school"> | string
     type?: EnumschooltypeFilter<"school"> | $Enums.schooltype
     feesRequired?: BoolFilter<"school"> | boolean
-    code?: StringFilter<"school"> | string
     admins?: StringNullableListFilter<"school">
-    maxtotalAdmins?: IntFilter<"school"> | number
     databaseName?: StringFilter<"school"> | string
     databaseUrl?: StringFilter<"school"> | string
     contact?: StringNullableFilter<"school"> | string | null
@@ -4678,10 +4539,9 @@ export namespace Prisma {
     subscription?: BoolFilter<"school"> | boolean
     paymentStatus?: EnumpaymentStatusFilter<"school"> | $Enums.paymentStatus
     subscriptionDate?: DateTimeFilter<"school"> | Date | string
-    EndOfLife?: DateTimeFilter<"school"> | Date | string
+    endOfLife?: DateTimeFilter<"school"> | Date | string
     createdAt?: DateTimeFilter<"school"> | Date | string
     updatedAt?: DateTimeFilter<"school"> | Date | string
-    superAdminId?: StringFilter<"school"> | string
   }
 
   export type superAdminCreateWithoutSchoolInput = {
@@ -4719,15 +4579,101 @@ export namespace Prisma {
     create: XOR<superAdminCreateWithoutSchoolInput, superAdminUncheckedCreateWithoutSchoolInput>
   }
 
-  export type superAdminUpsertWithoutSchoolInput = {
+  export type superAdminUpsertWithWhereUniqueWithoutSchoolInput = {
+    where: superAdminWhereUniqueInput
     update: XOR<superAdminUpdateWithoutSchoolInput, superAdminUncheckedUpdateWithoutSchoolInput>
     create: XOR<superAdminCreateWithoutSchoolInput, superAdminUncheckedCreateWithoutSchoolInput>
-    where?: superAdminWhereInput
   }
 
-  export type superAdminUpdateToOneWithWhereWithoutSchoolInput = {
-    where?: superAdminWhereInput
+  export type superAdminUpdateWithWhereUniqueWithoutSchoolInput = {
+    where: superAdminWhereUniqueInput
     data: XOR<superAdminUpdateWithoutSchoolInput, superAdminUncheckedUpdateWithoutSchoolInput>
+  }
+
+  export type superAdminUpdateManyWithWhereWithoutSchoolInput = {
+    where: superAdminScalarWhereInput
+    data: XOR<superAdminUpdateManyMutationInput, superAdminUncheckedUpdateManyWithoutSchoolInput>
+  }
+
+  export type superAdminScalarWhereInput = {
+    AND?: superAdminScalarWhereInput | superAdminScalarWhereInput[]
+    OR?: superAdminScalarWhereInput[]
+    NOT?: superAdminScalarWhereInput | superAdminScalarWhereInput[]
+    id?: StringFilter<"superAdmin"> | string
+    fullname?: StringFilter<"superAdmin"> | string
+    email?: StringFilter<"superAdmin"> | string
+    password?: StringFilter<"superAdmin"> | string
+    phone?: StringFilter<"superAdmin"> | string
+    status?: EnumstatusFilter<"superAdmin"> | $Enums.status
+    otp?: StringNullableFilter<"superAdmin"> | string | null
+    token?: StringNullableFilter<"superAdmin"> | string | null
+    verified?: BoolFilter<"superAdmin"> | boolean
+    role?: EnumroleFilter<"superAdmin"> | $Enums.role
+    createdAt?: DateTimeFilter<"superAdmin"> | Date | string
+    updatedAt?: DateTimeFilter<"superAdmin"> | Date | string
+  }
+
+  export type schoolUpdateWithoutSuperAdminInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolName?: StringFieldUpdateOperationsInput | string
+    type?: EnumschooltypeFieldUpdateOperationsInput | $Enums.schooltype
+    feesRequired?: BoolFieldUpdateOperationsInput | boolean
+    admins?: schoolUpdateadminsInput | string[]
+    databaseName?: StringFieldUpdateOperationsInput | string
+    databaseUrl?: StringFieldUpdateOperationsInput | string
+    contact?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    logoKey?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    subscription?: BoolFieldUpdateOperationsInput | boolean
+    paymentStatus?: EnumpaymentStatusFieldUpdateOperationsInput | $Enums.paymentStatus
+    subscriptionDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type schoolUncheckedUpdateWithoutSuperAdminInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolName?: StringFieldUpdateOperationsInput | string
+    type?: EnumschooltypeFieldUpdateOperationsInput | $Enums.schooltype
+    feesRequired?: BoolFieldUpdateOperationsInput | boolean
+    admins?: schoolUpdateadminsInput | string[]
+    databaseName?: StringFieldUpdateOperationsInput | string
+    databaseUrl?: StringFieldUpdateOperationsInput | string
+    contact?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    logoKey?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    subscription?: BoolFieldUpdateOperationsInput | boolean
+    paymentStatus?: EnumpaymentStatusFieldUpdateOperationsInput | $Enums.paymentStatus
+    subscriptionDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type schoolUncheckedUpdateManyWithoutSuperAdminInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolName?: StringFieldUpdateOperationsInput | string
+    type?: EnumschooltypeFieldUpdateOperationsInput | $Enums.schooltype
+    feesRequired?: BoolFieldUpdateOperationsInput | boolean
+    admins?: schoolUpdateadminsInput | string[]
+    databaseName?: StringFieldUpdateOperationsInput | string
+    databaseUrl?: StringFieldUpdateOperationsInput | string
+    contact?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    logoKey?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    subscription?: BoolFieldUpdateOperationsInput | boolean
+    paymentStatus?: EnumpaymentStatusFieldUpdateOperationsInput | $Enums.paymentStatus
+    subscriptionDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type superAdminUpdateWithoutSchoolInput = {
@@ -4760,94 +4706,17 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type schoolCreateManySuperAdminInput = {
-    id?: string
-    schoolName: string
-    type: $Enums.schooltype
-    feesRequired?: boolean
-    code: string
-    admins?: schoolCreateadminsInput | string[]
-    maxtotalAdmins?: number
-    databaseName: string
-    databaseUrl: string
-    contact?: string | null
-    email?: string | null
-    logoUrl?: string | null
-    logoKey?: string | null
-    address?: string | null
-    subscription?: boolean
-    paymentStatus?: $Enums.paymentStatus
-    subscriptionDate: Date | string
-    EndOfLife: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type schoolUpdateWithoutSuperAdminInput = {
+  export type superAdminUncheckedUpdateManyWithoutSchoolInput = {
     id?: StringFieldUpdateOperationsInput | string
-    schoolName?: StringFieldUpdateOperationsInput | string
-    type?: EnumschooltypeFieldUpdateOperationsInput | $Enums.schooltype
-    feesRequired?: BoolFieldUpdateOperationsInput | boolean
-    code?: StringFieldUpdateOperationsInput | string
-    admins?: schoolUpdateadminsInput | string[]
-    maxtotalAdmins?: IntFieldUpdateOperationsInput | number
-    databaseName?: StringFieldUpdateOperationsInput | string
-    databaseUrl?: StringFieldUpdateOperationsInput | string
-    contact?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    logoKey?: NullableStringFieldUpdateOperationsInput | string | null
-    address?: NullableStringFieldUpdateOperationsInput | string | null
-    subscription?: BoolFieldUpdateOperationsInput | boolean
-    paymentStatus?: EnumpaymentStatusFieldUpdateOperationsInput | $Enums.paymentStatus
-    subscriptionDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    EndOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type schoolUncheckedUpdateWithoutSuperAdminInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    schoolName?: StringFieldUpdateOperationsInput | string
-    type?: EnumschooltypeFieldUpdateOperationsInput | $Enums.schooltype
-    feesRequired?: BoolFieldUpdateOperationsInput | boolean
-    code?: StringFieldUpdateOperationsInput | string
-    admins?: schoolUpdateadminsInput | string[]
-    maxtotalAdmins?: IntFieldUpdateOperationsInput | number
-    databaseName?: StringFieldUpdateOperationsInput | string
-    databaseUrl?: StringFieldUpdateOperationsInput | string
-    contact?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    logoKey?: NullableStringFieldUpdateOperationsInput | string | null
-    address?: NullableStringFieldUpdateOperationsInput | string | null
-    subscription?: BoolFieldUpdateOperationsInput | boolean
-    paymentStatus?: EnumpaymentStatusFieldUpdateOperationsInput | $Enums.paymentStatus
-    subscriptionDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    EndOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type schoolUncheckedUpdateManyWithoutSuperAdminInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    schoolName?: StringFieldUpdateOperationsInput | string
-    type?: EnumschooltypeFieldUpdateOperationsInput | $Enums.schooltype
-    feesRequired?: BoolFieldUpdateOperationsInput | boolean
-    code?: StringFieldUpdateOperationsInput | string
-    admins?: schoolUpdateadminsInput | string[]
-    maxtotalAdmins?: IntFieldUpdateOperationsInput | number
-    databaseName?: StringFieldUpdateOperationsInput | string
-    databaseUrl?: StringFieldUpdateOperationsInput | string
-    contact?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    logoKey?: NullableStringFieldUpdateOperationsInput | string | null
-    address?: NullableStringFieldUpdateOperationsInput | string | null
-    subscription?: BoolFieldUpdateOperationsInput | boolean
-    paymentStatus?: EnumpaymentStatusFieldUpdateOperationsInput | $Enums.paymentStatus
-    subscriptionDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    EndOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
+    fullname?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
+    otp?: NullableStringFieldUpdateOperationsInput | string | null
+    token?: NullableStringFieldUpdateOperationsInput | string | null
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    role?: EnumroleFieldUpdateOperationsInput | $Enums.role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4861,6 +4730,10 @@ export namespace Prisma {
      * @deprecated Use SuperAdminCountOutputTypeDefaultArgs instead
      */
     export type SuperAdminCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SuperAdminCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use SchoolCountOutputTypeDefaultArgs instead
+     */
+    export type SchoolCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SchoolCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use superAdminDefaultArgs instead
      */

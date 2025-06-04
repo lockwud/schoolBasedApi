@@ -96,7 +96,7 @@ const processSchema = (schemaPath: string, outputName: string) => {
 
   const models = extractModels(parsedSchema);
 
-  const outputDir = path.join(__dirname, "../allowedFields");
+  const outputDir = path.join(__dirname, "./allowedFields");
   if (!existsSync(outputDir)) {
     mkdirSync(outputDir);
   }

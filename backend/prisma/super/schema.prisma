@@ -50,9 +50,7 @@ model school {
   schoolName       String
   type             schooltype
   feesRequired     Boolean       @default(false)
-  code             String        @unique
   admins           String[]
-  maxtotalAdmins   Int           @default(3)
   databaseName     String        @unique
   databaseUrl      String
   contact          String?
@@ -63,9 +61,8 @@ model school {
   subscription     Boolean       @default(false)
   paymentStatus    paymentStatus @default(demo)
   subscriptionDate DateTime
-  EndOfLife        DateTime
+  endOfLife        DateTime
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
-  superAdminId     String
-  superAdmin       superAdmin    @relation(fields: [superAdminId], references: [id])
+  superAdmin superAdmin[]
 }

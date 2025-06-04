@@ -142,9 +142,7 @@ exports.Prisma.SchoolScalarFieldEnum = {
   schoolName: 'schoolName',
   type: 'type',
   feesRequired: 'feesRequired',
-  code: 'code',
   admins: 'admins',
-  maxtotalAdmins: 'maxtotalAdmins',
   databaseName: 'databaseName',
   databaseUrl: 'databaseUrl',
   contact: 'contact',
@@ -155,10 +153,9 @@ exports.Prisma.SchoolScalarFieldEnum = {
   subscription: 'subscription',
   paymentStatus: 'paymentStatus',
   subscriptionDate: 'subscriptionDate',
-  EndOfLife: 'EndOfLife',
+  endOfLife: 'endOfLife',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  superAdminId: 'superAdminId'
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {

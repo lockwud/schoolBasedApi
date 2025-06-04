@@ -1,3 +1,4 @@
+import { onboardSchool } from './../../services/superAdmin.service';
 import { validatePayload } from "../../middleware/validate-payload";
 import {Router} from "express"
 import * as superAdmin from "../../controllers/superAdmin.controller"
@@ -19,9 +20,19 @@ const signInRateLimiter = rateLimit({
     message: "Too many sign-in attempts, please try again later.",
 });
 
+const onboardSchoolRateLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000,
+    max: 5,
+    message: "Too many requests, please try again later"
+});
+
+
+
 superAdminRoute.post("/signin", signInRateLimiter, superAdmin.signIn);
-superAdminRoute.post("/signUp",validatePayload('superAdmin'),superAdmin.signUpSuperAdmin);
+superAdminRoute.post("/signUp",validatePayload('superAdmin', 'super'),superAdmin.signUpSuperAdmin);
 superAdminRoute.post("/verifyOtp", verifyOtpRateLimiter, superAdmin.verifyOtp); 
+superAdminRoute.post("/onboard",  onboardSchoolRateLimiter, validatePayload("school", 'super'),superAdmin.registerSchool);
+superAdminRoute.get("/schools", superAdmin.getAllSchools)
 
 export default superAdminRoute;
 

@@ -1,26 +1,37 @@
 import { RequestHandler, Request, Response, NextFunction } from "express";
- import allowedFields from "../../allowedFields.json";
+import superAllowedFields from "../../allowedFields/super.json";
+import tenantAllowedFields from "../../allowedFields/tenant.json";
 import { HttpStatus } from "../utils/http-status";
-export const validatePayload: (model: string) => RequestHandler =
-  (model) => async (req: Request, res: Response, next: NextFunction) => {
-    const modelFields =  allowedFields.find(
-      (field) => field.modelName === model
+
+type Scope = "super" | "tenant";
+
+export const validatePayload =
+  (model: string, scope: Scope = "super"): RequestHandler =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    const allowedFieldsList = scope === "super" ? superAllowedFields : tenantAllowedFields;
+
+    const modelFields = allowedFieldsList.find(
+      (field) => field.modelName.toLowerCase() === model.toLowerCase()
     );
+
+    if (!modelFields) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: `Validation schema for model "${model}" not found.`,
+      });
+    }
+
     const payload = req.body;
     const dataFields = Object.keys(payload);
     const unwantedFields = dataFields.filter(
-      (field) => !modelFields?.fields.includes(field)
+      (field) => !modelFields.fields.includes(field)
     );
 
     if (unwantedFields.length > 0) {
-      res
-        .status(HttpStatus.BAD_REQUEST)
-        .json({
-          message: "unwanted fields are not allowed",
-          fields: unwantedFields,
-        });
-    } else {
-      next();
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        message: "Unwanted fields are not allowed",
+        fields: unwantedFields,
+      });
     }
+
+    next();
   };
-  

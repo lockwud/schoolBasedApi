@@ -1,70 +1,70 @@
-import { validatePayload } from '../../middleware/validate-payload';
-import { Router } from "express";
-import * as classes from "../../controllers/class.controller"
-import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
-import rateLimit from "express-rate-limit";
-const classRoute = Router();
+// import { validatePayload } from '../../middleware/validate-payload';
+// import { Router } from "express";
+// import * as classes from "../../controllers/class.controller"
+// import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
+// import rateLimit from "express-rate-limit";
+// const classRoute = Router();
 
-classRoute.post("/add",
-     validatePayload('classes'),
-     //authenticateJWT,
-     //authorizeRole(["admin"]),
-    classes.registerClass
-);
+// classRoute.post("/add",
+//      validatePayload('classes'),
+//      //authenticateJWT,
+//      //authorizeRole(["admin"]),
+//     classes.registerClass
+// );
 
-classRoute.get("/",
-    //authenticateJWT,
-    //authorizeRole(["admin", "tutors"]),
-    classes.getClasses
-);
+// classRoute.get("/",
+//     //authenticateJWT,
+//     //authorizeRole(["admin", "tutors"]),
+//     classes.getClasses
+// );
 
-const getClassByIdLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
-});
+// const getClassByIdLimiter = rateLimit({
+//     windowMs: 15 * 60 * 1000, // 15 minutes
+//     max: 100, // limit each IP to 100 requests per windowMs
+// });
 
-classRoute.get("/:id", 
-    getClassByIdLimiter,
-    authenticateJWT,
-    authorizeRole(["admin", "tutors"]),
-    classes.getClassById
-);
+// classRoute.get("/:id", 
+//     getClassByIdLimiter,
+//     authenticateJWT,
+//     authorizeRole(["admin", "tutors"]),
+//     classes.getClassById
+// );
 
-const getClassByNameLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
-});
+// const getClassByNameLimiter = rateLimit({
+//     windowMs: 15 * 60 * 1000, // 15 minutes
+//     max: 100, // limit each IP to 100 requests per windowMs
+// });
 
-classRoute.get("/name",
-    getClassByNameLimiter,
-    authenticateJWT,
-    authorizeRole(["admin", "tutors"]),
-    classes.getClassByName
-);
+// classRoute.get("/name",
+//     getClassByNameLimiter,
+//     authenticateJWT,
+//     authorizeRole(["admin", "tutors"]),
+//     classes.getClassByName
+// );
 
-const updateClassLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
-});
+// const updateClassLimiter = rateLimit({
+//     windowMs: 15 * 60 * 1000, // 15 minutes
+//     max: 100, // limit each IP to 100 requests per windowMs
+// });
 
-classRoute.put("/update/:id",
-    updateClassLimiter,
-    authenticateJWT,
-    authorizeRole(["admin"]),
-    classes.updateClassDetails
-);
+// classRoute.put("/update/:id",
+//     updateClassLimiter,
+//     authenticateJWT,
+//     authorizeRole(["admin"]),
+//     classes.updateClassDetails
+// );
 
-const deleteClassLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
-});
+// const deleteClassLimiter = rateLimit({
+//     windowMs: 15 * 60 * 1000, // 15 minutes
+//     max: 100, // limit each IP to 100 requests per windowMs
+// });
 
-classRoute.delete("/delete/:id",
-    deleteClassLimiter,
-    authenticateJWT,
-    authorizeRole(["admin"]),
-    classes.deleteClass
-)
+// classRoute.delete("/delete/:id",
+//     deleteClassLimiter,
+//     authenticateJWT,
+//     authorizeRole(["admin"]),
+//     classes.deleteClass
+// )
 
 
-export default classRoute;
+// export default classRoute;

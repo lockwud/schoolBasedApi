@@ -1,0 +1,84 @@
+[
+  {
+    "modelName": "client",
+    "fields": [
+      "provider",
+      "output"
+    ]
+  },
+  {
+    "modelName": "db",
+    "fields": [
+      "provider",
+      "url"
+    ]
+  },
+  {
+    "modelName": "role",
+    "fields": [
+      "super"
+    ]
+  },
+  {
+    "modelName": "schooltype",
+    "fields": [
+      "private",
+      "government"
+    ]
+  },
+  {
+    "modelName": "status",
+    "fields": [
+      "active",
+      "inactive",
+      "suspended"
+    ]
+  },
+  {
+    "modelName": "paymentStatus",
+    "fields": [
+      "demo",
+      "paid",
+      "unpaid"
+    ]
+  },
+  {
+    "modelName": "superAdmin",
+    "fields": [
+      "id",
+      "fullname",
+      "email",
+      "password",
+      "phone",
+      "status",
+      "otp",
+      "token",
+      "verified",
+      "role",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "modelName": "school",
+    "fields": [
+      "id",
+      "schoolName",
+      "type",
+      "feesRequired",
+      "databaseName",
+      "databaseUrl",
+      "contact",
+      "email",
+      "logoUrl",
+      "logoKey",
+      "address",
+      "subscription",
+      "paymentStatus",
+      "subscriptionDate",
+      "endOfLife",
+      "createdAt",
+      "updatedAt"
+    ]
+  }
+]

@@ -1,0 +1,216 @@
+[
+  {
+    "modelName": "client",
+    "fields": [
+      "provider",
+      "output"
+    ]
+  },
+  {
+    "modelName": "db",
+    "fields": [
+      "provider",
+      "url"
+    ]
+  },
+  {
+    "modelName": "admin",
+    "fields": [
+      "id",
+      "fullName",
+      "email",
+      "password",
+      "phone",
+      "role",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "modelName": "role",
+    "fields": [
+      "admin",
+      "tutor",
+      "accountant"
+    ]
+  },
+  {
+    "modelName": "tutor",
+    "fields": [
+      "id",
+      "name",
+      "email",
+      "password",
+      "phone",
+      "subject",
+      "picture",
+      "isActive",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "modelName": "student",
+    "fields": [
+      "id",
+      "firstName",
+      "lastName",
+      "email",
+      "password",
+      "class",
+      "level",
+      "gender",
+      "dateOfBirth",
+      "photoUrl",
+      "medicalInfo",
+      "guardianId",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "modelName": "Guardian",
+    "fields": [
+      "id",
+      "name",
+      "email",
+      "phone",
+      "address",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "modelName": "Assessment",
+    "fields": [
+      "id",
+      "studentId",
+      "term",
+      "academicYear",
+      "subject",
+      "caScore",
+      "examScore",
+      "createdAt"
+    ]
+  },
+  {
+    "modelName": "TerminalReport",
+    "fields": [
+      "id",
+      "studentId",
+      "term",
+      "academicYear",
+      "remarks",
+      "performance",
+      "createdAt"
+    ]
+  },
+  {
+    "modelName": "Transcript",
+    "fields": [
+      "id",
+      "studentId",
+      "details",
+      "createdAt"
+    ]
+  },
+  {
+    "modelName": "Event",
+    "fields": [
+      "id",
+      "title",
+      "description",
+      "startDate",
+      "endDate",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "modelName": "Timetable",
+    "fields": [
+      "id",
+      "class",
+      "day",
+      "subject",
+      "startTime",
+      "endTime",
+      "createdAt"
+    ]
+  },
+  {
+    "modelName": "Payment",
+    "fields": [
+      "id",
+      "studentId",
+      "payee",
+      "contact",
+      "amount",
+      "method",
+      "status",
+      "reference",
+      "paidAt",
+      "createdAt"
+    ]
+  },
+  {
+    "modelName": "paymentMethod",
+    "fields": [
+      "cash",
+      "momo"
+    ]
+  },
+  {
+    "modelName": "PaymentStatus",
+    "fields": [
+      "PAID",
+      "FAILED",
+      "PENDING"
+    ]
+  },
+  {
+    "modelName": "Attendance",
+    "fields": [
+      "id",
+      "studentId",
+      "date",
+      "status",
+      "createdAt"
+    ]
+  },
+  {
+    "modelName": "AttendanceStatus",
+    "fields": [
+      "PRESENT",
+      "ABSENT",
+      "LATE",
+      "EXCUSED"
+    ]
+  },
+  {
+    "modelName": "UnnamedModel_17",
+    "fields": []
+  },
+  {
+    "modelName": "SchoolSetting",
+    "fields": [
+      "id",
+      "schoolName",
+      "logoUrl",
+      "academicCalendar",
+      "gradingPolicy",
+      "createdAt",
+      "updatedAt"
+    ]
+  },
+  {
+    "modelName": "MigrationLog",
+    "fields": [
+      "id",
+      "filename",
+      "status",
+      "executedAt",
+      "result"
+    ]
+  }
+]

@@ -1,71 +1,71 @@
-import { validatePayload } from '../../middleware/validate-payload';
-import { Router } from "express";
-import rateLimit from "express-rate-limit";
-import * as student from "../../controllers/student.controller"
-// import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
-import upload from "../../utils/multer"
+// import { validatePayload } from '../../middleware/validate-payload';
+// import { Router } from "express";
+// import rateLimit from "express-rate-limit";
+// import * as student from "../../controllers/student.controller"
+// // import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
+// import upload from "../../utils/multer"
 
-const studentRoute = Router();
+// const studentRoute = Router();
 
-// All endpoints for admin-student relationship
-studentRoute.post("/register",
-    upload.single("photo"),
-    validatePayload('student'),
-    student.addStudent
-);
+// // All endpoints for admin-student relationship
+// studentRoute.post("/register",
+//     upload.single("photo"),
+//     validatePayload('student'),
+//     student.addStudent
+// );
 
-// Define rate limiter for login route
-const loginRateLimiter = rateLimit({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    max: 5, // Limit each IP to 5 login requests per `windowMs`
-    message: "Too many login attempts from this IP, please try again after a minute.",
-});
+// // Define rate limiter for login route
+// const loginRateLimiter = rateLimit({
+//     windowMs: 1 * 60 * 1000, // 1 minute
+//     max: 5, // Limit each IP to 5 login requests per `windowMs`
+//     message: "Too many login attempts from this IP, please try again after a minute.",
+// });
 
-studentRoute.post("/login",
-    loginRateLimiter,
-    student.login
-);
-
-
-studentRoute.get("/",
-    // authenticateJWT,
-    // authorizeRole(["admin"]),
-    student.fetchStudents
-);
+// studentRoute.post("/login",
+//     loginRateLimiter,
+//     student.login
+// );
 
 
-studentRoute.get("/:id",
-    // authenticateJWT,
-    // authorizeRole(["admin"]),
-    student.fetchStudentById
-);
+// studentRoute.get("/",
+//     // authenticateJWT,
+//     // authorizeRole(["admin"]),
+//     student.fetchStudents
+// );
 
 
-studentRoute.put("/:id",
-    student.updateStudent
-);
+// studentRoute.get("/:id",
+//     // authenticateJWT,
+//     // authorizeRole(["admin"]),
+//     student.fetchStudentById
+// );
 
 
-studentRoute.delete("/:id",
-    // authenticateJWT,
-    // authorizeRole(["admin"]),
-    student.deleteStudent
-);
+// studentRoute.put("/:id",
+//     student.updateStudent
+// );
 
 
-studentRoute.put("/autoDelete",
-    // authenticateJWT,
-    // authorizeRole(["admin"]),
-    student.autoDeleteStudent
-);
+// studentRoute.delete("/:id",
+//     // authenticateJWT,
+//     // authorizeRole(["admin"]),
+//     student.deleteStudent
+// );
 
 
-studentRoute.post("/forgotPassword",
-    student.requestPassword
-);
+// studentRoute.put("/autoDelete",
+//     // authenticateJWT,
+//     // authorizeRole(["admin"]),
+//     student.autoDeleteStudent
+// );
 
-studentRoute.put("/resetPassword",
-    student.updatePassword
-)
 
-export default studentRoute;
+// studentRoute.post("/forgotPassword",
+//     student.requestPassword
+// );
+
+// studentRoute.put("/resetPassword",
+//     student.updatePassword
+// )
+
+// export default studentRoute;

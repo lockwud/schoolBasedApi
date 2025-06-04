@@ -1,7 +1,7 @@
 import * as crypto from "crypto"
 import HttpException from "./http-error";
 import { HttpStatus } from "./http-status";
-import prisma from "./superClient";
+import prisma from "../../config/superClient";
 
 export const generateReferallCode = async()=>{
     const code =  crypto.randomUUID().slice(0, 6).toString();
