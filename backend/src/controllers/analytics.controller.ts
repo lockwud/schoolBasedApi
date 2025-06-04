@@ -22,6 +22,7 @@
 //       analyticsService.getTotalPopulation(),
 //     ]);
 
+
 //     // Combine results into a single object
 //     const analyticsData = {
 //       totalStudents,
