@@ -176,7 +176,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/lockwud/Documents/projects/schoolBasedApi/backend/prisma/generated/super",
+      "value": "/home/python/Documents/projects/schoolBasedApi/backend/prisma/generated/super",
       "fromEnvVar": null
     },
     "config": {
@@ -185,12 +185,16 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "darwin",
+        "value": "debian-openssl-3.0.x",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/lockwud/Documents/projects/schoolBasedApi/backend/prisma/super/schema.prisma",
+    "sourceFilePath": "/home/python/Documents/projects/schoolBasedApi/backend/prisma/super/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -204,6 +208,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -212,8 +217,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/super\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum role {\n  super\n}\n\nenum schooltype {\n  private\n  government\n}\n\nenum status {\n  active\n  inactive\n  suspended\n}\n\nenum paymentStatus {\n  demo\n  paid\n  unpaid\n}\n\nmodel superAdmin {\n  id        String   @id @default(uuid())\n  fullname  String\n  email     String   @unique\n  password  String\n  phone     String   @unique\n  status    status   @default(inactive)\n  otp       String?\n  token     String?\n  verified  Boolean  @default(false)\n  role      role     @default(super)\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  school    school[]\n}\n\nmodel school {\n  id               String        @id @default(uuid())\n  schoolName       String\n  type             schooltype\n  feesRequired     Boolean       @default(false)\n  admins           String[]\n  databaseName     String        @unique\n  databaseUrl      String\n  contact          String?\n  email            String?\n  logoUrl          String?\n  logoKey          String?\n  address          String?\n  subscription     Boolean       @default(false)\n  paymentStatus    paymentStatus @default(demo)\n  subscriptionDate DateTime\n  endOfLife        DateTime\n  createdAt        DateTime      @default(now())\n  updatedAt        DateTime      @updatedAt\n  superAdmin       superAdmin[]\n}\n",
-  "inlineSchemaHash": "a4553571bb382f0fd515e1534baefbfd3fb5d839f86391ec13078adac4449e7c",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../generated/super\"\n  binaryTargets = [\"native\", \"debian-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum role {\n  super\n}\n\nenum schooltype {\n  private\n  government\n}\n\nenum status {\n  active\n  inactive\n  suspended\n}\n\nenum paymentStatus {\n  demo\n  paid\n  unpaid\n}\n\nmodel superAdmin {\n  id        String   @id @default(uuid())\n  fullname  String\n  email     String   @unique\n  password  String\n  phone     String   @unique\n  status    status   @default(inactive)\n  otp       String?\n  token     String?\n  verified  Boolean  @default(false)\n  role      role     @default(super)\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  school    school[]\n}\n\nmodel school {\n  id               String        @id @default(uuid())\n  schoolName       String\n  type             schooltype\n  feesRequired     Boolean       @default(false)\n  admins           String[]\n  databaseName     String        @unique\n  databaseUrl      String\n  contact          String?\n  email            String?\n  logoUrl          String?\n  logoKey          String?\n  address          String?\n  subscription     Boolean       @default(false)\n  paymentStatus    paymentStatus @default(demo)\n  subscriptionDate DateTime\n  endOfLife        DateTime\n  createdAt        DateTime      @default(now())\n  updatedAt        DateTime      @updatedAt\n  superAdmin       superAdmin[]\n}\n",
+  "inlineSchemaHash": "c8b1142e2cdbbd57d8900ae928783d17c905cbb9e448bbf646113afb29b69c48",
   "copyEngine": true
 }
 config.dirname = '/'

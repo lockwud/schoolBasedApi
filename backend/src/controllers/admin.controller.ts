@@ -1,17 +1,18 @@
-// import { Request, Response, NextFunction } from "express";
-// import * as adminService from "../services/admin.service"
-// import { HttpStatus } from "../utils/http-status";
-// import { adminData } from '../validators/adminValidator';
-// import { catchAsync } from '../utils/catchAsync';
+import { Request, Response, NextFunction } from "express";
+import * as adminService from "../services/admin.service"
+import { HttpStatus } from "../utils/http-status";
+import { adminData } from '../validators/adminValidator';
+import { catchAsync } from '../utils/catchAsync';
 
-// export const signUp = catchAsync(
-//     async(req: Request, res: Response, next: NextFunction
+export const signUp = catchAsync(
+    async(req: Request, res: Response, next: NextFunction
         
-//     )=>{
-//         const data = req.body satisfies adminData
-//         const addAdmin = await adminService.registerAdmin(data)
-//         res.status(HttpStatus.CREATED).json({addAdmin})
-// });
+    )=>{
+        const data = req.body satisfies adminData
+        const { schoolId } = req.params;
+        const addAdmin = await adminService.registerAdmin(schoolId,data)
+        res.status(HttpStatus.CREATED).json({addAdmin})
+});
 
 
 // export const login = catchAsync(
