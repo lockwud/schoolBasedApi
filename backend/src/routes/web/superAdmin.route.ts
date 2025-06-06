@@ -1,4 +1,3 @@
-import { onboardSchool } from './../../services/superAdmin.service';
 import { validatePayload } from "../../middleware/validate-payload";
 import {Router} from "express"
 import * as superAdmin from "../../controllers/superAdmin.controller"

@@ -1,10 +1,10 @@
-// import { validatePayload } from '../../middleware/validate-payload';
-// import { Router } from "express";
-// import * as admin from "../../controllers/admin.controller"
-// import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
-// import rateLimit from "express-rate-limit";
+import { validatePayload } from '../../middleware/validate-payload';
+import { Router } from "express";
+import * as admin from "../../controllers/admin.controller"
+import {authenticateJWT, authorizeRole} from "../../utils/jsonwebtoken"
+import rateLimit from "express-rate-limit";
 
-// const adminRoute = Router();
+const adminRoute = Router();
 
 // const emailRateLimiter = rateLimit({
 //     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -23,10 +23,10 @@
 //     message: "Too many delete requests from this IP, please try again later."
 // });
 
-// adminRoute.post("/signup", 
-//     validatePayload('admin'),
-//     admin.signUp
-// );
+adminRoute.post("/signup", 
+    validatePayload('admin','tenant'),
+    admin.signUp
+);
 
 // adminRoute.post("/login",
 //     admin.login 
@@ -98,4 +98,4 @@
 // )
 
 
-// export default adminRoute;
+export default adminRoute;

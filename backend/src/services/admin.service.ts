@@ -1,12 +1,38 @@
-// import { HttpStatus } from "../utils/http-status";
-// import prisma from "../../config/superClient";
-// import {hash, compare} from "../utils/bcrypt"
-// import { adminData, adminSchema } from "../validators/adminValidator";
-// import { generateOtp, sendOtpEmail} from "../utils/emailTransporter"
-// import { generateReferallCode } from "../utils/referralCodeGenerator";
-// import { throwError } from "../middleware/errorHandler";
-// import { admin } from "@prisma/client";
-// import { signToken } from "../utils/jsonwebtoken";
+import { HttpStatus } from "../utils/http-status";
+import {hash, compare} from "../utils/bcrypt"
+import { adminData, adminSchema } from "../validators/adminValidator";
+import { generateOtp, sendOtpEmail} from "../utils/emailTransporter"
+import { generateReferallCode } from "../utils/referralCodeGenerator";
+import { throwError } from "../middleware/errorHandler";
+import { signToken } from "../utils/jsonwebtoken";
+import superDB from "../../config/superClient";
+import {getTenantClient} from "../../config/tenantClient"
+
+
+export const registerAdmin = async (schoolId: string, data: adminData) => {
+  const school = await superDB.school.findUnique({
+    where: { id: schoolId },
+  });
+
+  if (!school || !school.databaseUrl) {
+    throwError(HttpStatus.NOT_FOUND,"School or tenant DB not found");
+  }
+
+  const tenantDB = getTenantClient(school?.databaseUrl!);
+  const hashedPassword = await hash(data.password);
+  const admin = await tenantDB.admin.create({
+    data: {
+      fullName: data.fullName,
+      email: data.email,
+      password: hashedPassword,
+      phone: data.phone,
+    }
+  })
+      const { password, ...adminDataWithoutPassword } = admin;
+  const token = signToken({ id: admin.id, role: "admin" });
+  return { adminDataWithoutPassword, token };
+};
+
 
 // export const registerAdmin = async (data: adminData) => {
 //     const validateAdminData = adminSchema.safeParse(data);
