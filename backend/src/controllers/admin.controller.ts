@@ -9,8 +9,8 @@ export const signUp = catchAsync(
         
     )=>{
         const data = req.body satisfies adminData
-        const { schoolId } = req.params;
-        const addAdmin = await adminService.registerAdmin(schoolId,data)
+        const  { id }   = req.params;
+        const addAdmin = await adminService.registerAdmin(id,data)
         res.status(HttpStatus.CREATED).json({addAdmin})
 });
 

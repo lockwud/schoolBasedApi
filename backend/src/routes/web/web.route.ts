@@ -1,5 +1,5 @@
 import {Router } from "express"
-// import adminRoute from "./admin.route";
+import adminRoute from "./admin.route";
 // import classRoute from "./class.route";
 // import tutorRoute from "./tutor.route";
 // import studentRoute from "./student.route";
@@ -9,7 +9,7 @@ import {Router } from "express"
 import superAdminRoute from "./superAdmin.route";
 const webRouter = Router();
 
-// webRouter.use("/admins", adminRoute)
+webRouter.use("/admin", adminRoute)
 // webRouter.use("/classes",  classRoute)
 // webRouter.use("/tutors", tutorRoute)
 // webRouter.use("/students", studentRoute)

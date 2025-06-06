@@ -23,7 +23,7 @@ const adminRoute = Router();
 //     message: "Too many delete requests from this IP, please try again later."
 // });
 
-adminRoute.post("/signup", 
+adminRoute.post("/signup/:id", 
     validatePayload('admin','tenant'),
     admin.signUp
 );

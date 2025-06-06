@@ -9,12 +9,17 @@ import superDB from "../../config/superClient";
 import {getTenantClient} from "../../config/tenantClient"
 
 
-export const registerAdmin = async (schoolId: string, data: adminData) => {
+export const registerAdmin = async (id: string, data: adminData) => {
   const school = await superDB.school.findUnique({
-    where: { id: schoolId },
+    where: { 
+      id,
+    },
+    select:{
+      databaseUrl: true,
+    }
   });
 
-  if (!school || !school.databaseUrl) {
+  if (!school) {
     throwError(HttpStatus.NOT_FOUND,"School or tenant DB not found");
   }
 

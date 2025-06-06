@@ -1,4 +1,4 @@
-import { PrismaClient } from '../prisma/generated/tenant'; // path to the generated base client
+import { PrismaClient, PrismaClient as tenantClient} from '../prisma/generated/tenant'; // path to the generated base client
 
 // Cache to prevent PrismaClient re-instantiation
 const tenantClientCache: Record<string, PrismaClient> = {};
@@ -8,7 +8,7 @@ export function getTenantClient(databaseUrl: string): PrismaClient {
     return tenantClientCache[databaseUrl];
   }
 
-  const client = new PrismaClient({
+  const tenantDB = new tenantClient({
     datasources: {
       db: {
         url: databaseUrl,
@@ -16,6 +16,6 @@ export function getTenantClient(databaseUrl: string): PrismaClient {
     },
   });
 
-  tenantClientCache[databaseUrl] = client;
-  return client;
+  tenantClientCache[databaseUrl] = tenantDB;
+  return tenantDB;
 }
