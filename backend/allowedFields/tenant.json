@@ -3,7 +3,8 @@
     "modelName": "client",
     "fields": [
       "provider",
-      "output"
+      "output",
+      "binaryTargets"
     ]
   },
   {

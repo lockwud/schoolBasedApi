@@ -10,19 +10,38 @@ import {getTenantClient} from "../../config/tenantClient"
 
 
 export const registerAdmin = async (id: string, data: adminData) => {
+  const validateAdminData = adminSchema.safeParse(data);
+  if (!validateAdminData.success) {
+    const errors = validateAdminData.error.issues.map(
+      ({ message, path }) => `${path}: ${message}`
+    );
+    throwError(HttpStatus.BAD_REQUEST, errors.join(". "));
+  }
+
   const school = await superDB.school.findUnique({
     where: { 
       id,
     },
     select:{
       databaseUrl: true,
+      email: true,
     }
   });
 
   if (!school) {
     throwError(HttpStatus.NOT_FOUND,"School or tenant DB not found");
   }
-
+  
+  // Check if admin already exists
+  const checkAdminAvailability = await getTenantClient(school?.databaseUrl!).admin.findUnique({
+    where: {
+      email: data.email,
+    },
+  });
+  if (checkAdminAvailability) {
+    throwError(HttpStatus.CONFLICT, "Admin already exists");
+  }
+  
   const tenantDB = getTenantClient(school?.databaseUrl!);
   const hashedPassword = await hash(data.password);
   const admin = await tenantDB.admin.create({
@@ -35,6 +54,7 @@ export const registerAdmin = async (id: string, data: adminData) => {
   })
       const { password, ...adminDataWithoutPassword } = admin;
   const token = signToken({ id: admin.id, role: "admin" });
+  await tenantDB.$disconnect();
   return { adminDataWithoutPassword, token };
 };
 
