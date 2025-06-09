@@ -112,8 +112,6 @@ export const sendPasswordResetLink = async(email: string)=>{
         throwError(HttpStatus.NOT_FOUND, "Super admin not found");
     }
     const resetToken = signToken({ id: superAdmin?.email!, role: "super" });
-    // Here you would send the reset link via email
-    // For example: `https://yourapp.com/reset-password?token=${resetToken}`
     await sendOtpEmail(email, `Click the link to reset your password: http://localhost:4500/reset-password?token=${resetToken}`);
     return { message: "Password reset link sent to your email", resetToken };
 };
@@ -139,16 +137,24 @@ export const resetPassword = async(email: string, newPassword: string)=>{
     return { message: "Password reset successfully", superAdmin: updatedSuperAdmin };
 };
 
-export const fetchSuperAdmin = async(id: string)=>{
+export const fetchSuperAdminS = async()=>{
+    const superAdmins = await superDB.superAdmin.findMany();
+    const superAdminsWithoutPassword = superAdmins.map(({ password, ...rest }) => rest);
+    return superAdminsWithoutPassword;
+}
+
+
+export const fetchSuperAdminById = async(id: string)=>{
     const superAdmin = await superDB.superAdmin.findUnique({
-        where: { id },
+        where: { 
+            id: id
+        },
     });
-    if(!superAdmin){
-        throwError(HttpStatus.NOT_FOUND, "Super admin not found");
-    } else {
-        const { password, ...superAdminWithoutPassword } = superAdmin;
-        return superAdminWithoutPassword;
+    
+    if (!superAdmin) {
+        throwError(HttpStatus.NOT_FOUND, "Super admin not found")
     }
+    return superAdmin
 }
 
 export const updateSuperAdmin = async(id: string, data: Partial<superAdminData>)=>{
@@ -177,6 +183,8 @@ export const deleteSuperAdmin = async(id: string)=>{
     })
     return superAdmin
 }
+
+// School  Service
 
 export const onboardSchool = async(data: schoolData)=>{
     const validateSchoolData = schoolSchema.safeParse(data)
@@ -229,12 +237,27 @@ export const fetchSchools = async()=>{
         delete (school as any).databaseUrl;
         delete (school as any).databaseName;
     });
-    // Return the list of schools
     if(schools.length === 0){
         throwError(HttpStatus.NOT_FOUND, "No schools found");
     }   
     return schools
 }
+
+export const fetchSchoolById = async(id: string)=>{
+    const school = await superDB.school.findUnique({
+        where: { 
+            id: id
+        },
+    });
+    
+    if (!school) {
+        throwError(HttpStatus.NOT_FOUND, "School not found")
+    }
+    delete (school as any).databaseUrl;
+    delete (school as any).databaseName;
+    return school
+}
+
 
 export const updateSchool = async(id: string, data: Partial<schoolData>)=>{
         const school = await superDB.school.update({
@@ -243,6 +266,11 @@ export const updateSchool = async(id: string, data: Partial<schoolData>)=>{
                ...data
             }
         })
+    if (!school) {
+        throwError(HttpStatus.NOT_FOUND, "School not found")
+    }
+    delete (school as any).databaseUrl;
+    delete (school as any).databaseName;
         return school
 }
 
@@ -252,6 +280,7 @@ export const deleteSchool = async(id: string)=>{
     })
     return school
 }
+
 
 
 

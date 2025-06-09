@@ -12,7 +12,6 @@ export const signUp = catchAsync(
         const  { id }   = req.params;
         const addAdmin = await adminService.registerAdmin(id,data)
         res.status(HttpStatus.CREATED).json({addAdmin})
-        next();
 });
 
 

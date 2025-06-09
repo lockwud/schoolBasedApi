@@ -41,7 +41,51 @@ export const verifyOtp = catchAsync(async(
     res.status(HttpStatus.OK).json({verifiedSuperadmin})    
 });
 
+export const listSuperAdmins = catchAsync(async(
+    req: Request,
+    res: Response,
+    next: NextFunction
+)=>{
+    const superAdmins = await superAdminService.fetchSuperAdminS()
+    res.status(HttpStatus.OK).json({superAdmins})
+});
 
+export const getSuperAdminById = catchAsync(async(
+    req: Request,
+    res: Response,
+    next: NextFunction
+)=>{
+    const { id } = req.params
+    const superAdmin = await superAdminService.fetchSuperAdminById(id)
+    res.status(HttpStatus.OK).json({superAdmin})
+});
+
+export const updateSuperAdmin = catchAsync(async(
+    req: Request,
+    res: Response,
+    next: NextFunction
+)=>{
+    const { id } = req.params
+    const data = req.body
+    const updatedAdmin = await superAdminService.updateSuperAdmin(id, data)
+    res.status(HttpStatus.OK).json(updatedAdmin)
+})
+
+
+export const removeSuperAdmin = catchAsync(async(
+    req: Request,
+    res: Response,
+    next: NextFunction
+)=>{
+    const { id } = req.params
+    const deletedAdmin = await superAdminService.deleteSuperAdmin(id)
+    res.status(HttpStatus.OK).json(deletedAdmin)
+})
+
+
+
+
+//School
 export const registerSchool = catchAsync(async(
     req: Request,
     res: Response,
@@ -61,3 +105,37 @@ export const getAllSchools = catchAsync(async(
     const AllSchools = await superAdminService.fetchSchools()
     res.status(HttpStatus.OK).json({AllSchools})
 })
+
+
+export const getSchoolById = catchAsync(async(
+    req: Request,
+    res: Response,
+    next: NextFunction
+)=>{
+    const { id } = req.params
+    const school = await superAdminService.fetchSchoolById(id)
+    res.status(HttpStatus.OK).json({school})
+});
+
+export const updateSchool = catchAsync(async(
+    req: Request, 
+    res: Response, 
+    next: NextFunction
+) => {
+    const { id } = req.params
+    const data = req.body
+    const school = await superAdminService.updateSchool(id, data)
+    res.status(HttpStatus.OK).json(school);
+});
+
+
+export const deleteSchools = catchAsync(async(
+    req: Request, 
+    res: Response, 
+    next: NextFunction
+) => {
+    const { id } = req.params
+    const schools = await superAdminService.deleteSchool(id)
+    res.status(HttpStatus.OK).json(schools);
+});
+

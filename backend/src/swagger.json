@@ -1,9 +1,9 @@
 {
     "openapi": "3.1.0",
     "info": {
-        "title": "SMS(School Management System API)",
+        "title": "SYNX(SMS)",
         "version": "1.0.0",
-        "description": "API documentation for SMS (School Management System). This API provides endpoints for managing users, schools, and other resources related to the school management system."
+        "description": "API documentation for SYNX (School Management System). This API provides endpoints for managing users, schools, and other resources related to the school management system."
     },
     "servers": [
         {
@@ -22,6 +22,61 @@
         }
     ],
     "paths": {
+        "SuperAdminSignupRequest": {
+                "type": "object",
+                "properties": {
+                    "fullname": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "type": "string"
+                    },
+                    "phone": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "fullname",
+                    "email",
+                    "password",
+                    "phone"
+                ]
+            },
+            "SuperAdminResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "fullname": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "phone": {
+                        "type": "string"
+                    },
+                    "role": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }},
         "/admins/login": {
             "post": {
                 "summary": "Admin login",
@@ -84,7 +139,7 @@
                 }
             }
         },
-        "/superAdmins/signUp": {
+        "/super/signUp": {
             "post": {
                 "summary": "Create Super Admin",
                 "description": "Registers a new super admin.",
@@ -264,62 +319,8 @@
                         "format": "date-time"
                     }
                 }
-            },
-            "SuperAdminSignupRequest": {
-                "type": "object",
-                "properties": {
-                    "fullname": {
-                        "type": "string"
-                    },
-                    "email": {
-                        "type": "string",
-                        "format": "email"
-                    },
-                    "password": {
-                        "type": "string"
-                    },
-                    "phone": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "fullname",
-                    "email",
-                    "password",
-                    "phone"
-                ]
-            },
-            "SuperAdminResponse": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string"
-                    },
-                    "fullname": {
-                        "type": "string"
-                    },
-                    "email": {
-                        "type": "string",
-                        "format": "email"
-                    },
-                    "phone": {
-                        "type": "string"
-                    },
-                    "role": {
-                        "type": "string"
-                    },
-                    "status": {
-                        "type": "string"
-                    },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "updatedAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                }
+
+            
             },
             "SchoolCreateRequest": {
                 "type": "object",

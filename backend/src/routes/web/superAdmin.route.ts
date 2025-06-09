@@ -30,8 +30,19 @@ const onboardSchoolRateLimiter = rateLimit({
 superAdminRoute.post("/signin", signInRateLimiter, superAdmin.signIn);
 superAdminRoute.post("/signUp",validatePayload('superAdmin', 'super'),superAdmin.signUpSuperAdmin);
 superAdminRoute.post("/verifyOtp", verifyOtpRateLimiter, superAdmin.verifyOtp); 
+superAdminRoute.get("/admin", superAdmin.listSuperAdmins)
+superAdminRoute.get("/admin/:id", superAdmin.getSuperAdminById)
+superAdminRoute.put("/admin/:id", superAdmin.updateSuperAdmin);
+superAdminRoute.delete("/admin/:id", superAdmin.removeSuperAdmin);
+
+//school routes 
 superAdminRoute.post("/onboard",  onboardSchoolRateLimiter, validatePayload("school", 'super'),superAdmin.registerSchool);
 superAdminRoute.get("/schools", superAdmin.getAllSchools)
+superAdminRoute.get("/schools/:id", superAdmin.getSchoolById)
+superAdminRoute.put("/schools/:id", superAdmin.updateSchool);
+superAdminRoute.delete("/schools/:id", superAdmin.deleteSchools);
+
+
 
 export default superAdminRoute;
 
