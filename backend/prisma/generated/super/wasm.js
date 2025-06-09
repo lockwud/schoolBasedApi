@@ -152,6 +152,7 @@ exports.Prisma.SchoolScalarFieldEnum = {
   address: 'address',
   subscription: 'subscription',
   paymentStatus: 'paymentStatus',
+  status: 'status',
   subscriptionDate: 'subscriptionDate',
   endOfLife: 'endOfLife',
   createdAt: 'createdAt',
@@ -190,7 +191,8 @@ exports.schooltype = exports.$Enums.schooltype = {
 exports.paymentStatus = exports.$Enums.paymentStatus = {
   demo: 'demo',
   paid: 'paid',
-  unpaid: 'unpaid'
+  unpaid: 'unpaid',
+  expired: 'expired'
 };
 
 exports.Prisma.ModelName = {

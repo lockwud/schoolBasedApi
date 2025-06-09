@@ -28,6 +28,7 @@ enum paymentStatus {
   demo
   paid
   unpaid
+  expired
 }
 
 model superAdmin {
@@ -61,6 +62,7 @@ model school {
   address          String?
   subscription     Boolean       @default(false)
   paymentStatus    paymentStatus @default(demo)
+  status           status        @default(active)
   subscriptionDate DateTime
   endOfLife        DateTime
   createdAt        DateTime      @default(now())

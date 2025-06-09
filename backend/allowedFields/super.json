@@ -40,7 +40,8 @@
     "fields": [
       "demo",
       "paid",
-      "unpaid"
+      "unpaid",
+      "expired"
     ]
   },
   {
@@ -76,6 +77,7 @@
       "address",
       "subscription",
       "paymentStatus",
+      "status",
       "subscriptionDate",
       "endOfLife",
       "createdAt",

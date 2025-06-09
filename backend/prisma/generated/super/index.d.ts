@@ -55,7 +55,8 @@ export type schooltype = (typeof schooltype)[keyof typeof schooltype]
 export const paymentStatus: {
   demo: 'demo',
   paid: 'paid',
-  unpaid: 'unpaid'
+  unpaid: 'unpaid',
+  expired: 'expired'
 };
 
 export type paymentStatus = (typeof paymentStatus)[keyof typeof paymentStatus]
@@ -2100,6 +2101,7 @@ export namespace Prisma {
     address: string | null
     subscription: boolean | null
     paymentStatus: $Enums.paymentStatus | null
+    status: $Enums.status | null
     subscriptionDate: Date | null
     endOfLife: Date | null
     createdAt: Date | null
@@ -2120,6 +2122,7 @@ export namespace Prisma {
     address: string | null
     subscription: boolean | null
     paymentStatus: $Enums.paymentStatus | null
+    status: $Enums.status | null
     subscriptionDate: Date | null
     endOfLife: Date | null
     createdAt: Date | null
@@ -2141,6 +2144,7 @@ export namespace Prisma {
     address: number
     subscription: number
     paymentStatus: number
+    status: number
     subscriptionDate: number
     endOfLife: number
     createdAt: number
@@ -2163,6 +2167,7 @@ export namespace Prisma {
     address?: true
     subscription?: true
     paymentStatus?: true
+    status?: true
     subscriptionDate?: true
     endOfLife?: true
     createdAt?: true
@@ -2183,6 +2188,7 @@ export namespace Prisma {
     address?: true
     subscription?: true
     paymentStatus?: true
+    status?: true
     subscriptionDate?: true
     endOfLife?: true
     createdAt?: true
@@ -2204,6 +2210,7 @@ export namespace Prisma {
     address?: true
     subscription?: true
     paymentStatus?: true
+    status?: true
     subscriptionDate?: true
     endOfLife?: true
     createdAt?: true
@@ -2298,6 +2305,7 @@ export namespace Prisma {
     address: string | null
     subscription: boolean
     paymentStatus: $Enums.paymentStatus
+    status: $Enums.status
     subscriptionDate: Date
     endOfLife: Date
     createdAt: Date
@@ -2336,6 +2344,7 @@ export namespace Prisma {
     address?: boolean
     subscription?: boolean
     paymentStatus?: boolean
+    status?: boolean
     subscriptionDate?: boolean
     endOfLife?: boolean
     createdAt?: boolean
@@ -2359,6 +2368,7 @@ export namespace Prisma {
     address?: boolean
     subscription?: boolean
     paymentStatus?: boolean
+    status?: boolean
     subscriptionDate?: boolean
     endOfLife?: boolean
     createdAt?: boolean
@@ -2380,6 +2390,7 @@ export namespace Prisma {
     address?: boolean
     subscription?: boolean
     paymentStatus?: boolean
+    status?: boolean
     subscriptionDate?: boolean
     endOfLife?: boolean
     createdAt?: boolean
@@ -2412,6 +2423,7 @@ export namespace Prisma {
       address: string | null
       subscription: boolean
       paymentStatus: $Enums.paymentStatus
+      status: $Enums.status
       subscriptionDate: Date
       endOfLife: Date
       createdAt: Date
@@ -2824,6 +2836,7 @@ export namespace Prisma {
     readonly address: FieldRef<"school", 'String'>
     readonly subscription: FieldRef<"school", 'Boolean'>
     readonly paymentStatus: FieldRef<"school", 'paymentStatus'>
+    readonly status: FieldRef<"school", 'status'>
     readonly subscriptionDate: FieldRef<"school", 'DateTime'>
     readonly endOfLife: FieldRef<"school", 'DateTime'>
     readonly createdAt: FieldRef<"school", 'DateTime'>
@@ -3223,6 +3236,7 @@ export namespace Prisma {
     address: 'address',
     subscription: 'subscription',
     paymentStatus: 'paymentStatus',
+    status: 'status',
     subscriptionDate: 'subscriptionDate',
     endOfLife: 'endOfLife',
     createdAt: 'createdAt',
@@ -3477,6 +3491,7 @@ export namespace Prisma {
     address?: StringNullableFilter<"school"> | string | null
     subscription?: BoolFilter<"school"> | boolean
     paymentStatus?: EnumpaymentStatusFilter<"school"> | $Enums.paymentStatus
+    status?: EnumstatusFilter<"school"> | $Enums.status
     subscriptionDate?: DateTimeFilter<"school"> | Date | string
     endOfLife?: DateTimeFilter<"school"> | Date | string
     createdAt?: DateTimeFilter<"school"> | Date | string
@@ -3499,6 +3514,7 @@ export namespace Prisma {
     address?: SortOrderInput | SortOrder
     subscription?: SortOrder
     paymentStatus?: SortOrder
+    status?: SortOrder
     subscriptionDate?: SortOrder
     endOfLife?: SortOrder
     createdAt?: SortOrder
@@ -3524,6 +3540,7 @@ export namespace Prisma {
     address?: StringNullableFilter<"school"> | string | null
     subscription?: BoolFilter<"school"> | boolean
     paymentStatus?: EnumpaymentStatusFilter<"school"> | $Enums.paymentStatus
+    status?: EnumstatusFilter<"school"> | $Enums.status
     subscriptionDate?: DateTimeFilter<"school"> | Date | string
     endOfLife?: DateTimeFilter<"school"> | Date | string
     createdAt?: DateTimeFilter<"school"> | Date | string
@@ -3546,6 +3563,7 @@ export namespace Prisma {
     address?: SortOrderInput | SortOrder
     subscription?: SortOrder
     paymentStatus?: SortOrder
+    status?: SortOrder
     subscriptionDate?: SortOrder
     endOfLife?: SortOrder
     createdAt?: SortOrder
@@ -3573,6 +3591,7 @@ export namespace Prisma {
     address?: StringNullableWithAggregatesFilter<"school"> | string | null
     subscription?: BoolWithAggregatesFilter<"school"> | boolean
     paymentStatus?: EnumpaymentStatusWithAggregatesFilter<"school"> | $Enums.paymentStatus
+    status?: EnumstatusWithAggregatesFilter<"school"> | $Enums.status
     subscriptionDate?: DateTimeWithAggregatesFilter<"school"> | Date | string
     endOfLife?: DateTimeWithAggregatesFilter<"school"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"school"> | Date | string
@@ -3703,6 +3722,7 @@ export namespace Prisma {
     address?: string | null
     subscription?: boolean
     paymentStatus?: $Enums.paymentStatus
+    status?: $Enums.status
     subscriptionDate: Date | string
     endOfLife: Date | string
     createdAt?: Date | string
@@ -3725,6 +3745,7 @@ export namespace Prisma {
     address?: string | null
     subscription?: boolean
     paymentStatus?: $Enums.paymentStatus
+    status?: $Enums.status
     subscriptionDate: Date | string
     endOfLife: Date | string
     createdAt?: Date | string
@@ -3747,6 +3768,7 @@ export namespace Prisma {
     address?: NullableStringFieldUpdateOperationsInput | string | null
     subscription?: BoolFieldUpdateOperationsInput | boolean
     paymentStatus?: EnumpaymentStatusFieldUpdateOperationsInput | $Enums.paymentStatus
+    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
     subscriptionDate?: DateTimeFieldUpdateOperationsInput | Date | string
     endOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -3769,6 +3791,7 @@ export namespace Prisma {
     address?: NullableStringFieldUpdateOperationsInput | string | null
     subscription?: BoolFieldUpdateOperationsInput | boolean
     paymentStatus?: EnumpaymentStatusFieldUpdateOperationsInput | $Enums.paymentStatus
+    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
     subscriptionDate?: DateTimeFieldUpdateOperationsInput | Date | string
     endOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -3791,6 +3814,7 @@ export namespace Prisma {
     address?: string | null
     subscription?: boolean
     paymentStatus?: $Enums.paymentStatus
+    status?: $Enums.status
     subscriptionDate: Date | string
     endOfLife: Date | string
     createdAt?: Date | string
@@ -3812,6 +3836,7 @@ export namespace Prisma {
     address?: NullableStringFieldUpdateOperationsInput | string | null
     subscription?: BoolFieldUpdateOperationsInput | boolean
     paymentStatus?: EnumpaymentStatusFieldUpdateOperationsInput | $Enums.paymentStatus
+    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
     subscriptionDate?: DateTimeFieldUpdateOperationsInput | Date | string
     endOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -3833,6 +3858,7 @@ export namespace Prisma {
     address?: NullableStringFieldUpdateOperationsInput | string | null
     subscription?: BoolFieldUpdateOperationsInput | boolean
     paymentStatus?: EnumpaymentStatusFieldUpdateOperationsInput | $Enums.paymentStatus
+    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
     subscriptionDate?: DateTimeFieldUpdateOperationsInput | Date | string
     endOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -4084,6 +4110,7 @@ export namespace Prisma {
     address?: SortOrder
     subscription?: SortOrder
     paymentStatus?: SortOrder
+    status?: SortOrder
     subscriptionDate?: SortOrder
     endOfLife?: SortOrder
     createdAt?: SortOrder
@@ -4104,6 +4131,7 @@ export namespace Prisma {
     address?: SortOrder
     subscription?: SortOrder
     paymentStatus?: SortOrder
+    status?: SortOrder
     subscriptionDate?: SortOrder
     endOfLife?: SortOrder
     createdAt?: SortOrder
@@ -4124,6 +4152,7 @@ export namespace Prisma {
     address?: SortOrder
     subscription?: SortOrder
     paymentStatus?: SortOrder
+    status?: SortOrder
     subscriptionDate?: SortOrder
     endOfLife?: SortOrder
     createdAt?: SortOrder
@@ -4472,6 +4501,7 @@ export namespace Prisma {
     address?: string | null
     subscription?: boolean
     paymentStatus?: $Enums.paymentStatus
+    status?: $Enums.status
     subscriptionDate: Date | string
     endOfLife: Date | string
     createdAt?: Date | string
@@ -4493,6 +4523,7 @@ export namespace Prisma {
     address?: string | null
     subscription?: boolean
     paymentStatus?: $Enums.paymentStatus
+    status?: $Enums.status
     subscriptionDate: Date | string
     endOfLife: Date | string
     createdAt?: Date | string
@@ -4538,6 +4569,7 @@ export namespace Prisma {
     address?: StringNullableFilter<"school"> | string | null
     subscription?: BoolFilter<"school"> | boolean
     paymentStatus?: EnumpaymentStatusFilter<"school"> | $Enums.paymentStatus
+    status?: EnumstatusFilter<"school"> | $Enums.status
     subscriptionDate?: DateTimeFilter<"school"> | Date | string
     endOfLife?: DateTimeFilter<"school"> | Date | string
     createdAt?: DateTimeFilter<"school"> | Date | string
@@ -4628,6 +4660,7 @@ export namespace Prisma {
     address?: NullableStringFieldUpdateOperationsInput | string | null
     subscription?: BoolFieldUpdateOperationsInput | boolean
     paymentStatus?: EnumpaymentStatusFieldUpdateOperationsInput | $Enums.paymentStatus
+    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
     subscriptionDate?: DateTimeFieldUpdateOperationsInput | Date | string
     endOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -4649,6 +4682,7 @@ export namespace Prisma {
     address?: NullableStringFieldUpdateOperationsInput | string | null
     subscription?: BoolFieldUpdateOperationsInput | boolean
     paymentStatus?: EnumpaymentStatusFieldUpdateOperationsInput | $Enums.paymentStatus
+    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
     subscriptionDate?: DateTimeFieldUpdateOperationsInput | Date | string
     endOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -4670,6 +4704,7 @@ export namespace Prisma {
     address?: NullableStringFieldUpdateOperationsInput | string | null
     subscription?: BoolFieldUpdateOperationsInput | boolean
     paymentStatus?: EnumpaymentStatusFieldUpdateOperationsInput | $Enums.paymentStatus
+    status?: EnumstatusFieldUpdateOperationsInput | $Enums.status
     subscriptionDate?: DateTimeFieldUpdateOperationsInput | Date | string
     endOfLife?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
