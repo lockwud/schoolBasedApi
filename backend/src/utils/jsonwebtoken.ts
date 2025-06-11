@@ -107,8 +107,8 @@ export const setInvalidToken = (): string => {
 
 export const authorizeRole = (allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
-    const user = req.student || req.tutor || req.admin || req.guardian;
-    
+    const user = req.student || req.tutor || req.admin || req.guardian || req.parent || req.superAdmin;
+
     if (!user || !allowedRoles.includes(user.role)) {
       return next(new HttpException(HttpStatus.FORBIDDEN, "Access denied"));
     }

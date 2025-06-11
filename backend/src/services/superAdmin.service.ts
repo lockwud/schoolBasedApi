@@ -26,10 +26,13 @@ export const createSuperAdmin = async(data: superAdminData)=>{
         });
 
         if(!checkSuperAdminAvailability){
-            const checkEnvForSuperAdmin = process.env.SUPER_ADMIN_EMAIL  === data.email;
-            if(!checkEnvForSuperAdmin){
+            const allowedEmails = process.env.SUPER_ADMIN_EMAIL?.split(',').map(email => email.trim());
+            const checkEnvForSuperAdmin = allowedEmails?.includes(data.email);
+
+            if (!checkEnvForSuperAdmin) {
                 throwError(HttpStatus.INTERNAL_SERVER_ERROR, "Super admin email not set, kindly contact support");
             }
+
             const hashedPassword = await hash(data.password);
            
             // Save superAdmin to the database
@@ -40,16 +43,7 @@ export const createSuperAdmin = async(data: superAdminData)=>{
                     phone: phone!
                 },
             });
-
-            const superAdmin = await superDB.superAdmin.update({
-                where: {
-                    id: saveSuperAdmin.id,
-                },
-                data: {
-                    otp: null,
-                }
-            })
-            const { password,...superAdminDataWithoutPassword } = superAdmin;
+            const { password,...superAdminDataWithoutPassword } = saveSuperAdmin;
             return { superAdminDataWithoutPassword };
         }else{
             throwError(HttpStatus.CONFLICT, "Super admin already exists");
@@ -98,7 +92,7 @@ export const verifySuperAdminOtp = async(email: string, otp: string)=>{
             const token = signToken({ id: findSuperAdmin.id, role: "super" });
             await superDB.superAdmin.update({
                 where: { email },
-                data: { otp: null }, 
+                data: { otp: null, status: "active", verified: true }, 
             });
             return { superAdmin: superAdminWithoutPassword, token };
         }else{

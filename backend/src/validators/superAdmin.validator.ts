@@ -7,10 +7,8 @@ export const superAdminSchema = z.object({
     password: z.string({required_error: "Password is required"}).min(8, "Password should be at least 8 characters long")
     .trim()
     .min(1, "Invalid password format"),
-    phone: z.string({required_error: "Phone number is required"}).trim().min(10, "Phone number should be at least 10 digits long").max(10, "Phone number should be at most 10 digits long"),
-    status: z.enum(["inactive", "active", "suspended"]),
+    phone: z.string({required_error: "Phone number is required"}).trim().min(10, "Phone number should be at least 10 digits long").max(15, "Phone number should be at most 10 digits long"),
     otp: z.string({required_error: "Please enter otp"}).optional(),
-    roles: z.array(z.enum(["super"])).optional(),
 
 })
 

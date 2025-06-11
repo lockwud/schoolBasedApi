@@ -37,6 +37,26 @@ export const verifyOtp = catchAsync(async(
     res.status(HttpStatus.OK).json({verifiedSuperadmin})    
 });
 
+export const sendPasswordResetLink = catchAsync(async(
+    req: Request,
+    res: Response,
+    next: NextFunction
+)=>{
+    const {email} = req.body
+    const resetLink = await superAdminService.sendPasswordResetLink(email)
+    res.status(HttpStatus.OK).json({resetLink})
+});
+
+export const resetPassword = catchAsync(async(
+    req: Request,
+    res: Response,
+    next: NextFunction
+)=>{
+    const {email, password} = req.body
+    const resetPassword = await superAdminService.resetPassword(email, password)
+    res.status(HttpStatus.OK).json({resetPassword})
+});
+
 export const listSuperAdmins = catchAsync(async(
     req: Request,
     res: Response,

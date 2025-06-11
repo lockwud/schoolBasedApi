@@ -94,149 +94,202 @@ export const signInAdmin = async (schoolId: string, email: string, password: str
     return {message: "Check your email for otp"}; 
 };
 
-export const verifyOtp = async(email: string, otp: string) =>{
-  await getTe
+export const verifyOtp = async (schoolId: string, email: string, otp: string) => {
+  const school = await superDB.school.findUnique({
+    where: { id: schoolId },
+    select: { databaseUrl: true }
+  });
+
+  if (!school) {
+    throwError(HttpStatus.NOT_FOUND, "School or tenant DB not found");
+    return;
+  }
+
+  const tenantDB = getTenantClient(school.databaseUrl);
+
+  const admin = await tenantDB.admin.findUnique({
+    where: {
+      email: email,
+    },
+  });
+  if (!admin) {
+    throwError(HttpStatus.NOT_FOUND, "Admin not found")
+  }
+  if (admin?.otp !== otp) {
+    throwError(HttpStatus.UNAUTHORIZED, "Invalid OTP")
+    return
+  }
+  const token = signToken({ id: admin.id, role: "admin" });
+  await tenantDB.admin.update({
+    where: {
+      email: email,
+    },
+    data: {
+      otp: null,
+      token: token,
+    },
+  });
+  await tenantDB.$disconnect();
+  return { token }
 }
 
 
-// export const updateAdmin = async(id: string, updateData: Partial<admin> )=>{
-//     const findAdmin = await prisma.admin.findUnique({
-//         where:{
-//             id
-//         }
-//     })
-//     if(!findAdmin){
-//        throwError(HttpStatus.NOT_FOUND, "admin not found");
-//     }else{
-//         if(updateData.password){
-//             const hashpassword = await hash(updateData.password);
-//             if(!hashpassword){
-//                throwError(
-//                     HttpStatus.INTERNAL_SERVER_ERROR,
-//                     "Error hashing password"
-//                   );
-//             }
-//             updateData.password = hashpassword
-//         }
-//         const updatedAdmin = await prisma.admin.update({
-//             where: {id},
-//             data: updateData,
-//         });
-//         const {password, ...adminDataWithoutPassword} = updatedAdmin
-//         return adminDataWithoutPassword
-//     }
+// send password reset link and reset password
+export const sendPasswordResetLink = async (schoolId: string, email: string) => {
+  const school = await superDB.school.findUnique({
+    where: { id: schoolId },
+    select: { databaseUrl: true }
+  });
 
-// };
+  if (!school) {
+    throwError(HttpStatus.NOT_FOUND, "School or tenant DB not found");
+    return;
+  }
 
+  const tenantDB = getTenantClient(school.databaseUrl);
 
-// export const fetchAdminByEmail = async(email: string)=>{
-//     const findAdmin = await prisma.admin.findUnique({
-//         where:{
-//             email
-//         }
-//     })
-//     return findAdmin
-// };
+  const admin = await tenantDB.admin.findUnique({
+    where: { email },
+  });
 
+  if (!admin) {
+    throwError(HttpStatus.NOT_FOUND, "Admin not found");
+    return;
+  }
 
-// export const fetchAllAdmins = async()=>{
-//     const fetchedAdmins = await prisma.admin.findMany();
-//     return fetchedAdmins
+  const resetToken = signToken({ id: admin.email, role: "admin" });
+  await sendOtpEmail(email, `Click the link to reset your password: http://localhost:4500/  reset-password?token=${resetToken}`);
+  return { message: "Password reset link sent to your email", resetToken };
 
-// };
+  };
 
+export const resetPassword = async (schoolId: string, email: string, newPassword: string) => {
+  const school = await superDB.school.findUnique({
+    where: { id: schoolId },
+    select: { databaseUrl: true }
+  });
 
-// export const fetchAdminById = async(id: string)=>{
-//     const findAdmin = await prisma.admin.findUnique({
-//         where: {
-//             id
-//         }
-//     })
-//     return findAdmin
-// };
+  if (!school) {
+    throwError(HttpStatus.NOT_FOUND, "School or tenant DB not found");
+    return;
+  }
 
+  const tenantDB = getTenantClient(school.databaseUrl);
 
-// export const deleteAdminRecords = async(id: string)=>{
-//     const deletedAdmin = await prisma.admin.delete({
-//         where:{
-//             id
-//         }
-//     })
-//     return deletedAdmin
-// };
+  const admin = await tenantDB.admin.findUnique({
+    where: { email },
+  });
 
+  if (!admin) {
+    throwError(HttpStatus.NOT_FOUND, "Admin not found");
+    return;
+  }
 
-// export const forgotPassword = async(email: string)=>{
-//     if(!(await fetchAdminByEmail(email) )){
-//        throwError(HttpStatus.NOT_FOUND, "Admin does not exist");
-//     }else{
-//         const otp = await generateOtp();
-//         await sendOtpEmail(email, otp)
-//         await prisma.admin.update({
-//             where:{
-//                 email
-//             },
-//             data:{
-//                 otp,
-//             }
-//         })
-//         setTimeout(async()=>{
-//             await prisma.admin.update({
-//                 where:{
-//                     email
-//                 },
-//                 data:{
-//                     otp: null
-//                 }
-//             })
-//         }
-//         , 300000)
-//         return {message: "Check your email for otp"}
-
-//     }
-// }
-
-// export const verifyOtp = async(email: string, otp: string)=>{
-//     const findAdmin = await prisma.admin.findUnique({where: {email}})
-//     if(!findAdmin){
-//        throwError(HttpStatus.NOT_FOUND, "Admin does not exist");
-//     }else{
-//         if(findAdmin.otp === otp){
-//             const token = signToken({ id: findAdmin.id, role: "admin" });
-//             await prisma.admin.update({
-//                 where:{
-//                     email
-//                 },
-//                 data:{
-//                     otp: null,
-//                     token: token
-//                 }
-//             })
-
-//             return {token}
-//         }else{
-//             throwError(HttpStatus.UNAUTHORIZED, "Invalid OTP");
-//         }
-//     }
-// }
-
- 
-// export const resetPassword = async (newPassword: string, token: string) => {
-//     // Find the user by token
-//     const admin = await prisma.admin.findFirst({ where: { token } });
-//     if (!admin) {
-//       throwError(HttpStatus.UNAUTHORIZED, "Invalid or expired token");
-//     }
+  const hashedPassword = await hash(newPassword);
+  await tenantDB.admin.update({
+    where: { email },
+    data: { password: hashedPassword },
+  });
   
-//     const hashedPassword = await hash(newPassword);
+  await tenantDB.$disconnect();
+  return { message: "Password reset successfully" };
+};
+
+
+export const fetchAdmins = async (schoolId: string) => {
+  const school = await superDB.school.findUnique({
+    where: { id: schoolId },
+    select: { databaseUrl: true }
+  });
+
+  if (!school) {
+    throwError(HttpStatus.NOT_FOUND, "School or tenant DB not found");
+    return;
+  }
+
+  const tenantDB = getTenantClient(school.databaseUrl);
   
-//     await prisma.admin.update({
-//       where: { id: admin?.id! },
-//       data: {
-//         password: hashedPassword,
-//         token: null, 
-//       },
-//     });
+  const admins = await tenantDB.admin.findMany();
+  if (!admins || admins.length === 0) {
+    throwError(HttpStatus.NOT_FOUND, "No admins found");
+    return;
+  }
+  const adminsWithoutPassword = admins.map(({ password, ...rest }) => rest);
+
+  await tenantDB.$disconnect();
+  return adminsWithoutPassword;
+};
+
+
+export const fetchAdminById = async (schoolId: string, adminId: string) => {
+  const school = await superDB.school.findUnique({
+    where: { id: schoolId },
+    select: { databaseUrl: true }
+  });
+
+  if (!school) {
+    throwError(HttpStatus.NOT_FOUND, "School or tenant DB not found");
+    return;
+  }
+
+  const tenantDB = getTenantClient(school.databaseUrl);
   
-//     return { message: "Password reset successfully"};
-//   };
+  const admin = await tenantDB.admin.findUnique({
+    where: { id: adminId },
+  });
+  
+  if (!admin) {
+    throwError(HttpStatus.NOT_FOUND, "Admin not found");
+    return;
+  }
+  
+  await tenantDB.$disconnect();
+  return admin;
+};
+
+
+export const updateAdmin = async (schoolId: string, adminId: string, data: Partial<adminData>) => {
+  const school = await superDB.school.findUnique({
+    where: { id: schoolId },
+    select: { databaseUrl: true }
+  });
+
+  if (!school) {
+    throwError(HttpStatus.NOT_FOUND, "School or tenant DB not found");
+    return;
+  }
+
+  const tenantDB = getTenantClient(school.databaseUrl);
+  
+  const admin = await tenantDB.admin.update({
+    where: { id: adminId },
+    data: {
+      ...data,
+    }
+  });
+  
+  await tenantDB.$disconnect();
+  return admin;
+}
+
+
+export const deleteAdmin = async (schoolId: string, adminId: string) => {
+  const school = await superDB.school.findUnique({
+    where: { id: schoolId },
+    select: { databaseUrl: true }
+  });
+
+  if (!school) {
+    throwError(HttpStatus.NOT_FOUND, "School or tenant DB not found");
+    return;
+  }
+
+  const tenantDB = getTenantClient(school.databaseUrl);
+  
+  const admin = await tenantDB.admin.delete({
+    where: { id: adminId },
+  });
+  
+  await tenantDB.$disconnect();
+  return admin;
+};
