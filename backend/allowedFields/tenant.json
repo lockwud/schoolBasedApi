@@ -22,6 +22,8 @@
       "email",
       "password",
       "phone",
+      "otp",
+      "token",
       "role",
       "createdAt",
       "updatedAt"

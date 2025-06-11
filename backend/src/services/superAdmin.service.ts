@@ -6,9 +6,12 @@ import { generateOtp, sendOtpEmail } from "../utils/emailTransporter"
 import { throwError } from "../middleware/errorHandler";
 import { superAdminData, superAdminSchema, schoolData, schoolSchema } from "../validators/superAdmin.validator";
 import { migrateTenantDb } from "../../config/tenantMigrate";
+import { checkMobileNetwork, phoneValidator } from "../utils/phone.check";
 
 
 export const createSuperAdmin = async(data: superAdminData)=>{
+     const validatedPhone = await phoneValidator(data.phone);
+     const phone = await checkMobileNetwork(validatedPhone!);
     const validateSuperAdminData = superAdminSchema.safeParse(data)
     if(!validateSuperAdminData.success){
         const errors = validateSuperAdminData.error.issues.map(
@@ -23,16 +26,18 @@ export const createSuperAdmin = async(data: superAdminData)=>{
         });
 
         if(!checkSuperAdminAvailability){
-            const checkEnvForSuperAdmin = process.env.SUPER_ADMIN_EMAIL! === data.email;
+            const checkEnvForSuperAdmin = process.env.SUPER_ADMIN_EMAIL  === data.email;
             if(!checkEnvForSuperAdmin){
                 throwError(HttpStatus.INTERNAL_SERVER_ERROR, "Super admin email not set, kindly contact support");
             }
             const hashedPassword = await hash(data.password);
+           
             // Save superAdmin to the database
             const saveSuperAdmin = await superDB.superAdmin.create({
                 data: {
                    ...data,
                     password: hashedPassword,
+                    phone: phone!
                 },
             });
 
@@ -65,7 +70,7 @@ export const loginSuperAdmin = async(email: string, password: string)=>{
             throwError(HttpStatus.UNAUTHORIZED, "Invalid password");
         }
            const otp = await generateOtp();
-            await sendOtpEmail(email, otp);
+            await sendOtpEmail(findSuperAdmin.email, otp);
 
            await superDB.superAdmin.update({
             where: { email },

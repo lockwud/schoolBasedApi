@@ -2,14 +2,13 @@ import { HttpStatus } from "../utils/http-status";
 import {hash, compare} from "../utils/bcrypt"
 import { adminData, adminSchema } from "../validators/adminValidator";
 import { generateOtp, sendOtpEmail} from "../utils/emailTransporter"
-import { generateReferallCode } from "../utils/referralCodeGenerator";
 import { throwError } from "../middleware/errorHandler";
 import { signToken } from "../utils/jsonwebtoken";
 import superDB from "../../config/superClient";
 import {getTenantClient} from "../../config/tenantClient"
 
 
-export const registerAdmin = async (id: string, data: adminData) => {
+export const registerAdmin = async (schoolId: string, data: adminData) => {
   const validateAdminData = adminSchema.safeParse(data);
   if (!validateAdminData.success) {
     const errors = validateAdminData.error.issues.map(
@@ -20,11 +19,10 @@ export const registerAdmin = async (id: string, data: adminData) => {
 
   const school = await superDB.school.findUnique({
     where: { 
-      id,
+      id: schoolId,
     },
     select:{
       databaseUrl: true,
-      email: true,
     }
   });
 
@@ -43,6 +41,10 @@ export const registerAdmin = async (id: string, data: adminData) => {
   }
   
   const tenantDB = getTenantClient(school?.databaseUrl!);
+  const checkEnvForAdmin = process.env.SHOOL_ADMINS_EMAIL === data.email
+  if(!checkEnvForAdmin){
+    throwError(HttpStatus.NOT_FOUND, "Admin email not set, kindly contact support")
+  }
   const hashedPassword = await hash(data.password);
   const admin = await tenantDB.admin.create({
     data: {
@@ -53,72 +55,48 @@ export const registerAdmin = async (id: string, data: adminData) => {
     }
   })
       const { password, ...adminDataWithoutPassword } = admin;
-  const token = signToken({ id: admin.id, role: "admin" });
   await tenantDB.$disconnect();
-  return { adminDataWithoutPassword, token };
+  return { adminDataWithoutPassword};
 };
 
 
-// export const registerAdmin = async (data: adminData) => {
-//     const validateAdminData = adminSchema.safeParse(data);
-//     if (!validateAdminData.success) {
-//         const errors = validateAdminData.error.issues.map(
-//             ({ message, path }) => `${path}: ${message}`
-//         );
-//         throwError(HttpStatus.BAD_REQUEST, errors.join(". "));
-//     }
+export const signInAdmin = async (schoolId: string, email: string, password: string) => {
+  const school = await superDB.school.findUnique({
+    where:{
+      id: schoolId
+    }
+  })
+  const admin = await getTenantClient(school?.databaseUrl!).admin.findUnique({
+    where: {
+      email: email,
+    },
+  });
+  if(!school && !admin){
+    throwError(HttpStatus.NOT_FOUND, "Admin not found")
+  }
+  const validPassword = await compare(password, admin?.password!)
+  if(!validPassword){
+    throwError(HttpStatus.NOT_FOUND, "Invalid email or password")
+  }
+  const otp = await generateOtp()
+  await sendOtpEmail(admin?.email!, otp)
+   setTimeout(async () => {
+    await getTenantClient(school?.databaseUrl!).admin.update({
+    where: {
+      email: admin?.email!
+    },
+    data: {
+      otp: otp
+    }
+             
+    });
+    }, 5 * 60 * 1000);
+    return {message: "Check your email for otp"}; 
+};
 
-//     // Check if admin already exists
-//     const checkAdminAvailability = await prisma.admin.findUnique({
-//         where: {
-//             email: data.email,
-//         },
-//     });
-
-//     if (!checkAdminAvailability) {
-//         const HashedAdminPassword = await hash(data.password);
-//         const registrationCode = await generateReferallCode();
-
-//         // Save admin to the database
-//         const saveAdmin = await prisma.admin.create({
-//             data: {
-//                 ...data,
-//                 tutorRegistrationCode: registrationCode,
-//                 password: HashedAdminPassword,
-                
-//             },
-//         });
-
-//         const token = signToken({ id: saveAdmin.id, role: "admin" });
-//         const { password, ...adminDataWithoutPassword } = saveAdmin;
-//         return { adminDataWithoutPassword };
-//     } else {
-//         throwError(HttpStatus.CONFLICT, "Admin already exists");
-//     }
-// };
-
-
-// export const signInAdmin = async (email: string, password: string) => {
-//     const findAdmin = await prisma.admin.findUnique({ where: { email } });
-//     if (!findAdmin) {
-//       throwError(HttpStatus.NOT_FOUND, "Admin does not exist");
-//     }
-  
-//     const verifyPassword = await compare(password, findAdmin?.password!);
-//     if (!verifyPassword) {
-//       throwError(HttpStatus.UNAUTHORIZED, "Invalid email or password");
-//     }
-  
-//     const otp = await generateOtp();
-//     await sendOtpEmail(email, otp);
-  
-//     await prisma.admin.update({
-//       where: { email },
-//       data: { otp },
-//     });
-  
-//     return { message: "OTP sent to your email. Please verify to continue." };
-//   };
+export const verifyOtp = async(email: string, otp: string) =>{
+  await getTe
+}
 
 
 // export const updateAdmin = async(id: string, updateData: Partial<admin> )=>{

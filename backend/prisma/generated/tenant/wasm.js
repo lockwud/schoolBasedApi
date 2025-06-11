@@ -128,6 +128,8 @@ exports.Prisma.AdminScalarFieldEnum = {
   email: 'email',
   password: 'password',
   phone: 'phone',
+  otp: 'otp',
+  token: 'token',
   role: 'role',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

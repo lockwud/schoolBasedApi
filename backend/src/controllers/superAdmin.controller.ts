@@ -10,10 +10,6 @@ export const signUpSuperAdmin = catchAsync(async (
     next: NextFunction
 ) => {
     const data = req.body
-    const { phone } = data
-    const validatedPhone = await phoneValidator(phone);
-    await checkMobileNetwork(validatedPhone!);
-    data.phone = validatedPhone
     const superAdmin = await superAdminService.createSuperAdmin(data);
     res.status(HttpStatus.CREATED).json(superAdmin);
 });
