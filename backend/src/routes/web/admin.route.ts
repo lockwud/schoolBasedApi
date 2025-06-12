@@ -67,7 +67,7 @@ adminRoute.get("/:id/admins",
 
 
 
-adminRoute.get("/:id",
+adminRoute.get("/:schoolId/:id",
     getAdminByIdRateLimiter,
     // authenticateJWT,
     // authorizeRole(["admin"]),
@@ -75,15 +75,15 @@ adminRoute.get("/:id",
 );
 
 
-adminRoute.put("/update/:id",
+adminRoute.patch("/:schoolId/:id",
     updateAdminRateLimiter,
     admin.updateAdminRecords
 );
 
-adminRoute.delete("/delete/:id",
+adminRoute.delete("/:schoolId/:id",
     deleteAdminRateLimiter,
-    authenticateJWT,
-    authorizeRole(["admin"]),
+    // authenticateJWT,
+    // authorizeRole(["admin"]),
     admin.deleteAdmin
 )
 

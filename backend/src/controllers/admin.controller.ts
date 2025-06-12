@@ -88,7 +88,7 @@ export const updateAdminRecords = catchAsync(async(
     next: NextFunction
 )=>{
         const { schoolId, id } = req.params;
-        const { data } = req.body;
+        const  data  = req.body;
         const updatedRecord = await adminService.updateAdmin(schoolId, id, data)
         res.status(HttpStatus.OK).json(updatedRecord)
    
@@ -102,7 +102,7 @@ export const deleteAdmin = catchAsync(async(
 )=>{
         const { schoolId, id } = req.params;
         const deletedAdmin = await adminService.deleteAdmin(schoolId, id)
-        res.status(HttpStatus.OK).json({ message: "Admin deleted successfully", deletedAdmin });
+        res.status(HttpStatus.OK).json({ message: "Admin deleted successfully"});
 
 });
 

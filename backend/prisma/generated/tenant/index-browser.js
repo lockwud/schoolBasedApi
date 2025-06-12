@@ -135,15 +135,33 @@ exports.Prisma.AdminScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ClassRoomsScalarFieldEnum = {
+  id: 'id',
+  classname: 'classname',
+  description: 'description',
+  capacity: 'capacity',
+  isFull: 'isFull',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.TutorScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
   password: 'password',
   phone: 'phone',
-  subject: 'subject',
   picture: 'picture',
   isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SubjectScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  code: 'code',
+  description: 'description',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -178,9 +196,10 @@ exports.Prisma.GuardianScalarFieldEnum = {
 exports.Prisma.AssessmentScalarFieldEnum = {
   id: 'id',
   studentId: 'studentId',
+  subjectId: 'subjectId',
+  tutorId: 'tutorId',
   term: 'term',
   academicYear: 'academicYear',
-  subject: 'subject',
   caScore: 'caScore',
   examScore: 'examScore',
   createdAt: 'createdAt'
@@ -191,9 +210,23 @@ exports.Prisma.TerminalReportScalarFieldEnum = {
   studentId: 'studentId',
   term: 'term',
   academicYear: 'academicYear',
+  position: 'position',
+  finalGrade: 'finalGrade',
+  finalScore: 'finalScore',
   remarks: 'remarks',
+  behavior: 'behavior',
+  discipline: 'discipline',
+  extraCurricular: 'extraCurricular',
+  parentMeeting: 'parentMeeting',
+  feedback: 'feedback',
+  finalClassPerformance: 'finalClassPerformance',
+  finalClassAttendance: 'finalClassAttendance',
   performance: 'performance',
-  createdAt: 'createdAt'
+  attendance: 'attendance',
+  headTeacherSignature: 'headTeacherSignature',
+  adminSignature: 'adminSignature',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.TranscriptScalarFieldEnum = {
@@ -215,12 +248,13 @@ exports.Prisma.EventScalarFieldEnum = {
 
 exports.Prisma.TimetableScalarFieldEnum = {
   id: 'id',
-  class: 'class',
+  classId: 'classId',
   day: 'day',
   subject: 'subject',
   startTime: 'startTime',
   endTime: 'endTime',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.PaymentScalarFieldEnum = {
@@ -250,16 +284,22 @@ exports.Prisma.SchoolSettingScalarFieldEnum = {
   logoUrl: 'logoUrl',
   academicCalendar: 'academicCalendar',
   gradingPolicy: 'gradingPolicy',
+  classLevels: 'classLevels',
+  attendancePolicy: 'attendancePolicy',
+  paymentMethods: 'paymentMethods',
+  contactInfo: 'contactInfo',
+  schoolAddress: 'schoolAddress',
+  schoolEmail: 'schoolEmail',
+  schoolPhone: 'schoolPhone',
+  schoolWebsite: 'schoolWebsite',
+  schoolMotto: 'schoolMotto',
+  schoolVision: 'schoolVision',
+  schoolMission: 'schoolMission',
+  schoolValues: 'schoolValues',
+  schoolHistory: 'schoolHistory',
+  schoolAchievements: 'schoolAchievements',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
-};
-
-exports.Prisma.MigrationLogScalarFieldEnum = {
-  id: 'id',
-  filename: 'filename',
-  status: 'status',
-  executedAt: 'executedAt',
-  result: 'result'
 };
 
 exports.Prisma.SortOrder = {
@@ -297,6 +337,17 @@ exports.role = exports.$Enums.role = {
   accountant: 'accountant'
 };
 
+exports.ClassLevel = exports.$Enums.ClassLevel = {
+  primary: 'primary',
+  jhs: 'jhs'
+};
+
+exports.Term = exports.$Enums.Term = {
+  FIRST: 'FIRST',
+  SECOND: 'SECOND',
+  THIRD: 'THIRD'
+};
+
 exports.paymentMethod = exports.$Enums.paymentMethod = {
   cash: 'cash',
   momo: 'momo'
@@ -317,7 +368,9 @@ exports.AttendanceStatus = exports.$Enums.AttendanceStatus = {
 
 exports.Prisma.ModelName = {
   admin: 'admin',
+  classRooms: 'classRooms',
   tutor: 'tutor',
+  Subject: 'Subject',
   student: 'student',
   Guardian: 'Guardian',
   Assessment: 'Assessment',
@@ -327,8 +380,7 @@ exports.Prisma.ModelName = {
   Timetable: 'Timetable',
   Payment: 'Payment',
   Attendance: 'Attendance',
-  SchoolSetting: 'SchoolSetting',
-  MigrationLog: 'MigrationLog'
+  SchoolSetting: 'SchoolSetting'
 };
 
 /**

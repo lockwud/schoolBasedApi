@@ -236,13 +236,19 @@ export const fetchAdminById = async (schoolId: string, adminId: string) => {
   
   const admin = await tenantDB.admin.findUnique({
     where: { id: adminId },
+    select: {
+      id: true,
+      fullName: true,
+      phone: true,
+      email: true,
+      role: true,
+    }
   });
   
   if (!admin) {
     throwError(HttpStatus.NOT_FOUND, "Admin not found");
     return;
   }
-  
   await tenantDB.$disconnect();
   return admin;
 };
@@ -262,14 +268,16 @@ export const updateAdmin = async (schoolId: string, adminId: string, data: Parti
   const tenantDB = getTenantClient(school.databaseUrl);
   
   const admin = await tenantDB.admin.update({
-    where: { id: adminId },
+    where: { 
+      id: adminId 
+    },
     data: {
       ...data,
-    }
+    },
   });
-  
+  const { password, ...adminDataWithoutPassword } = admin;
   await tenantDB.$disconnect();
-  return admin;
+  return adminDataWithoutPassword;
 }
 
 
@@ -285,11 +293,15 @@ export const deleteAdmin = async (schoolId: string, adminId: string) => {
   }
 
   const tenantDB = getTenantClient(school.databaseUrl);
-  
+  const adminExists = await tenantDB.admin.findUnique({
+    where: { id: adminId },
+  });
+  if (!adminExists) {
+    throwError(HttpStatus.NOT_FOUND, "Admin not found");
+  }
   const admin = await tenantDB.admin.delete({
     where: { id: adminId },
   });
-  
   await tenantDB.$disconnect();
-  return admin;
+  return { message: "Admin deleted successfully", admin };
 };
