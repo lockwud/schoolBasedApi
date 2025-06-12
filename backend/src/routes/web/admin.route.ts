@@ -41,7 +41,7 @@ adminRoute.post("/signup/:id",
     admin.signUp
 );
 
-adminRoute.post("/login",
+adminRoute.post("/login/:schoolId",
     admin.login 
 );
 

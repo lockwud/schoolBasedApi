@@ -66,12 +66,16 @@ export const signInAdmin = async (schoolId: string, email: string, password: str
       id: schoolId
     }
   })
+  if(!school){
+    throwError(HttpStatus.NOT_FOUND, "School or tenant DB not found");
+    return;
+  }
   const admin = await getTenantClient(school?.databaseUrl!).admin.findUnique({
     where: {
       email: email,
     },
   });
-  if(!school && !admin){
+  if(!admin){
     throwError(HttpStatus.NOT_FOUND, "Admin not found")
   }
   const validPassword = await compare(password, admin?.password!)
