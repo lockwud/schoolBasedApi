@@ -23,10 +23,9 @@
   "deploy:tenant": "npx prisma migrate deploy --schema=prisma/tenants/schema.prisma",
   "deploy": "pnpm deploy:super && pnpm deploy:tenant",
 
-  "reset:super": "npx prisma migrate reset --schema=prisma/super/schema.prisma",
-  "reset:tenant": "npx prisma migrate reset --schema=prisma/tenants/schema.prisma",
+  "reset:super": "npx prisma migrate reset --schema=prisma/super/schema.prisma --force",
+  "reset:tenant": "npx prisma migrate reset --schema=prisma/tenants/schema.prisma --force",
   "reset": "pnpm reset:super && pnpm reset:tenant",
-
   "extract:fields": "ts-node ./extractFields.ts"
 },
 
