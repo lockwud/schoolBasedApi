@@ -1,6 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/tenant"
+  provider      = "prisma-client-js"
+  output        = "../generated/tenant"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
@@ -9,24 +9,79 @@ datasource db {
   url      = env("TENANT_DATABASE_URL")
 }
 
+enum role {
+  admin
+  tutor
+  accountant
+}
+
+enum paymentMethod {
+  cash
+  momo
+}
+
+enum PaymentStatus {
+  PAID
+  FAILED
+  PENDING
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum Term {
+  FIRST
+  SECOND
+  THIRD
+}
+
+enum ClassLevel {
+  primary
+  jhs
+}
 
 model admin {
-  id        String   @id @default(uuid())
-  fullName      String
-  email     String   @unique
-  password  String
-  phone     String
-  otp String?
-  token String?
-  role      role   @default(admin)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-enum role {
-    admin
-    tutor
-    accountant
+  id         String   @id @default(uuid())
+  fullName   String
+  email      String   @unique
+  password   String
+  phone      String
+  otp        String?
+  token      String?
+  role       role     @default(admin)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
+  classes       classRooms[]
+  tutor         tutor[]
+  students      student[]
+  attendances   Attendance[]
+  assessments   Assessment[]
+  reports       TerminalReport[]
+  transcripts   Transcript[]
+  events        Event[]
+  timetables    Timetable[]
+  payments      Payment[]
+  settings      SchoolSetting[]
+  guardians     Guardian[]
+}
+
+model classRooms {
+  id          String   @id @default(uuid())
+  classname   String
+  description String?
+  capacity    Int
+  isFull      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tutor   tutor[]
+  admin   admin[]
+  Timetable Timetable[]
 }
 
 model tutor {
@@ -35,11 +90,32 @@ model tutor {
   email     String   @unique
   password  String
   phone     String?
-  subject   String?
   picture   String?
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  subject   Subject[]
+  classes   classRooms[]
+  students  student[]
+  attendances   Attendance[]
+  assessments   Assessment[]
+  reports       TerminalReport[]
+  Timetable     Timetable[]
+  admin         admin[]
+}
+
+model Subject {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  code        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tutors      tutor[]
+  assessments Assessment[]
+  reports     TerminalReport[]
 }
 
 model student {
@@ -49,7 +125,7 @@ model student {
   email       String?   @unique
   password    String?
   class       String
-  level       String
+  level       ClassLevel
   gender      String
   dateOfBirth DateTime
   photoUrl    String?
@@ -63,9 +139,9 @@ model student {
   reports     TerminalReport[]
   assessments Assessment[]
   payments    Payment[]
-
-  Transcript Transcript[]
-
+  Transcript  Transcript[]
+  tutor       tutor[]
+  admin       admin[]
 }
 
 model Guardian {
@@ -74,35 +150,58 @@ model Guardian {
   email     String?   @unique
   phone     String
   address   String?
-  students  student[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  students  student[]
+  admin     admin[]
 }
 
-
 model Assessment {
-  id        String   @id @default(uuid())
-  studentId String
-  term      String
+  id           String   @id @default(uuid())
+  studentId    String
+  subjectId    String
+  tutorId      String?
+  term         Term
   academicYear String
-  subject   String
-  caScore   Float?
-  examScore Float?
-  createdAt DateTime @default(now())
+  caScore      Float?
+  examScore    Float?
+  createdAt    DateTime @default(now())
 
   student   student @relation(fields: [studentId], references: [id])
+  subject   Subject @relation(fields: [subjectId], references: [id])
+  tutor     tutor?  @relation(fields: [tutorId], references: [id])
+  admin     admin[]
 }
 
 model TerminalReport {
-  id          String   @id @default(uuid())
-  studentId   String
-  term        String
-  academicYear String
-  remarks     String?
-  performance Json     // { subject: { ca: 20, exam: 50 } }
-  createdAt   DateTime @default(now())
+  id                    String   @id @default(uuid())
+  studentId             String
+  term                  Term
+  academicYear          String
+  position              Int?
+  finalGrade            String?
+  finalScore            Float?
+  remarks               String?
+  behavior              String?
+  discipline            String?
+  extraCurricular       String?
+  parentMeeting         String?
+  feedback              String?
+  finalClassPerformance Json
+  finalClassAttendance  Json
+  performance           Json     // { subjectCode: { ca: 20, exam: 50 } }
+  attendance            Json     // { present: 20, absent: 2, late: 1 }
+  headTeacherSignature  String?
+  adminSignature        String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
-  student     student @relation(fields: [studentId], references: [id])
+  student student @relation(fields: [studentId], references: [id])
+  tutor   tutor[]
+  admin   admin[]
+
+  Subject Subject[]
 }
 
 model Transcript {
@@ -112,8 +211,8 @@ model Transcript {
   createdAt DateTime @default(now())
 
   student   student @relation(fields: [studentId], references: [id])
+  admin     admin[]
 }
-
 
 model Event {
   id          String   @id @default(uuid())
@@ -123,42 +222,39 @@ model Event {
   endDate     DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  admin admin[]
 }
 
 model Timetable {
   id        String   @id @default(uuid())
-  class     String
+  classId   String
   day       String
   subject   String
   startTime DateTime
   endTime   DateTime
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  class   classRooms @relation(fields: [classId], references: [id])
+  tutor   tutor[]
+  admin   admin[]
 }
-
-
 
 model Payment {
   id         String   @id @default(uuid())
   studentId  String
-  payee     String
-  contact String?
+  payee      String
+  contact    String?
   amount     Float
   method     paymentMethod
   status     PaymentStatus
-  reference  String     @unique
+  reference  String   @unique
   paidAt     DateTime
-  createdAt  DateTime   @default(now())
-  student    student   @relation(fields: [studentId], references: [id])
-}
-enum paymentMethod {
-    cash
-    momo
-}
+  createdAt  DateTime @default(now())
 
-enum PaymentStatus {
-  PAID
-  FAILED
-  PENDING
+  student    student @relation(fields: [studentId], references: [id])
+  admin      admin[]
 }
 
 model Attendance {
@@ -169,33 +265,31 @@ model Attendance {
   createdAt DateTime @default(now())
 
   student   student @relation(fields: [studentId], references: [id])
+  tutor     tutor[]
+  admin     admin[]
 }
-
-enum AttendanceStatus {
-  PRESENT
-  ABSENT
-  LATE
-  EXCUSED
-}
-
-// ------------------------
-// SETTINGS & MIGRATION
-// ------------------------
 
 model SchoolSetting {
   id               String   @id @default(uuid())
-  schoolName       String
+  schoolName       String?
   logoUrl          String?
   academicCalendar Json?
   gradingPolicy    Json?
+  classLevels      Json? // e.g., { primary: ["1", "2", "3"], jhs: ["1", "2"] }
+  attendancePolicy Json?
+  paymentMethods   Json? // e.g., { cash: true, momo: true }
+  contactInfo      Json? // e.g., { phone: "1234567890", email: "school@example.com" }
+  schoolAddress    String?
+  schoolEmail      String?
+  schoolPhone      String?
+  schoolWebsite    String?
+  schoolMotto      String?
+  schoolVision     String?
+  schoolMission    String?
+  schoolValues     Json? // e.g., { integrity: true, excellence: true, respect: true }
+  schoolHistory    String?
+  schoolAchievements Json? // e.g., { awards: ["Best School 2023"], milestones: ["Established in 2000"] }
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
-}
-
-model MigrationLog {
-  id          String   @id @default(uuid())
-  filename    String
-  status      String
-  executedAt  DateTime @default(now())
-  result      String?
+  admin admin[]
 }
