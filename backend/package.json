@@ -8,6 +8,7 @@
 
   "copy-files": "cp -r ./allowedFields dist/",
   "build": "tsc && pnpm copy-files",
+  "postbuild": "cp -r prisma/generated dist/prisma/generated",
   "start": "node ./dist/src/index.js",
   "dev": "nodemon",
 
